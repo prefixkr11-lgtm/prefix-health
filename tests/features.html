@@ -133,11 +133,20 @@ function decodeImage(src){
      sp.style.animationDelay === '0.58s' && sp.style.animationTimingFunction.indexOf('cubic-bezier(0.22, 1, 0.36, 1)') !== -1,
      '커튼 구간 0.58초~1.0초 · ease-out cubic-bezier(0.22, 1, 0.36, 1) (' +
      (sp ? sp.style.animationDelay + ' + ' + sp.style.animationDuration + ' / ' + sp.style.animationTimingFunction : '없음') + ')');
-  const reduceText = rules.map(function(r){ return r.cssText; }).join('\n');
-  ok(/prefers-reduced-motion:\s*reduce/.test(reduceText) &&
-     /[.]splashInner\s*\{\s*animation:\s*none/.test(reduceText) &&
-     /[.]splashGlow\s*\{\s*animation:\s*none/.test(reduceText),
-     'prefers-reduced-motion: reduce에서 인트로 모션 끔');
+  const mq = rules.filter(function(r){ return r.conditionText && r.conditionText.indexOf('prefers-reduced-motion') !== -1; })[0];
+  const inMq = function(selector){
+    if (!mq) return null;
+    const found = Array.prototype.slice.call(mq.cssRules).filter(function(r){
+      if (!r.selectorText) return false;
+      return r.selectorText.split(',').map(function(s){ return s.trim(); }).indexOf(selector) !== -1;
+    });
+    return found[0] || null;
+  };
+  const mqSplash = inMq('.splash'), mqGlow = inMq('.splashGlow'), mqInner = inMq('.splashInner');
+  ok(!!mq && !!mqSplash && mqSplash.style.animationName === 'none' &&
+     !!mqGlow && mqGlow.style.animationName === 'none' &&
+     !!mqInner && mqInner.style.animationName === 'none',
+     'prefers-reduced-motion: reduce에서 인트로 모션 끔 (스플래시·글로우·바운스)');
   const tSplash = Date.now();
   const gone = await until(function(){ return doc.getElementById('splash') === null; }, 2600, 50);
   const cost = Date.now() - tSplash;
