@@ -659,7 +659,7 @@ function decodeImage(src){
   ok(sig(pre.full) === 'squat:10:45 pushup:10:45 plank:30:0',
      '전신 기본 = 스쿼트10 → 휴식45 → 푸시업10 → 휴식45 → 플랭크30 (' + sig(pre.full) + ')');
   ok(sig(pre.lower) === 'squat:12:45 lunge:10:45 plank:30:0',
-     '하체 집중 = 스쿼트12 → 휴식45 → 런지10 → 휴식45 → 플랑크30 (' + sig(pre.lower) + ')');
+     '하체 집중 = 스쿼트12 → 휴식45 → 런지10 → 휴식45 → 플랭크30 (' + sig(pre.lower) + ')');
   ok(sig(pre.upper) === 'pushup:10:45 pullup:6:45 situp:15:0',
      '상체·코어 = 푸시업10 → 휴식45 → 턱걸이6 → 휴식45 → 윗몸일으키기15 (' + sig(pre.upper) + ')');
   ok(P.routine.summary(pre.full.steps) === '스쿼트 10회 → 휴식 45초 → 푸시업 10회 → 휴식 45초 → 플랭크 30초',
