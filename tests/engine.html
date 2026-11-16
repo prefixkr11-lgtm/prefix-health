@@ -42,7 +42,7 @@ const html = await (await fetch('../index.html', { cache: 'no-store' })).text();
 const a = html.lastIndexOf('/*', html.indexOf('CORE START'));
 const b = html.lastIndexOf('/*', html.indexOf('CORE END'));
 if (a < 0 || b < 0) { say('index.html에서 CORE 블록을 찾지 못했습니다'); throw new Error('no core'); }
-const src = html.slice(a, b) + ' */\nexport { createEngine, RUN, EXERCISES, angleAt, torsoLean };';
+const src = html.slice(a, b) + 'export { createEngine, RUN, EXERCISES, angleAt, torsoLean };';
 const mod = await import(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
 const createEngine = mod.createEngine, RUN = mod.RUN, EXERCISES = mod.EXERCISES;
 say('코어 로드 완료 · 운동 ' + Object.keys(EXERCISES).join(', '));
