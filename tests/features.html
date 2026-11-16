@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prehealth · v15 기능 테스트 (플랫 스타일·기록·카드·Pro·레벨·일시정지·인트로 · 실시간 코칭 박스 제거)</title>
+<title>Prehealth · v16 기능 테스트 (플랫 스타일·기록·카드·Pro·레벨·일시정지·인트로·☰ 메뉴·휴식 타이머·고속 스캔)</title>
 <style>
   body{background:#0F0F11;color:#F2F2F0;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
   h1{font-size:15px;letter-spacing:.02em}
@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h1>Prehealth v15 · 기능 테스트 (플랫·매트 스타일 / 기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로 / 코칭 박스 제거)</h1>
+<h1>Prehealth v16 · 기능 테스트 (플랫·매트 스타일 / 기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로 / ☰ 메뉴·휴식 타이머 / 고속 스캔)</h1>
 <pre id="out">index.html을 불러오는 중…</pre>
 <iframe id="app" src="../index.html" title="Prehealth 앱"></iframe>
 <script>
@@ -114,7 +114,7 @@ function decodeImage(src){
   const P = await until(function(){ return app.Prehealth; }, 30000);
   if (!P){ say('FAIL  window.Prehealth 공개 API를 찾지 못함'); return done(); }
   say('앱 로드 완료 · 버전 ' + P.version);
-  ok(P.version === 'v15', '공개 API 버전 v15 (실제 ' + P.version + ')');
+  ok(P.version === 'v16', '공개 API 버전 v16 (실제 ' + P.version + ')');
   say('');
 
   const q = function(sel){ return doc.querySelector(sel); };
@@ -122,7 +122,8 @@ function decodeImage(src){
 
   /* ---------- 1) 기본 구조 ---------- */
   say('▸ 1. 화면 구조');
-  ok(!!q('#proBadge'), '헤더에 PRO 배지 존재');
+  ok(!!q('#menuBtn') && !q('#proBadge'), '헤더 우상단 ☰ 메뉴 버튼 · PRO 배지는 헤더에서 걷어냄');
+  ok(!!q('#menuDrawer') && q('#menuDrawer').hidden === true, '메뉴 드로어 존재 · 처음엔 닫힘');
   ok(!!q('#proLock'), '리포트 안 Pro 잠금 카드 존재');
   ok(!!q('#repCard'), '리포트에 “결과 카드 저장” 버튼 존재');
   ok(!!q('#records') && !!q('#weekBars') && !!q('#recList'), '내 기록 섹션 구성');
@@ -142,9 +143,22 @@ function decodeImage(src){
   ok((q('#scanTitle').textContent || '').indexOf('영상 분석 중') === 0, '진행 문구: ' + q('#scanTitle').textContent);
   ok(typeof P.startScan === 'function' && P.startScan() === false, '영상이 없을 때 분석 시작 요청은 안전하게 무시');
   ok(P.isScanning() === false, '처음엔 분석 중 아님');
-  ok(P.scanPlan(10).total >= 100 && P.scanPlan(10).total <= 130, '10초 영상은 약 12fps로 샘플 (' + P.scanPlan(10).total + '장)');
-  ok(P.scanPlan(600).total <= 420, '긴 영상은 최대 420장으로 제한 (' + P.scanPlan(600).total + '장)');
-  ok(P.scanPlan(600).total >= 200, '긴 영상도 충분히 촘촘히 샘플 (' + P.scanPlan(600).total + '장)');
+  /* v16: 분석 속도 — 6~8fps · 최대 140장 · 폭 480px 리사이즈 */
+  ok(P.scan.targetFps >= 6 && P.scan.targetFps <= 8, '기본 샘플링 6~8fps (' + P.scan.targetFps + 'fps)');
+  ok(P.scan.maxFrames >= 120 && P.scan.maxFrames <= 140, '최대 프레임 120~140 (' + P.scan.maxFrames + '장)');
+  ok(P.scanPlan(10).total === 80, '10초 영상은 8fps로 80장 (' + P.scanPlan(10).total + '장)');
+  ok(P.scanPlan(30).total === 140, '30초 영상은 최대 140장으로 제한 (' + P.scanPlan(30).total + '장)');
+  ok(P.scanPlan(600).total === 140, '긴 영상도 140장까지만 (' + P.scanPlan(600).total + '장)');
+  ok(P.scanPlan(600).step > P.scanPlan(10).step, '긴 영상은 간격을 늘려 같은 장수로 훑음');
+  ok(P.scan.tailFrames === 25, '시간 예산 초과 시 25장으로 빠르게 마무리 (' + P.scan.tailFrames + '장)');
+  ok(P.scan.budgetMs <= 7000, '시간 예산 6초 이내 (' + P.scan.budgetMs + 'ms)');
+  const szFhd = P.scanFrameSize(1080, 1920);
+  ok(szFhd.w === 480 && Math.abs(szFhd.h - 853) <= 1, '1080×1920 → 폭 480px 비율 유지 (' + szFhd.w + '×' + szFhd.h + ')');
+  const sz4k = P.scanFrameSize(3840, 2160);
+  ok(sz4k.w === 480 && sz4k.h === 270, '4K 가로 영상도 폭 480px (' + sz4k.w + '×' + sz4k.h + ')');
+  const szSmall = P.scanFrameSize(360, 640);
+  ok(szSmall.w === 360 && szSmall.h === 640, '작은 영상은 늘리지 않음 (' + szSmall.w + '×' + szSmall.h + ')');
+  ok(P.scan.maxWidth === 480, '리사이즈 기준 폭 480px (' + P.scan.maxWidth + ')');
   ok(!!q('#repNew') && q('#repNew').hidden === true, '리포트에 “다른 영상 올리기” 버튼(영상 모드에서만)');
   /* v15: 운동 8종 컴팩트 목록 */
   const exBtns = doc.querySelectorAll('.ex-btn');
@@ -252,10 +266,16 @@ function decodeImage(src){
   ok(!!markCS && markCS.backgroundColor === 'rgb(16, 102, 74)' && blank(markCS.boxShadow) &&
      blank(markCS.backgroundImage),
      '헤더 [P] 배지는 플랫 단색 #10664A · 그림자 없음 (' + (markCS ? markCS.backgroundColor + ' / ' + markCS.boxShadow : '없음') + ')');
-  const proCS = csOf('#proBadge');
-  ok(!!proCS && proCS.borderTopWidth === '1px' && proCS.borderTopStyle === 'solid' &&
-     blank(proCS.boxShadow) && blank(proCS.backgroundImage) && proCS.backgroundColor === 'rgba(0, 0, 0, 0)',
-     'PRO 배지는 그라데이션·글로우 없는 테두리 필 (' + (proCS ? proCS.borderTopWidth + ' ' + proCS.borderTopStyle + ' ' + proCS.borderTopColor : '없음') + ')');
+  const menuCS = csOf('#menuBtn');
+  ok(!!menuCS && menuCS.borderTopWidth === '1px' && menuCS.borderTopStyle === 'solid' &&
+     blank(menuCS.boxShadow) && blank(menuCS.backgroundImage) && menuCS.backgroundColor === 'rgb(22, 22, 24)',
+     '☰ 메뉴 버튼은 플랫 매트(#161618) 단색 · 테두리 필 · 그림자 없음 (' +
+     (menuCS ? menuCS.backgroundColor + ' / ' + menuCS.borderTopColor : '없음') + ')');
+  const sheetCS = csOf('#menuSheet'), timerCS = csOf('#restTimer');
+  ok(!!sheetCS && sheetCS.backgroundColor === 'rgb(22, 22, 24)' && blank(sheetCS.backgroundImage) && blank(sheetCS.boxShadow),
+     '메뉴 판도 단색 매트(#161618) (' + (sheetCS ? sheetCS.backgroundColor : '없음') + ')');
+  ok(!!timerCS && timerCS.backgroundColor === 'rgb(19, 19, 21)' && blank(timerCS.backgroundImage) && blank(timerCS.boxShadow),
+     '휴식 타이머 판은 단색 매트(#131315) (' + (timerCS ? timerCS.backgroundColor : '없음') + ')');
   /* 7일 막대: 단색 채움 — 실제 칠해진 색을 확인한다 (오늘 칸은 한 톤 밝은 단색) */
   const probe = doc.createElement('div');
   probe.className = 'wb today';
@@ -420,7 +440,7 @@ function decodeImage(src){
   say('▸ 5. Prehealth Pro 모달');
   const startCount = P.proInterest();
   P.openPro();
-  ok(q('#proModal').hidden === false, 'PRO 배지 → 모달 열림');
+  ok(q('#proModal').hidden === false, '메뉴의 Prehealth Pro → 모달 열림');
   ok((q('#proModal').textContent || '').indexOf('4,900') !== -1, '월 4,900원 표시');
   ok((q('#proModal').textContent || '').indexOf('39,000') !== -1, '연 39,000원 표시');
   ok(q('#proModal').querySelectorAll('.benefits li').length >= 3, '혜택 3가지 이상');
@@ -439,7 +459,7 @@ function decodeImage(src){
   }
   q('#proClose').click();
   ok(q('#proModal').hidden === true, '모달 닫기');
-  ok(q('#proBadge') && q('#fileInput') && !q('#repCard').disabled, '무료 기능(분석·리포트·카드)은 잠기지 않음');
+  ok(q('#menuBtn') && q('#fileInput') && !q('#repCard').disabled, '무료 기능(분석·리포트·카드)은 잠기지 않음');
   say('');
 
   /* ---------- 6) 헬린이 / 헬창 레벨 모드 ---------- */
@@ -521,8 +541,112 @@ function decodeImage(src){
   ok(P.state.stream === null && q('#camPause').disabled === true, '영상 모드 복귀 시 일시정지 버튼 비활성');
   say('');
 
-  /* ---------- 8) 콘솔 에러 ---------- */
-  say('▸ 8. 에러 확인');
+  /* ---------- 8) 우상단 ☰ 메뉴 · 휴식 타이머 · 촬영 각도 · 앱 설치 ---------- */
+  say('▸ 8. 우상단 ☰ 메뉴');
+  ok(!q('#proBadge'), '헤더에서 PRO 배지 제거 (메뉴 안으로 이동)');
+  ok(q('.top .topRight').children.length === 2, '헤더 우측은 엔진 상태 + ☰ 두 개만 (실제 ' + q('.top .topRight').children.length + ')');
+  ok(q('#menuBtn').getAttribute('aria-expanded') === 'false' && q('#menuBtn').getAttribute('aria-controls') === 'menuDrawer',
+     '☰ 버튼 접힘 상태 · 드로어 연결');
+  ok(q('#menuBtn').querySelectorAll('i').length === 3, '☰ 세 줄 아이콘');
+  ok(q('#menuDrawer').hidden === true, '드로어는 처음엔 닫힘');
+  q('#menuBtn').click();
+  ok(q('#menuDrawer').hidden === false, '☰ 누르면 메뉴 열림');
+  ok(q('#menuBtn').getAttribute('aria-expanded') === 'true', 'aria-expanded = true');
+  ok(doc.body.style.overflow === 'hidden', '메뉴가 열리면 뒤 화면 스크롤 잠금');
+  ok(txt('#menuTitle') === '메뉴' && q('#menuBack').hidden === true, '첫 화면 제목 = 메뉴 · 뒤로 버튼 숨김');
+  const menuText = q('#menuMainView').textContent || '';
+  ok(['내 운동 기록', '세트 휴식 타이머', 'Prehealth Pro', '촬영 각도 가이드', '홈 화면에 앱 설치하기'].every(function(t){ return menuText.indexOf(t) !== -1; }),
+     '요청한 5가지 기능이 모두 메뉴에 있음');
+  ok(q('#menuMainView').querySelectorAll('.menuRow').length === 4 && q('#menuMainView').querySelectorAll('.menuBlock').length === 1,
+     '메뉴 줄 4개 + 타이머 블록 1개');
+  say('');
+
+  say('▸ 8-1. 세트 휴식 타이머 (30/60/90초)');
+  ok(txt('#timerClock') === '1:00', '기본 60초 표시 (' + txt('#timerClock') + ')');
+  ok(q('#timerChip60').getAttribute('aria-pressed') === 'true', '60초 칩 선택 표시');
+  q('#timerChip30').click();
+  ok(txt('#timerClock') === '0:30' && q('#timerChip30').getAttribute('aria-pressed') === 'true' &&
+     q('#timerChip60').getAttribute('aria-pressed') === 'false', '30초 원탭 선택 → 0:30');
+  q('#timerStart').click();
+  ok(P.timer.state().running === true && txt('#timerStart') === '일시정지', '시작 → 카운트다운 · 라벨 일시정지');
+  ok(q('#timerPill').hidden === false && (txt('#timerPillText') || '').indexOf('휴식') === 0,
+     '실행 중에는 화면에 휴식 알약 표시 (' + txt('#timerPillText') + ')');
+  await wait(1150);
+  const st1 = P.timer.state();
+  ok(st1.running === true && st1.left <= 29500 && st1.left >= 27500, '1초 남짓 지나면 29초 근처 (' + Math.round(st1.left) + 'ms)');
+  ok(txt('#timerClock') === '0:29' || txt('#timerClock') === '0:28', '시계가 줄어듦 (' + txt('#timerClock') + ')');
+  q('#timerStart').click();
+  ok(P.timer.state().running === false && txt('#timerStart') === '계속', '일시정지 → 라벨 “계속”');
+  q('#timerReset').click();
+  ok(P.timer.state().running === false && P.timer.state().left === 30000 && txt('#timerClock') === '0:30',
+     '초기화 → 30초로 복귀 (' + txt('#timerClock') + ')');
+  ok(q('#timerPill').hidden === true, '멈추면 알약 숨김');
+  P.timer.finish();
+  ok(txt('#timerClock') === '0:00' && q('#restTimer').getAttribute('data-done') === '1', '0초가 되면 “끝” 상태 표시');
+  ok((q('#toast').textContent || '').indexOf('휴식 끝') !== -1, '휴식 종료 토스트: ' + q('#toast').textContent);
+  q('#timerChip90').click();
+  ok(txt('#timerClock') === '1:30' && P.timer.state().sec === 90, '90초 선택 → 1:30');
+  q('#timerChip60').click();
+  q('#timerStart').click();
+  ok(P.timer.state().running === true, '60초로 다시 시작');
+  P.closeMenu();
+  ok(q('#menuDrawer').hidden === true && q('#timerPill').hidden === false, '메뉴를 닫아도 타이머는 계속 돎');
+  q('#timerPill').click();
+  ok(q('#menuDrawer').hidden === false, '알약을 누르면 메뉴로 복귀');
+  q('#timerReset').click();
+  ok(P.timer.state().running === false, '타이머 정리');
+  say('');
+
+  say('▸ 8-2. 촬영 각도 가이드 · 앱 설치 안내');
+  q('#menuGuide').click();
+  ok(q('#menuMainView').hidden === true && q('#menuGuideView').hidden === false, '촬영 각도 가이드 화면으로 전환');
+  ok(txt('#menuTitle') === '촬영 각도 가이드' && q('#menuBack').hidden === false, '제목 변경 · 뒤로 버튼 표시');
+  const camRows = q('#camGuideList').querySelectorAll('.camRow');
+  ok(camRows.length === 8, '운동 8종 촬영 팁 (실제 ' + camRows.length + ')');
+  const camViews = Array.prototype.slice.call(q('#camGuideList').querySelectorAll('.cv')).map(function(e){ return e.textContent.trim(); });
+  ok(camViews.length === 8 && camViews.every(function(v){ return v === '측면' || v === '정면'; }) &&
+     camViews.indexOf('측면') !== -1 && camViews.indexOf('정면') !== -1,
+     '측면/정면 위치 표기 (' + camViews.join(', ') + ')');
+  const camTips = Array.prototype.slice.call(q('#camGuideList').querySelectorAll('.ct'));
+  ok(camTips.length === 8 && camTips.every(function(e){ return e.textContent.trim().length >= 10; }), '운동마다 한 줄 팁');
+  const camNames = Array.prototype.slice.call(q('#camGuideList').querySelectorAll('.cn')).map(function(e){ return e.textContent.trim(); });
+  ok(camNames.join(',') === '스쿼트,푸시업,플랭크,러닝,런지,턱걸이,데드리프트,윗몸일으키기', '8종 이름 순서 (' + camNames.join(',') + ')');
+  q('#menuBack').click();
+  ok(q('#menuMainView').hidden === false && txt('#menuTitle') === '메뉴', '뒤로 → 메뉴 첫 화면');
+  q('#menuInstall').click();
+  ok(q('#menuInstallView').hidden === false, '앱 설치 안내 화면으로 전환');
+  const instText = q('#menuInstallView').textContent || '';
+  ok(instText.indexOf('아이폰') !== -1 && instText.indexOf('사파리') !== -1, '아이폰 사파리 안내');
+  ok(instText.indexOf('갤럭시') !== -1 && instText.indexOf('크롬') !== -1 && instText.indexOf('삼성 인터넷') !== -1,
+     '갤럭시 크롬·삼성 인터넷 안내');
+  ok(instText.indexOf('홈 화면에 추가') !== -1 && instText.indexOf('앱 설치') !== -1, '실제 메뉴 이름으로 안내');
+  ok(q('#menuInstallView').querySelectorAll('.stepGroup').length === 3 &&
+     q('#menuInstallView').querySelectorAll('.steps li').length >= 12,
+     '브라우저별 단계 안내 (' + q('#menuInstallView').querySelectorAll('.steps li').length + '단계)');
+  q('#menuBack').click();
+  say('');
+
+  say('▸ 8-3. 메뉴에서 기록·Pro·닫기');
+  ok(P.menuOpen() === true, '메뉴 열린 상태');
+  q('#menuRecords').click();
+  ok(q('#menuDrawer').hidden === true, '내 운동 기록 → 메뉴 닫힘');
+  ok(q('#records').classList.contains('jump'), '기록 섹션으로 이동 표시');
+  ok(doc.body.style.overflow === '', '스크롤 잠금 해제');
+  P.openMenu('main');
+  q('#menuPro').click();
+  ok(q('#menuDrawer').hidden === true && q('#proModal').hidden === false, '메뉴의 Prehealth Pro → 요금제 미리보기');
+  P.closePro();
+  P.openMenu('main');
+  doc.dispatchEvent(new app.KeyboardEvent('keydown', { key: 'Escape' }));
+  ok(q('#menuDrawer').hidden === true, 'Esc로 메뉴 닫힘');
+  ok(doc.body.style.overflow === '', '닫으면 스크롤 잠금 해제');
+  q('#menuBtn').click();
+  q('#menuBackdrop').click();
+  ok(q('#menuDrawer').hidden === true, '바깥을 눌러도 닫힘');
+  say('');
+
+  /* ---------- 9) 콘솔 에러 ---------- */
+  say('▸ 9. 에러 확인');
   const real = errors.filter(function(e){ return e && e.indexOf('ResizeObserver') === -1; });
   ok(real.length === 0, '앱에서 발생한 JS 에러 0건' + (real.length ? ' → ' + real.join(' | ') : ''));
   const collected = (app.__prehealthErrors || []).filter(function(e){ return String(e).indexOf('ResizeObserver') === -1; });
