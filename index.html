@@ -763,7 +763,7 @@ function createEngine(kind){
     }
     if (bounce > RUN.bounceBad) issues.push({ code: 'run_bounce', label: '상하 흔들림', text: '상하 흔들림이 커요, 힘을 빼고 앞으로 밀어주세요', pen: 14, lv: 'warn' });
     else if (bounce > RUN.bounceWarn) issues.push({ code: 'run_bounce_mid', label: '바운스 있음', text: '상하 흔들림을 조금만 줄여 볼까요', pen: 6, lv: 'warn' });
-    if (sg.driveMax > 0 && sg.driveMax < RUN.driveLow) issues.push({ code: 'run_drive_low', label: '무릎 드라이브 부족', text: '무릎을 조금 더 들어 올려 보세요', pen: 8, lv: 'warn' });
+    if (st.reps.length >= 3 && sg.driveMax > 0 && sg.driveMax < RUN.driveLow) issues.push({ code: 'run_drive_low', label: '무릎 드라이브 부족', text: '무릎을 조금 더 들어 올려 보세요', pen: 8, lv: 'warn' });
 
     let sc = 100;
     for (let i = 0; i < issues.length; i++) sc -= issues[i].pen;
@@ -875,7 +875,7 @@ function createEngine(kind){
       }
       const firstIdx = Math.max(0, st.runStepT.length - n);
       const span = clamp(t - st.runStepT[firstIdx], 1500, 10000) / 1000;
-      st.runCadence = ema(st.runCadence, n / span * 60, 0.25);
+      st.runCadence = ema(st.runCadence, (n - 1) / span * 60, 0.25);
     } else {
       st.runCadence = 0;
     }

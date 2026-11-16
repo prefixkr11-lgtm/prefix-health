@@ -105,7 +105,9 @@ function simulate(kind, opts, seconds) {
   for (let i = 0; i < frames; i++) {
     const t = Math.round(i * DT);
     const fase = (i / FPS) / (opts.period || 0.7);
-    last = eng.update(runner({ fase: fase, lean: opts.lean, elbow: opts.elbow, drive: opts.drive, hipY: opts.hipY }), 1.0, t);
+    last = eng.update(runner({ fase: fase, lean: opts.lean, elbow: opts.elbow, drive: opts.drive,
+      hipY: (opts.hipY === undefined ? 0.52 : opts.hipY) +
+        (opts.bounceAmp || 0) * Math.sin(2 * Math.PI * (opts.bounceHz || 1.6) * (i / FPS)) }), 1.0, t);
   }
   return { last: last, sum: eng.summary() };
 }
@@ -145,8 +147,12 @@ say('');
 /* ---------- 4) 바운스 ---------- */
 say('▸ 4. 상하 바운스');
 const bRun = simulate('running', { lean: 8, elbow: 92, drive: 1, period: 0.7 }, 4);
-say('   bounceAmp=' + bRun.sum.bounceAmp.toFixed(3) + ' (경고 ' + RUN.bounceWarn + ' / 강 ' + RUN.bounceBad + ')');
+say('   안정 러닝 bounceAmp=' + bRun.sum.bounceAmp.toFixed(3));
 ok(bRun.sum.bounceAmp >= 0 && bRun.sum.bounceAmp < RUN.bounceBad, '안정 러닝 바운스 < ' + RUN.bounceBad);
+const bUp = simulate('running', { lean: 8, elbow: 92, drive: 1, period: 0.7, bounceAmp: 0.035, bounceHz: 1.7 }, 4);
+say('   흔들리는 러닝 bounceAmp=' + bUp.sum.bounceAmp.toFixed(3) + ' issues=' + JSON.stringify(bUp.sum.issues));
+ok(bUp.sum.bounceAmp >= RUN.bounceBad, '큰 흔들림 감지 (bounceAmp ' + bUp.sum.bounceAmp.toFixed(3) + ' ≥ ' + RUN.bounceBad + ')');
+ok(codesOf(bUp.sum).indexOf('run_bounce') >= 0 || codesOf(bUp.sum).indexOf('run_bounce_mid') >= 0, '상하 흔들림 교정 포인트 생성');
 say('');
 
 /* ---------- 5) 기존 운동 회귀 ---------- */
