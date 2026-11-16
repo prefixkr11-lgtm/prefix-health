@@ -7,10 +7,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PREFIX HEALTH">
-<meta name="application-name" content="PREFIX HEALTH">
+<meta name="apple-mobile-web-app-title" content="Prehealth">
+<meta name="application-name" content="Prehealth">
 <meta name="description" content="자세를 보고 바로 고쳐주는 트레이너 — 스쿼트·푸시업·플랭크·러닝을 브라우저 안에서만 분석합니다.">
-<title>PREFIX HEALTH — 자세 분석 프로토타입</title>
+<title>Prehealth — AI 운동 자세 교정</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png?v=2">
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png?v=2">
@@ -48,7 +48,7 @@
   }
   .brand{display:flex;align-items:baseline;font-weight:800;font-size:17px;letter-spacing:-.02em;white-space:nowrap}
   .brand .br{color:var(--lime);font-weight:700}
-  .brand .health{color:var(--lime);margin-left:4px;letter-spacing:.02em}
+  .brand .health{color:var(--lime)}
   .brand .ver{
     margin-left:9px;font-size:8.5px;letter-spacing:.14em;font-weight:700;color:var(--dim2);
     border:1px solid var(--line);border-radius:4px;padding:2px 5px;transform:translateY(-1px);
@@ -288,7 +288,7 @@
 
 <header class="top">
   <div class="brand">
-    <span class="br">[</span><span>PREFIX</span><span class="health">HEALTH</span><span class="ver">PROTO.01</span>
+    <span class="br">[</span><span>Pre</span><span class="health">health</span><span class="ver">PROTO.01</span>
   </div>
   <div class="engine" id="engineStatus" data-state="loading"><i></i><span id="engineText">AI 엔진 준비 중</span></div>
 </header>
@@ -444,14 +444,14 @@
   </section>
 
   <footer>
-    PREFIX HEALTH · 자세 분석 프로토타입 (프로토타입 0.1) — 관절 인식은 MediaPipe Pose Landmarker, 모든 처리는 이 기기의 브라우저 안에서만 이루어집니다. 업로드한 영상은 서버로 전송되지 않아요.<br>
+    Prehealth · 자세 분석 프로토타입 (프로토타입 0.1) — 관절 인식은 MediaPipe Pose Landmarker, 모든 처리는 이 기기의 브라우저 안에서만 이루어집니다. 업로드한 영상은 서버로 전송되지 않아요.<br>
     각도 판정은 2D 웹캠/영상 기준이라 촬영 각도에 따라 값이 조금씩 달라질 수 있습니다. 통증이 있는 동작은 무리하지 마세요.
   </footer>
 </main>
 
 <script type="module">
 /* =====================================================================
-   PREFIX HEALTH — pose analysis prototype
+   Prehealth — pose analysis prototype
    Pose engine: MediaPipe Tasks Vision (PoseLandmarker, 33 landmarks)
    ===================================================================== */
 

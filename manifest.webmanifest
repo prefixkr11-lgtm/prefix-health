@@ -1,6 +1,6 @@
 {
-  "name": "PREFIX HEALTH",
-  "short_name": "PREFIX",
+  "name": "Prehealth",
+  "short_name": "Prehealth",
   "description": "자세를 보고 바로 고쳐주는 트레이너 — 스쿼트·푸시업·플랭크·러닝을 브라우저 안에서만 분석합니다.",
   "lang": "ko",
   "dir": "ltr",
