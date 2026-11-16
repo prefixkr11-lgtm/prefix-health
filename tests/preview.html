@@ -65,6 +65,8 @@
     if (full){
       setTimeout(function(){
         const doc = frame.contentDocument;
+        // iOS처럼 오버레이 스크롤바: 캡처에서 회색 스크롤바가 폭을 차지하지 않게 한다
+        doc.documentElement.style.scrollbarWidth = 'none';
         frame.style.height = Math.max(844, doc.documentElement.scrollHeight + 2) + 'px';
       }, 500);
     }
