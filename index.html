@@ -490,7 +490,7 @@ window.addEventListener('unhandledrejection', function (e) {
   .splashPH{
     position:relative;display:flex;align-items:center;justify-content:center;
     padding:0;border:0;border-radius:0;background:none;
-    font-size:72px;font-weight:900;line-height:1;letter-spacing:-.015em;
+    font-size:72px;font-weight:900;line-height:1;letter-spacing:-.01em;
     /* 합체 순간의 탄성: scale .86 → 1.12 → 1 */
     animation:splashMerge .36s cubic-bezier(.22,1,.36,1) .82s both;
     will-change:transform;
@@ -499,7 +499,7 @@ window.addEventListener('unhandledrejection', function (e) {
   /* P: 화이트 — 화면 왼쪽 위 대각선 바깥(-36vw, -30vh)에서 크게(scale 1.8) 중앙 왼쪽 자리로 */
   .splashP{color:#FFFFFF;animation:splashFlyP .85s cubic-bezier(.22,1,.36,1) both}
   /* H: 에메랄드 — 화면 오른쪽 아래 대각선 바깥(36vw, 30vh)에서 크게(scale 1.8) 중앙 오른쪽 자리로 */
-  .splashH{color:#34D399;margin-left:-.03em;animation:splashFlyH .85s cubic-bezier(.22,1,.36,1) both}
+  .splashH{color:#34D399;margin-left:.02em;animation:splashFlyH .85s cubic-bezier(.22,1,.36,1) both}
   /* 합체 뒤 아래에서 부드럽게 올라오는 워드마크 */
   .splashWord{
     font-size:20px;font-weight:800;letter-spacing:-.025em;color:var(--ink);opacity:0;
