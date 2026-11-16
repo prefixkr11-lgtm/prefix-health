@@ -138,6 +138,7 @@
     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   }
   .chip.accent{border-color:rgba(250,68,36,.55);color:var(--coral-2);background:rgba(20,20,22,.82)}
+  .chip.good{border-color:rgba(63,211,122,.5);color:var(--good)}
   .chip.bad{border-color:rgba(255,59,98,.55);color:var(--bad)}
   .chip.warn{border-color:rgba(255,194,75,.5);color:var(--warn)}
 
@@ -1716,7 +1717,7 @@ function applyResult(out){
     }
     setText($('#mv2'), (out.score === null || out.score === undefined) ? '–' : String(out.score));
     if (out.badJoints && out.badJoints.length) els.hudPhase.className = 'chip bad';
-    else if (out.hint && /좋은|좋아요|충분/.test(out.hint)) els.hudPhase.className = 'chip accent';
+    else if (out.hint && /좋은|좋아요|충분/.test(out.hint)) els.hudPhase.className = 'chip good';
     else els.hudPhase.className = 'chip';
     setText(els.hudFrames, '33 JOINTS · ' + engine.state.frames);
   } else {
