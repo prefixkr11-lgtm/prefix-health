@@ -168,7 +168,7 @@ function decodeImage(src){
   const phBg = propOf(spPH, 'background-color');
   const phBgImg = propOf(spPH, 'background-image');
   ok(!!spPH && (phBgImg === '' || phBgImg === 'none') &&
-     (phBg === '' || phBg === 'transparent' || phBg === 'rgba(0, 0, 0, 0)') &&
+     (phBg === '' || phBg === 'initial' || phBg === 'transparent' || phBg === 'rgba(0, 0, 0, 0)') &&
      propOf(spPH, 'border-top-width', '0px') === '0px' &&
      propOf(spPH, 'border-radius', '0px') === '0px' &&
      propOf(spPH, 'padding-top', '0px') === '0px' &&
