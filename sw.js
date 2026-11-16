@@ -1,6 +1,6 @@
 /* Prehealth — Service Worker
    앱 셸만 캐싱한다. MediaPipe CDN·카메라·동영상 스트림은 건드리지 않는다. */
-const CACHE = 'prefix-health-v11';
+const CACHE = 'prefix-health-v12';
 const SHELL = [
   './',
   './index.html',
