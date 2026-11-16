@@ -1661,8 +1661,8 @@ function createEngine(kind, level){
       if (st.streakMs > 0 && t - st.lastGoodT > 500) st.streakMs = 0;
       if (!st.broken && t - st.lastGoodT > 500){
         st.broken = true;
-        if (sag > L.sag) note('plank_sag', '엉덩이 처짐');
-        else if (sag < -L.sag) note('plank_pike', '엉덩이 솟음');
+        if (sag > L.sag) note('plank_sag', '엉덩이가 처짐');
+        else if (sag < -L.sag) note('plank_pike', '엉덩이가 솟음');
         else note('plank_bend', '몸이 꺾임');
       }
       if (!lying) log(t, 'plank_bend', T('엎드린 자세에서 시작해 볼까요? 팔꿈치를 바닥에 대고 몸을 일직선으로', '플랭크 자세가 안 잡혔어요 — 팔꿈치를 바닥에 대고 몸을 일직선으로'), 'warn', 5000);

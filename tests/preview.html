@@ -37,12 +37,12 @@
       return d.toISOString();
     }
     const rows = [
-      { lv: 'advanced', off: 0, hour: 7, kind: 'squat', name: '스쿼트', label: '반복', value: '14', score: 88, dur: 46, fb: '깊이 살짝 부족 ×1', c: '자세가 아주 안정적이에요. 이 리듬 그대로 한 세트 더 가 볼까요?' },
+      { lv: 'advanced', off: 0, hour: 7, kind: 'squat', name: '스쿼트', label: '반복', value: '14', score: 88, dur: 46, fb: '조금 더 깊이 ×1', c: '자세가 아주 안정적이에요. 이 리듬 그대로 한 세트 더 가 볼까요?' },
       { off: 0, hour: 7, kind: 'plank', name: '플랭크', label: '유지 시간', value: '0:42', score: 92, dur: 44, fb: '좋은 자세 유지', c: '일직선이 아주 잘 유지됐어요. 시간을 조금씩 늘려 볼 차례예요.' },
-      { lv: 'advanced', off: 1, hour: 21, kind: 'running', name: '러닝', label: '스텝', value: '26', score: 84, dur: 60, fb: '팔 살짝 펴짐 ×4', c: '전반적으로 좋아요. 팔꿈치 각도만 잡으면 훨씬 가벼워져요.' },
-      { off: 1, hour: 21, kind: 'pushup', name: '푸시업', label: '반복', value: '11', score: 79, dur: 38, fb: '가동범위 살짝 부족 ×2', c: '기본은 잡혔어요. 가동범위를 조금만 더 확보해 볼까요?' },
-      { off: 2, hour: 20, kind: 'squat', name: '스쿼트', label: '반복', value: '12', score: 71, dur: 41, fb: '상체 숙임 ×3', c: '가슴을 조금 더 세우면 점수가 확 올라가요.' },
-      { off: 4, hour: 19, kind: 'plank', name: '플랭크', label: '유지 시간', value: '0:28', score: 66, dur: 30, fb: '엉덩이 처짐 ×2', c: '시간을 줄이고 일직선을 먼저 잡아 볼까요?' }
+      { lv: 'advanced', off: 1, hour: 21, kind: 'running', name: '러닝', label: '스텝', value: '26', score: 84, dur: 60, fb: '팔이 살짝 펴짐 ×4', c: '전반적으로 좋아요. 팔꿈치 각도만 잡으면 훨씬 가벼워져요.' },
+      { off: 1, hour: 21, kind: 'pushup', name: '푸시업', label: '반복', value: '11', score: 79, dur: 38, fb: '조금 더 깊이 ×2', c: '기본은 잡혔어요. 가동범위를 조금만 더 확보해 볼까요?' },
+      { off: 2, hour: 20, kind: 'squat', name: '스쿼트', label: '반복', value: '12', score: 71, dur: 41, fb: '상체가 조금 숙음 ×3', c: '가슴을 조금 더 세우면 점수가 확 올라가요.' },
+      { off: 4, hour: 19, kind: 'plank', name: '플랭크', label: '유지 시간', value: '0:28', score: 66, dur: 30, fb: '엉덩이가 처짐 ×2', c: '시간을 줄이고 일직선을 먼저 잡아 볼까요?' }
     ];
     P.saveRecords(rows.map(function(r, i){
       return {
