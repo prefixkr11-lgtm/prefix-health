@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prehealth · v8 기능 테스트 (기록·카드·Pro·레벨·일시정지)</title>
+<title>Prehealth · v9 기능 테스트 (기록·카드·Pro·레벨·일시정지·인트로)</title>
 <style>
   body{background:#141416;color:#F5F2EB;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
   h1{font-size:15px;letter-spacing:.02em}
@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h1>Prehealth v8 · 기능 테스트 (기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지)</h1>
+<h1>Prehealth v9 · 기능 테스트 (기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로)</h1>
 <pre id="out">index.html을 불러오는 중…</pre>
 <iframe id="app" src="../index.html" title="Prehealth 앱"></iframe>
 <script>
@@ -110,10 +110,19 @@ function decodeImage(src){
      'Pro 요금제 월 4,900 / 연 39,000 노출');
   ok(q('.top').classList.contains('rise') && doc.querySelectorAll('.rise').length >= 8,
      '메인 요소 순차 등장(stagger) 적용 (' + doc.querySelectorAll('.rise').length + '개)');
+  /* v9 인트로: 에메랄드 글로우 + 로고 줌-인 디졸브 (~1.1초) */
+  const cssText = Array.prototype.map.call(doc.styleSheets[0].cssRules, function(r){ return r.cssText; }).join('\n');
+  ok(cssText.indexOf('splashGlow') !== -1 && cssText.indexOf('radial-gradient') !== -1,
+     '중심에서 퍼지는 에메랄드 방사형 글로우 정의');
+  ok(cssText.indexOf('splashLogoMelt') !== -1 && cssText.indexOf('scale(1.14)') !== -1,
+     '로고 줌-인 디졸브 모션 정의 (scale 1.14 → opacity 0)');
+  ok(cssText.indexOf('splashLogoIn') !== -1 && /[.]68s/.test(cssText),
+     '로고 등장(0~0.65초) → 디졸브(0.68초~) 타이밍');
   const tSplash = Date.now();
   const gone = await until(function(){ return doc.getElementById('splash') === null; }, 2600, 50);
-  ok(!!gone && (Date.now() - tSplash) < 1700,
-     '진입 스플래시가 화면에서 사라짐 (' + (Date.now() - tSplash) + 'ms, null=' + (gone ? 'yes' : 'no') + ')');
+  const cost = Date.now() - tSplash;
+  ok(!!gone && cost < 1700,
+     '진입 스플래시가 화면에서 사라짐 (' + cost + 'ms, null=' + (gone ? 'yes' : 'no') + ')');
   await wait(900);
   ok(app.getComputedStyle(q('.top')).opacity === '1', '등장 모션 후 요소가 보임');
   say('');
