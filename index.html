@@ -339,8 +339,8 @@ window.addEventListener('unhandledrejection', function (e) {
   /* ================= v6: 내 기록 · 결과 카드 · Pro ================= */
   .topRight{display:flex;align-items:center;gap:8px;min-width:0}
   @media (max-width:440px){
-    .engine span{display:none}
-    .engine{padding:5px 8px}
+    .engine{padding:4px 8px 6px;font-size:10.5px;gap:5px}
+    .engine span{font-size:10.5px}
   }
 
   /* ================= v16: 우상단 ☰ 메뉴 ================= */
@@ -695,6 +695,105 @@ window.addEventListener('unhandledrejection', function (e) {
     .rise{animation:none}
     .menuSheet{animation:none}
   }
+
+  /* ================= v18 =================
+     1) 첫 화면 촬영 안내  2) 샘플 체험  3) AI 엔진 로딩 진행률
+     4) Pro 출시 알림 폼   5) 의료 면책 문구 — 모두 플랫·단색 */
+
+  /* 샘플 체험 중: 무대는 그대로 두고 진행 판만 아래에 띄운다 (자세가 또렷이 보이게) */
+  .scan.sample{background:none;align-items:flex-end;padding:0 12px 46px}
+  .scan.sample .scanCard{
+    width:min(360px,94%);background:rgba(10,10,11,.92);border:1px solid var(--line);
+    border-radius:13px;padding:13px 14px;
+  }
+  .scan.sample .scanTitle{font-size:13.5px;margin-bottom:8px}
+
+  /* 엔진 상태칩: 아래쪽에 얇은 진행 막대 */
+  .engine{position:relative;overflow:hidden;padding-bottom:6px}
+  .engineProg{
+    position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--emerald-3);
+    display:block;transition:width .25s ease-out;
+  }
+  .engine[data-state="ready"] .engineProg{background:var(--good)}
+  .engine[data-state="error"] .engineProg{background:var(--bad)}
+
+  /* 엔진 준비 상황판 — 처음 열 때 어디까지 왔는지 단계로 보여 준다 */
+  .engLoad{
+    margin:0 0 14px;padding:11px 13px;border:1px solid #2C4E41;border-radius:11px;
+    background:#121816;
+  }
+  .engLoad[hidden]{display:none}
+  .engTop{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:var(--ink)}
+  .engTop .ed{width:7px;height:7px;flex:0 0 auto;border-radius:50%;background:var(--warn);animation:pulse 1.1s infinite}
+  .engLoad[data-state="ready"] .ed{background:var(--good);animation:none}
+  .engTop .et{flex:1;min-width:0}
+  .engTop .ep{font-variant-numeric:tabular-nums;color:var(--emerald-2);font-size:11.5px}
+  .engTrack{height:5px;border-radius:99px;background:#262629;overflow:hidden;margin:9px 0 7px}
+  .engTrack i{display:block;height:100%;width:0;background:var(--emerald-3);transition:width .25s ease-out}
+  .engNote{margin:0;font-size:10.5px;color:var(--dim2);font-weight:700;line-height:1.5}
+
+  /* 촬영 안내 배지 — 분석 무대 바로 위, 운동마다 각도가 바뀐다 */
+  .shootGuide{
+    display:flex;align-items:flex-start;gap:10px;
+    border:1px solid #2C5748;border-left:3px solid var(--emerald-3);border-radius:11px;
+    background:#121816;padding:10px 11px;margin:0 0 10px;
+  }
+  .shootGuide .sgBadge{
+    flex:0 0 auto;background:var(--emerald-btn);color:#fff;border-radius:7px;
+    padding:4px 8px;font-size:11px;font-weight:900;letter-spacing:.01em;margin-top:1px;
+  }
+  .shootGuide .sgBody{flex:1;min-width:0;display:block}
+  .shootGuide .sgBody b{display:block;font-size:13px;font-weight:800;letter-spacing:-.015em;line-height:1.35}
+  .shootGuide .sgBody span{display:block;font-size:11.5px;color:var(--dim);font-weight:700;margin-top:3px;line-height:1.45}
+  .shootGuide .sgCam{flex:0 0 auto;font-size:14px;opacity:.75;line-height:1.3}
+  @media (max-width:520px){ .shootGuide{padding:9px 10px} .shootGuide .sgBody b{font-size:12.5px} }
+
+  /* 샘플 체험 버튼 — 동영상 선택 아래 한 줄 */
+  .sampleBtn{
+    flex:1 1 100%;justify-content:center;border-color:#2C5748;color:var(--emerald-2);
+    background:#121816;
+  }
+  .sampleBtn:hover:not(:disabled){background:#16211D;border-color:#3B6B58}
+
+  /* 리포트의 샘플 표시 */
+  .tag.sampleTag{background:#121816;border:1px solid #2C5748;color:var(--emerald-2)}
+  .repSampleNote{
+    margin:10px 0 0;font-size:11.5px;line-height:1.6;color:var(--dim);font-weight:700;
+    border-left:3px solid #2C5748;padding-left:10px;
+  }
+  .repSampleNote b{color:var(--emerald-2)}
+
+  /* 면책 문구 */
+  .disclaimer{
+    margin:12px 0 0;font-size:11px;line-height:1.6;color:var(--dim2);font-weight:700;
+  }
+  footer .disc{display:block;margin-top:8px;color:var(--dim);font-weight:700}
+
+  /* Pro 출시 알림 폼 */
+  .proForm{margin-top:12px;border-top:1px solid var(--line);padding-top:13px}
+  .pfLabel{
+    display:block;font-size:11.5px;font-weight:800;color:var(--ink);margin:0 0 7px;
+  }
+  .pfLabel em{font-style:normal;font-weight:700;color:var(--dim2);font-size:10.5px;margin-left:5px}
+  .planChips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:13px}
+  .planChip{
+    background:var(--card2);border:1px solid var(--line);border-radius:999px;
+    padding:7px 11px;font-size:11.5px;font-weight:800;color:var(--dim);cursor:pointer;transition:.14s;
+  }
+  .planChip:hover{color:var(--ink);border-color:#3A3A3E}
+  .planChip[aria-pressed="true"]{background:var(--emerald-soft);border-color:#2C5748;color:var(--emerald-2)}
+  .proInput{
+    width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;
+    color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;padding:10px 12px;margin-bottom:9px;
+  }
+  .proInput::placeholder{color:var(--dim2);font-weight:700}
+  .proInput:focus{border-color:#2C5748;outline:none}
+  .pfNote{margin:0;font-size:10.5px;line-height:1.6;color:var(--dim2);font-weight:700}
+  .pfNote b{color:var(--dim)}
+  .pfDone{
+    margin:10px 0 0;font-size:11.5px;font-weight:800;color:var(--good);
+  }
+  .pfDone[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -713,7 +812,7 @@ window.addEventListener('unhandledrejection', function (e) {
     <span class="mark" aria-hidden="true">P</span><span class="word">Prehealth</span><span class="ver">PROTO.01</span>
   </div>
   <div class="topRight">
-    <div class="engine" id="engineStatus" data-state="loading"><i></i><span id="engineText">AI 엔진 준비 중</span></div>
+    <div class="engine" id="engineStatus" data-state="loading" data-progress="0"><i></i><span id="engineText">AI 엔진 준비 중</span><b class="engineProg" id="engineProg" aria-hidden="true"></b></div>
     <button class="menuBtn" id="menuBtn" type="button" aria-haspopup="dialog" aria-controls="menuDrawer" aria-expanded="false" aria-label="메뉴 열기">
       <span aria-hidden="true"><i></i><i></i><i></i></span>
     </button>
@@ -725,6 +824,16 @@ window.addEventListener('unhandledrejection', function (e) {
     <span class="ti" aria-hidden="true">📲</span>
     <span class="tx">홈 화면에 추가하면 앱처럼 <b>전체화면</b>으로 쓸 수 있어요</span>
     <button type="button" id="installTipClose" aria-label="안내 닫기">✕</button>
+  </div>
+
+  <div class="engLoad" id="engineLoad" data-state="loading" aria-live="polite">
+    <div class="engTop">
+      <span class="ed" aria-hidden="true"></span>
+      <span class="et" id="engineLoadText">AI 엔진을 준비하고 있어요</span>
+      <span class="ep" id="engineLoadPct">0%</span>
+    </div>
+    <div class="engTrack" aria-hidden="true"><i id="engineLoadBar"></i></div>
+    <p class="engNote" id="engineLoadNote">처음 한 번만 내려받아요. 다음부터는 바로 시작돼요.</p>
   </div>
 
   <section class="intro">
@@ -773,6 +882,15 @@ window.addEventListener('unhandledrejection', function (e) {
 
   <div class="grid">
     <section>
+      <div class="shootGuide" id="shootGuide" role="note" aria-live="polite">
+        <span class="sgBadge" id="shootGuideBadge">측면</span>
+        <span class="sgBody">
+          <b id="shootGuideTitle">옆에서 머리~발끝 다 보이게 찍으세요</b>
+          <span id="shootGuideText">폰을 허리 높이에 두고 2~3걸음 떨어져서 찍으면 관절이 다 보여요.</span>
+        </span>
+        <span class="sgCam" aria-hidden="true">📷</span>
+      </div>
+
       <div class="modes" role="tablist" aria-label="입력 모드">
         <button role="tab" data-mode="video" aria-selected="true">동영상 분석</button>
         <button role="tab" data-mode="camera" aria-selected="false">실시간 카메라</button>
@@ -861,6 +979,7 @@ window.addEventListener('unhandledrejection', function (e) {
         <button class="btn icon" id="muteBtn" title="소리" disabled>🔈</button>
         <button class="btn ghost" id="reportBtn" disabled>결과 보기</button>
         <button class="btn ghost" id="resetBtn" disabled>초기화</button>
+        <button class="btn sampleBtn" id="sampleBtn" type="button">🎬 샘플 스쿼트로 바로 체험하기</button>
       </div>
 
       <div class="seekRow" id="seekRow" hidden>
@@ -902,6 +1021,7 @@ window.addEventListener('unhandledrejection', function (e) {
   <section class="report" id="report" hidden>
     <div class="reportHead">
       <span class="tag">운동 결과</span>
+      <span class="tag sampleTag" id="repSampleTag" hidden>샘플 체험</span>
       <span class="meta" id="repMeta">—</span>
     </div>
     <div class="reportGrid">
@@ -910,15 +1030,18 @@ window.addEventListener('unhandledrejection', function (e) {
       <div class="rbig"><span>분석 시간</span><strong id="repDur">0:00</strong></div>
     </div>
     <p class="repComment" id="repComment"></p>
+    <p class="repSampleNote" id="repSampleNote" hidden></p>
     <div class="repIssues" id="repIssues"></div>
     <h4>고칠 점 · 시간 순</h4>
     <ul class="timeline" id="repTimeline"></ul>
     <div class="reportActions">
       <button class="btn primary" id="repCard">결과 카드 저장</button>
+      <button class="btn ghost" id="repSaveSample" type="button" hidden>내 기록에 저장</button>
       <button class="btn ghost" id="repAgain">다시 분석하기</button>
       <button class="btn ghost" id="repNew" hidden>다른 영상 올리기</button>
       <button class="btn ghost" id="repClose">닫기</button>
     </div>
+    <p class="disclaimer" id="repDisclaimer">자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.</p>
     <button class="proLock" id="proLock" type="button" aria-haspopup="dialog">
       <span class="plIcon" aria-hidden="true">🔒</span>
       <span class="plBody">
@@ -957,6 +1080,7 @@ window.addEventListener('unhandledrejection', function (e) {
   <footer>
     Prehealth · 자세 분석 프로토타입 (0.1) — 자세 인식은 MediaPipe Pose Landmarker를 쓰고, 모든 계산은 이 기기 브라우저 안에서만 해요. 올린 영상은 서버로 보내지 않아요.<br>
     각도는 실제 3D 좌표로 계산해서 카메라가 비스듬해도 정확해요. 가려진 관절은 판정에서 자동으로 빼요. 통증이 있는 동작은 무리하지 마세요.
+    <span class="disc" id="footDisclaimer">자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.</span>
   </footer>
 </main>
 
@@ -1160,8 +1284,23 @@ window.addEventListener('unhandledrejection', function (e) {
       <li><span class="bi" aria-hidden="true">📤</span><span><b>카드·기록 무제한</b> — 결과 카드를 높은 화질로 저장하고 기록도 백업</span></li>
     </ul>
 
+    <div class="proForm" id="proForm">
+      <p class="pfLabel" id="proFeatLabel">기대하는 기능 <em>여러 개 골라도 돼요</em></p>
+      <div class="planChips" id="proFeatures" role="group" aria-labelledby="proFeatLabel">
+        <button class="planChip" type="button" data-feat="capture" aria-pressed="false">틀린 순간 캡처</button>
+        <button class="planChip" type="button" data-feat="weekly" aria-pressed="false">주간 리포트</button>
+        <button class="planChip" type="button" data-feat="unlimited" aria-pressed="false">루틴 무제한</button>
+        <button class="planChip" type="button" data-feat="joint" aria-pressed="false">관절별 분석</button>
+        <button class="planChip" type="button" data-feat="trend" aria-pressed="false">4주 변화</button>
+      </div>
+      <label class="pfLabel" for="proContact">알림 받을 이메일·카톡 <em>안 써도 돼요</em></label>
+      <input class="proInput" id="proContact" type="text" inputmode="email" autocomplete="email" maxlength="80" placeholder="예) prehealth@example.com / 카톡 아이디">
+      <p class="pfNote">신청 내용은 <b>이 기기</b>에만 저장돼요. 서버로 보내지 않아요.</p>
+      <p class="pfDone" id="proDone" hidden>✓ 출시 알림 신청 완료 · 이 기기에 저장했어요</p>
+    </div>
+
     <div class="sheetActions">
-      <button class="btn primary" id="proCta" type="button">출시되면 알려 주세요</button>
+      <button class="btn primary" id="proCta" type="button">출시 알림 신청</button>
     </div>
     <div class="proCount">이 기기에서 관심 표시 <b id="proCount">0</b>번 · 결제는 아직 안 돼요</div>
     <p class="proNote">분석·기록·결과 카드 저장은 지금처럼 모두 무료예요. Pro는 더 자세한 리포트만 맡아요.</p>
@@ -1238,14 +1377,14 @@ const SKELETON = [
   [23,25],[25,27],[27,31],[24,26],[26,28],[28,32],[11,0],[12,0]
 ];
 const EXERCISES = {
-  squat:   { name: '스쿼트', en: 'SQUAT', unit: '회', view: '측면', tip: '옆에서 머리부터 발끝까지 다 보이게 찍어 주세요.' },
-  pushup:  { name: '푸시업', en: 'PUSH-UP', unit: '회', view: '측면', tip: '옆에서 머리부터 발끝까지 한 화면에 담아 주세요.' },
-  plank:   { name: '플랭크', en: 'PLANK', unit: '', view: '측면', tip: '옆에서 어깨·엉덩이·발목이 모두 보이게 찍어 주세요.' },
-  running: { name: '러닝', en: 'RUNNING', unit: '스텝', view: '측면', tip: '옆에서 10초 넘게 달리는 모습을 찍어 주세요.' },
-  lunge:   { name: '런지', en: 'LUNGE', unit: '회', view: '측면', tip: '옆에서 무릎과 발끝까지 다 보이게 찍어 주세요.' },
-  pullup:  { name: '턱걸이', en: 'PULL-UP', unit: '회', view: '정면', tip: '정면에서 머리부터 팔끝까지 다 보이게 찍어 주세요.' },
-  deadlift:{ name: '데드리프트', en: 'DEADLIFT', unit: '회', view: '측면', tip: '옆에서 머리부터 발끝까지 다 보이게 찍어 주세요.' },
-  situp:   { name: '윗몸일으키기', en: 'SIT-UP', unit: '회', view: '측면', tip: '옆에서 머리부터 무릎까지 보이게 찍어 주세요.' }
+  squat:   { name: '스쿼트', en: 'SQUAT', unit: '회', view: '측면', frame: '머리~발끝', tip: '옆에서 머리부터 발끝까지 다 보이게 찍어 주세요.' },
+  pushup:  { name: '푸시업', en: 'PUSH-UP', unit: '회', view: '측면', frame: '머리~발끝', tip: '옆에서 머리부터 발끝까지 한 화면에 담아 주세요.' },
+  plank:   { name: '플랭크', en: 'PLANK', unit: '', view: '측면', frame: '어깨~발목', tip: '옆에서 어깨·엉덩이·발목이 모두 보이게 찍어 주세요.' },
+  running: { name: '러닝', en: 'RUNNING', unit: '스텝', view: '측면', frame: '머리~발끝', tip: '옆에서 10초 넘게 달리는 모습을 찍어 주세요.' },
+  lunge:   { name: '런지', en: 'LUNGE', unit: '회', view: '측면', frame: '머리~발끝', tip: '옆에서 무릎과 발끝까지 다 보이게 찍어 주세요.' },
+  pullup:  { name: '턱걸이', en: 'PULL-UP', unit: '회', view: '정면', frame: '머리~손끝', tip: '정면에서 머리부터 팔끝까지 다 보이게 찍어 주세요.' },
+  deadlift:{ name: '데드리프트', en: 'DEADLIFT', unit: '회', view: '측면', frame: '머리~발끝', tip: '옆에서 머리부터 발끝까지 다 보이게 찍어 주세요.' },
+  situp:   { name: '윗몸일으키기', en: 'SIT-UP', unit: '회', view: '측면', frame: '머리~무릎', tip: '옆에서 머리부터 무릎까지 보이게 찍어 주세요.' }
 };
 
 /* ---------- 인식 품질 기준 ---------- */
@@ -2900,6 +3039,16 @@ const els = {
   engineStatus: $('#engineStatus'), engineText: $('#engineText'),
   stage: $('#stage'), video: $('#video'), overlay: $('#overlay'),
   hudEx: $('#hudEx'), hudPhase: $('#hudPhase'), hudFrames: $('#hudFrames'),
+  /* v18: 엔진 로딩 진행률 · 촬영 안내 · 샘플 체험 · 면책 */
+  engineProg: $('#engineProg'), engineLoad: $('#engineLoad'),
+  engineLoadText: $('#engineLoadText'), engineLoadPct: $('#engineLoadPct'),
+  engineLoadBar: $('#engineLoadBar'), engineLoadNote: $('#engineLoadNote'),
+  shootGuide: $('#shootGuide'), shootGuideBadge: $('#shootGuideBadge'),
+  shootGuideTitle: $('#shootGuideTitle'), shootGuideText: $('#shootGuideText'),
+  sampleBtn: $('#sampleBtn'),
+  repSampleTag: $('#repSampleTag'), repSampleNote: $('#repSampleNote'),
+  repSaveSample: $('#repSaveSample'),
+  proFeatures: $('#proFeatures'), proContact: $('#proContact'), proDone: $('#proDone'),
   hudQuality: $('#hudQuality'), hudPause: $('#hudPause'),
   hudHint: $('#hudHint'), hudCount: $('#hudCount'), hudCountUnit: $('#hudCountUnit'), hudCountKey: $('#hudCountKey'),
   empty: $('#empty'), emptyTitle: $('#emptyTitle'), emptyText: $('#emptyText'), emptyNote: $('#emptyNote'),
@@ -2976,7 +3125,14 @@ const S = {
   camStartAt: 0,
   sessionActive: false,
   recordId: null,
-  lastRecord: null
+  lastRecord: null,
+  /* v18 */
+  enginePct: 0,
+  engineStage: '엔진 불러오는 중',
+  sample: false,
+  sampleRunning: false,
+  sampleSaved: false,
+  lastSample: null
 };
 
 let engine = createEngine('squat', 'beginner');
@@ -3009,29 +3165,95 @@ function setEngine(state, text){
   setText(els.engineText, text);
 }
 
+/* ------------------------------ v18: 엔진 로딩 진행률 ------------------------------
+   처음 열 때 MediaPipe 스크립트·자세 모델을 내려받는 단계를 퍼센트로 보여 준다.
+   10% 엔진 불러오는 중 → 50% 자세 모델 준비 중 → 100% 준비 완료 */
+let engHideTimer = 0;
+function engineStageLabel(p){
+  if (p >= 100) return '준비 완료';
+  if (p >= 50) return '자세 모델 준비 중';
+  return '엔진 불러오는 중';
+}
+function hideEngineLoad(){
+  if (els.engineLoad) els.engineLoad.hidden = true;
+}
+function setEngineProgress(pct, stage, keep){
+  const p = clamp(Math.round(pct || 0), 0, 100);
+  S.enginePct = p;
+  S.engineStage = stage || engineStageLabel(p);
+  if (els.engineStatus){
+    els.engineStatus.setAttribute('data-progress', String(p));
+    els.engineStatus.setAttribute('data-state', p >= 100 ? (S.modelReady ? 'ready' : 'loading') : 'loading');
+  }
+  if (els.engineProg) els.engineProg.style.width = p + '%';
+  setText(els.engineText, p >= 100 ? '분석 준비 완료' : ('AI ' + p + '% 준비 중'));
+  if (els.engineLoad){
+    els.engineLoad.hidden = false;
+    els.engineLoad.setAttribute('data-state', p >= 100 ? 'ready' : 'loading');
+    setText(els.engineLoadText, p + '% ' + S.engineStage);
+    setText(els.engineLoadPct, p + '%');
+    if (els.engineLoadBar) els.engineLoadBar.style.width = p + '%';
+  }
+  /* 기다리는 자리(빈 무대의 안내문)에도 같은 진행률을 보여 준다 */
+  if (els.empty && !els.empty.hidden && els.emptyNote && !S.modelReady && els.emptyNote.getAttribute('data-engine') === '1'){
+    setText(els.emptyNote, 'AI 엔진 ' + p + '% · ' + S.engineStage);
+  }
+  clearTimeout(engHideTimer);
+  if (p >= 100 && !keep) engHideTimer = setTimeout(hideEngineLoad, 1200);
+  return p;
+}
+/* 빈 무대 안내문: 엔진을 기다리는 중이면 진행률을, 준비됐으면 짧은 안내를 */
+function emptyNoteText(){
+  if (!S.modelReady && (S.enginePct || 0) < 100) return 'AI 엔진 ' + (S.enginePct || 0) + '% · ' + (S.engineStage || engineStageLabel(S.enginePct || 0));
+  return '분석은 이 기기 안에서만 해요 · 위 안내대로 찍으면 가장 정확해요';
+}
+/* v18-1: 무대 위 촬영 안내 배지 — 고른 운동의 추천 각도와 프레임에 맞춰 바뀐다 */
+const SHOT_TIP = {
+  '측면': '폰을 허리 높이에 두고 2~3걸음 떨어져서 찍으면 관절이 다 보여요.',
+  '정면': '폰을 가슴 높이에 두고, 양팔이 화면 밖으로 나가지 않게 찍어요.'
+};
+function renderShootGuide(){
+  const ex = EXERCISES[S.exercise] || EXERCISES.squat;
+  const view = ex.view || '측면';
+  const frame = ex.frame || '머리~발끝';
+  const side = (view === '정면') ? '정면' : '옆';
+  setText(els.shootGuideBadge, view);
+  setText(els.shootGuideTitle, side + '에서 ' + frame + ' 다 보이게 찍으세요');
+  setText(els.shootGuideText, SHOT_TIP[view] || SHOT_TIP['측면']);
+  if (els.shootGuide) els.shootGuide.setAttribute('data-view', view);
+  return side + '에서 ' + frame + ' 다 보이게 찍으세요';
+}
+
 /* ------------------------------ engine load ------------------------------ */
 async function loadEngine(){
   setEngine('loading', '분석 준비 중');
+  setEngineProgress(10, '엔진 불러오는 중', true);
   let mod;
   try {
     mod = await import(CDN.module);
   } catch (err){
+    setEngineProgress(0, '엔진 연결 실패', true);
     setEngine('error', '분석 엔진 연결 실패');
+    if (els.engineLoad) els.engineLoad.setAttribute('data-state', 'error');
     showNotice('bad',
       '<b>분석 엔진을 불러오지 못했어요.</b><br>인터넷 연결을 확인해 주세요. 처음 열 때 분석 프로그램을 내려받기 때문에, 인터넷이 끊겼거나 회사·학교 네트워크에서 막혀 있으면 동작하지 않아요.',
       { label: '다시 시도', primary: true, onClick: function(){ hideNotice(); loadEngine(); } });
     return;
   }
   const FilesetResolver = mod.FilesetResolver, PoseLandmarker = mod.PoseLandmarker;
+  setEngineProgress(30, '엔진 불러오는 중', true);
   let fileset = null;
   try {
     fileset = await FilesetResolver.forVisionTasks(CDN.wasm);
   } catch (err){
+    setEngineProgress(30, '분석 파일을 받지 못했어요', true);
     setEngine('error', '분석 파일 로드 실패');
+    if (els.engineLoad) els.engineLoad.setAttribute('data-state', 'error');
     showNotice('bad', '<b>분석에 필요한 파일을 내려받지 못했어요.</b><br>잠시 후 다시 시도해 주세요.',
       { label: '다시 시도', primary: true, onClick: function(){ hideNotice(); loadEngine(); } });
     return;
   }
+  setEngineProgress(50, '자세 모델 준비 중', true);
   const attempts = [
     { model: CDN.modelFull, delegate: 'GPU', label: '정밀 분석' },
     { model: CDN.modelFull, delegate: 'CPU', label: '정밀 분석 (느린 기기)' },
@@ -3041,6 +3263,7 @@ async function loadEngine(){
   for (let i = 0; i < attempts.length; i++){
     const a = attempts[i];
     try {
+      setEngineProgress(70, '자세 모델 준비 중', true);
       poseLandmarker = await PoseLandmarker.createFromOptions(fileset, {
         baseOptions: { modelAssetPath: a.model, delegate: a.delegate },
         runningMode: 'VIDEO',
@@ -3053,6 +3276,7 @@ async function loadEngine(){
       S.modelReady = true;
       S.modelName = a.label;
       setEngine('ready', '분석 준비 완료');
+      setEngineProgress(100, '준비 완료');
       setText(els.sessModel, a.label);
       if (i > 0){
         showNotice('warn', (a.model === CDN.modelLite)
@@ -3066,7 +3290,9 @@ async function loadEngine(){
       lastErr = err;
     }
   }
+  setEngineProgress(50, '자세 모델을 받지 못했어요', true);
   setEngine('error', '분석 모델 로드 실패');
+  if (els.engineLoad) els.engineLoad.setAttribute('data-state', 'error');
   showNotice('bad', '<b>자세를 알아보는 프로그램을 불러오지 못했어요.</b><br>' + (lastErr ? String(lastErr.message || lastErr) : '') + '<br>인터넷 연결을 확인한 뒤 다시 시도해 주세요.',
     { label: '다시 시도', primary: true, onClick: function(){ hideNotice(); loadEngine(); } });
 }
@@ -3114,6 +3340,7 @@ const METRIC_DEFS = {
   situp:  [{ l: '반복', u: '회' }, { l: '몸통 각도', u: '°' }, { l: '자세 점수', u: '점' }]
 };
 function applyExerciseUI(kind){
+  if (S.sampleRunning) cancelSample(true);
   if (S.scanning) cancelScan(true);
   S.exercise = kind;
   const ex = EXERCISES[kind];
@@ -3129,11 +3356,14 @@ function applyExerciseUI(kind){
   setText(els.hudCountKey, kind === 'plank' ? '유지' : (kind === 'running' ? '발걸음' : '횟수'));
   setText(els.repCountLabel, kind === 'plank' ? '총 유지 시간' : (kind === 'running' ? '총 스텝' : '총 반복'));
   setText(els.repCountUnit, kind === 'plank' ? '' : (kind === 'running' ? '스텝' : '회'));
-  els.emptyNote.textContent = ex.tip;
+  els.emptyNote.textContent = emptyNoteText();
+  els.emptyNote.setAttribute('data-engine', (!S.modelReady && (S.enginePct || 0) < 100) ? '1' : '0');
+  renderShootGuide();
   resetSession(true);
   if (S.mode === 'video' && S.hasVideo) maybeScan();
 }
 function setMode(mode){
+  if (S.sampleRunning) cancelSample(true);
   if (S.mode === mode) return;
   if (S.scanning) cancelScan(true);
   if (S.mode === 'camera') stopCamera(false);
@@ -3196,7 +3426,9 @@ function showEmpty(title, text, note){
   els.stage.classList.add('is-empty');
   setText(els.emptyTitle, title);
   setText(els.emptyText, text);
-  setText(els.emptyNote, note || EXERCISES[S.exercise].tip);
+  const waiting = !S.modelReady && (S.enginePct || 0) < 100;
+  setText(els.emptyNote, note || (waiting ? emptyNoteText() : '분석은 이 기기 안에서만 해요 · 위 안내대로 찍으면 가장 정확해요'));
+  els.emptyNote.setAttribute('data-engine', (!note && waiting) ? '1' : '0');
   els.video.style.visibility = 'hidden';
   clearOverlay();
 }
@@ -3212,6 +3444,9 @@ function resetSession(silent){
   S.lastVideoTime = -1;
   S.recordId = null;
   S.lastRecord = null;
+  S.sample = false;
+  S.sampleSaved = false;
+  S.lastSample = null;
   setText($('#mv0'), S.exercise === 'plank' ? '0:00' : '0');
   setText($('#mv1'), '–');
   setText($('#mv2'), '–');
@@ -3245,6 +3480,7 @@ function resetAll(){
 /* ------------------------------ video mode ------------------------------ */
 function pickFile(file){
   if (!file) return;
+  if (S.sampleRunning) cancelSample(true);
   const ok = /^video\//.test(file.type) || /\.(mp4|mov|webm|m4v|avi|mkv)$/i.test(file.name);
   if (!ok){
     showNotice('bad', '<b>동영상 파일이 아니에요.</b><br>mp4, mov, webm 형식의 파일을 골라 주세요.');
@@ -3431,12 +3667,13 @@ function scanTarget(v){
     return scanCanvas;
   } catch (e){ return v; }
 }
-function scanUi(on, pct, note){
+function scanUi(on, pct, note, label){
   if (!els.scanBox) return;
   els.scanBox.hidden = !on;
+  els.scanBox.classList.toggle('sample', !!(on && S.sampleRunning));
   if (!on) return;
   const p = clamp(Math.round(pct || 0), 0, 100);
-  setText(els.scanTitle, '영상 분석 중… ' + p + '%');
+  setText(els.scanTitle, (label || '영상 분석 중') + '… ' + p + '%');
   if (els.scanBar) els.scanBar.style.width = p + '%';
   if (note) setText(els.scanNote, note);
 }
@@ -3617,7 +3854,227 @@ function cancelScan(silent){
   setText(els.hudHint, S.hasVideo ? '영상을 올리면 바로 분석해 드려요' : '동영상을 올리거나 카메라를 켜 주세요');
   if (!silent) toast('분석을 멈췄어요');
 }
-els.scanCancel.addEventListener('click', function(){ cancelScan(false); });
+els.scanCancel.addEventListener('click', function(){
+  if (S.sampleRunning){ cancelSample(false); return; }
+  cancelScan(false);
+});
+
+/* =====================================================================
+   v18-2 · 샘플 스쿼트 1탭 체험
+   영상 파일 없이도 합성 스쿼트 포즈 시퀀스를 만들어, 실제 CORE 분석
+   파이프라인(engine.update)에 그대로 넣는다. 스캔 진행 → 실제 리포트
+   (횟수·점수·코칭) → 1080×1350 결과 카드까지 진짜 분석과 같은 길로 간다.
+   결과에는 '샘플 체험' 배지를 붙이고 내 기록에는 자동 저장하지 않는다.
+   ===================================================================== */
+const SAMPLE = {
+  aspect: 0.75,        // 무대 세로 비율(3:4)과 같은 등방 좌표계
+  fps: 30,
+  cycleMs: 2400,       // 한 번 앉았다 일어나는 시간
+  reps: 6,
+  tailMs: 600,         // 마지막 반복을 끝까지 올라와 세도록 여유
+  bottom: [98, 98, 98, 128, 98, 98],   // 4번째는 얕게 앉음 → 실제 '더 깊이' 코칭
+  lean:   [24, 24, 52, 24, 24, 24]     // 3번째는 상체가 앞으로 쏠림 → 실제 교정 코칭
+};
+const SAMPLE_FRAMES = Math.round(((SAMPLE.reps * SAMPLE.cycleMs) + SAMPLE.tailMs) / 1000 * SAMPLE.fps);
+
+function easeInOut(u){ return (1 - Math.cos(Math.PI * clamp(u, 0, 1))) / 2; }
+
+/* 한 프레임의 합성 스쿼트 자세 — 정측면에서 본 33개 관절(정규화 좌표) */
+function samplePoseAt(ms){
+  const t = Math.max(0, ms || 0);
+  const cyc = t % SAMPLE.cycleMs;
+  const rep = Math.min(SAMPLE.reps - 1, Math.floor(t / SAMPLE.cycleMs));
+  let s;
+  const p = cyc / SAMPLE.cycleMs;
+  if (p < 0.42) s = easeInOut(p / 0.42);
+  else if (p < 0.55) s = 1;
+  else if (p < 0.97) s = 1 - easeInOut((p - 0.55) / 0.42);
+  else s = 0;
+  const kneeDeg = 170 - s * (170 - SAMPLE.bottom[rep]);
+  const leanDeg = 6 + s * (SAMPLE.lean[rep] - 6);
+
+  const Ls = 0.17, Lt = 0.185, Ltr = 0.26;
+  const ank = { x: 0.41, y: 0.90 };
+  const phi = 8 * Math.PI / 180;
+  const knee = { x: ank.x + Ls * Math.sin(phi), y: ank.y - Ls * Math.cos(phi) };
+  const vx = ank.x - knee.x, vy = ank.y - knee.y;
+  const th = kneeDeg * Math.PI / 180;
+  let hx = vx * Math.cos(th) - vy * Math.sin(th);
+  let hy = vx * Math.sin(th) + vy * Math.cos(th);
+  const hn = Math.hypot(hx, hy) || 1;
+  const hip = { x: knee.x + Lt * (hx / hn), y: knee.y + Lt * (hy / hn) };
+  const lam = leanDeg * Math.PI / 180;
+  const sh = { x: hip.x + Ltr * Math.sin(lam), y: hip.y - Ltr * Math.cos(lam) };
+  const nose = { x: sh.x + 0.105 * Math.sin(lam) + 0.012, y: sh.y - 0.105 * Math.cos(lam) };
+
+  const L = new Array(33).fill(null);
+  /* 무대 세로 비율(aspect)만큼 x를 줄여 정규화한다 — 분석은 aspect를 곱해 등방 좌표로
+     되돌리므로 각도가 왜곡되지 않고, 화면에도 사람 비율 그대로 그려진다. */
+  const A = SAMPLE.aspect;
+  const put = function(i, x, y, v){ L[i] = { x: x / A, y: y, z: 0, visibility: (v === undefined ? 0.96 : v) }; };
+  const NO = 0.86;
+  put(0, nose.x, nose.y, 0.97);
+  put(1, nose.x + 0.012, nose.y - 0.008, NO); put(2, nose.x - 0.012, nose.y - 0.008, NO);
+  put(3, nose.x + 0.022, nose.y - 0.004, NO); put(4, nose.x - 0.022, nose.y - 0.004, NO);
+  put(5, nose.x + 0.030, nose.y + 0.012, NO); put(6, nose.x - 0.030, nose.y + 0.012, NO);
+  put(7, nose.x + 0.034, nose.y + 0.004, NO); put(8, nose.x - 0.034, nose.y + 0.004, NO);
+  put(9, nose.x + 0.016, nose.y + 0.020, NO); put(10, nose.x - 0.016, nose.y + 0.020, NO);
+  /* 어깨 · 팔 — 양쪽을 조금씩 어깃하게 (측면) */
+  put(11, sh.x - 0.008, sh.y + 0.004); put(12, sh.x + 0.008, sh.y + 0.004);
+  put(13, sh.x - 0.002, sh.y + 0.135, 0.92); put(14, sh.x + 0.028, sh.y + 0.135, 0.92);
+  put(15, sh.x - 0.004, sh.y + 0.255, 0.9); put(16, sh.x + 0.020, sh.y + 0.255, 0.9);
+  put(17, sh.x - 0.008, sh.y + 0.280, NO); put(18, sh.x + 0.016, sh.y + 0.280, NO);
+  put(19, sh.x - 0.006, sh.y + 0.290, NO); put(20, sh.x + 0.018, sh.y + 0.290, NO);
+  put(21, sh.x - 0.004, sh.y + 0.286, NO); put(22, sh.x + 0.024, sh.y + 0.286, NO);
+  /* 골반 · 무릎 · 발목 (양쪽) */
+  put(23, hip.x - 0.010, hip.y); put(24, hip.x + 0.010, hip.y);
+  put(25, knee.x - 0.010, knee.y); put(26, knee.x + 0.010, knee.y);
+  put(27, ank.x - 0.008, ank.y); put(28, ank.x + 0.008, ank.y);
+  put(29, ank.x - 0.045, ank.y + 0.018, 0.92); put(30, ank.x + 0.045, ank.y + 0.018, 0.92);
+  put(31, ank.x + 0.085, ank.y + 0.015, 0.93); put(32, ank.x + 0.093, ank.y + 0.015, 0.93);
+  return L;
+}
+
+/* 샘플 자세를 무대 위에 그린다 (동영상 대신 보이는 화면) */
+function drawSamplePose(lm, out){
+  const r = els.overlay.getBoundingClientRect();
+  if (!r.width || !r.height || !lm) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const W = Math.round(r.width * dpr), H = Math.round(r.height * dpr);
+  if (els.overlay.width !== W || els.overlay.height !== H){ els.overlay.width = W; els.overlay.height = H; }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, r.width, r.height);
+  const map = function(p){ return { x: p.x * r.width, y: p.y * r.height }; };
+  const bad = {};
+  if (out && out.badJoints) out.badJoints.forEach(function(i){ bad[i] = true; });
+  ctx.lineCap = 'round';
+  ctx.lineWidth = Math.max(2, r.width * 0.0055);
+  for (let i = 0; i < SKELETON.length; i++){
+    const a = lm[SKELETON[i][0]], b = lm[SKELETON[i][1]];
+    if (!a || !b) continue;
+    const pa = map(a), pb = map(b);
+    ctx.strokeStyle = (bad[SKELETON[i][0]] || bad[SKELETON[i][1]]) ? 'rgba(216,87,110,.92)' : 'rgba(242,242,240,.6)';
+    ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
+  }
+  const jr = Math.max(2.6, r.width * 0.007);
+  for (let i = 0; i < lm.length; i++){
+    if (i > 0 && i < 11) continue;   // 눈·입·귀는 그리지 않는다(샘플 가시성)
+    const p = lm[i];
+    if (!p) continue;
+    const q = map(p);
+    ctx.beginPath(); ctx.arc(q.x, q.y, bad[i] ? jr * 1.9 : jr, 0, Math.PI * 2);
+    ctx.fillStyle = bad[i] ? '#D8576E' : '#4FBE86';
+    ctx.fill();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(8,8,9,.8)'; ctx.stroke();
+  }
+}
+
+function sampleStageOn(){
+  els.empty.hidden = true;
+  els.stage.classList.remove('is-empty');
+  els.stage.classList.add('sampling');
+  els.stage.style.aspectRatio = '3 / 4';
+  els.video.style.visibility = 'hidden';
+  els.hudPause.hidden = true;
+  els.report.hidden = true;
+  els.videoControls.hidden = true;
+  els.seekRow.hidden = true;
+}
+function sampleStageOff(){
+  els.stage.style.aspectRatio = '';
+  els.stage.classList.remove('sampling');
+  els.videoControls.hidden = S.mode !== 'video';
+  els.seekRow.hidden = true;
+  els.video.style.visibility = S.hasVideo ? 'visible' : 'hidden';
+}
+
+function cancelSample(silent){
+  if (!S.sampleRunning) return false;
+  S.sampleRunning = false;
+  scanUi(false);
+  sampleStageOff();
+  if (els.sampleBtn) els.sampleBtn.disabled = false;
+  showEmpty('동영상을 올려 주세요', '영상을 올리면 바로 분석해서 몇 회 했는지 알려드려요.');
+  setText(els.hudPhase, '대기');
+  setText(els.hudHint, '동영상을 올리거나 샘플로 먼저 체험해 볼 수 있어요');
+  clearOverlay();
+  els.stage.classList.remove('sampling');
+  if (!silent) toast('샘플 체험을 멈췄어요');
+  return true;
+}
+
+/* 실제 CORE 엔진으로 합성 스쿼트를 분석한다 */
+async function analyzeSampleSquat(onFrame){
+  engine = createEngine('squat', S.level);
+  let lastOut = null;
+  for (let i = 0; i < SAMPLE_FRAMES; i++){
+    const t = Math.round((i / SAMPLE.fps) * 1000);
+    const lm = samplePoseAt(t);
+    const out = engine.update(lm, SAMPLE.aspect, t, null);
+    if (out) lastOut = out;
+    if (onFrame) onFrame(i, lm, out);
+  }
+  return lastOut;
+}
+
+async function runSampleSquat(){
+  if (S.sampleRunning) return false;
+  hideNotice();
+  if (routine.active) routineQuit(true);
+  if (S.scanning) cancelScan(true);
+  if (S.mode !== 'video') setMode('video');
+  if (S.exercise !== 'squat') applyExerciseUI('squat');
+
+  S.sampleRunning = true;
+  resetSession(true);
+  S.sample = true;
+  S.sampleSaved = false;
+  sampleStageOn();
+  if (els.sampleBtn) els.sampleBtn.disabled = true;
+  scanUi(true, 0, '샘플 스쿼트 영상을 만드는 중', '샘플 분석 중');
+  setText(els.hudPhase, '분석 중');
+  setText(els.hudHint, '샘플 스쿼트를 분석하고 있어요');
+  setText(els.sessModel, '샘플 체험');
+  drawSamplePose(samplePoseAt(0), null);
+  await new Promise(function(res){ setTimeout(res, 260); });
+
+  let lastOut = null;
+  const step = 16;
+  for (let i = 0; i < SAMPLE_FRAMES; i += step){
+    if (!S.sampleRunning) return false;
+    const until = Math.min(SAMPLE_FRAMES, i + step);
+    for (let k = i; k < until; k++){
+      const t = Math.round((k / SAMPLE.fps) * 1000);
+      const lm = samplePoseAt(t);
+      const out = engine.update(lm, SAMPLE.aspect, t, null);
+      if (out) lastOut = out;
+      if (k === until - 1){ drawSamplePose(lm, out); if (out) applyResult(out); }
+    }
+    const pct = Math.min(99, (until / SAMPLE_FRAMES) * 100);
+    scanUi(true, pct, pct < 45 ? '장면마다 자세를 확인하고 있어요'
+      : (pct < 85 ? '반복을 세고 있어요' : '거의 다 됐어요 — 코칭을 정리하는 중'), '샘플 분석 중');
+    await new Promise(function(res){ setTimeout(res, 34); });
+  }
+  if (!S.sampleRunning) return false;
+  scanUi(true, 100, '다 됐어요! 결과를 정리하고 있어요', '샘플 분석 중');
+  await new Promise(function(res){ setTimeout(res, 280); });
+  if (!S.sampleRunning) return false;
+
+  S.sampleRunning = false;
+  scanUi(false);
+  sampleStageOff();
+  drawSamplePose(samplePoseAt((SAMPLE_FRAMES - 1) * 1000 / SAMPLE.fps), lastOut);
+  if (els.sampleBtn) els.sampleBtn.disabled = false;
+  els.reportBtn.disabled = false;
+  els.resetBtn.disabled = false;
+  if (lastOut) applyResult(lastOut);
+  setText(els.hudPhase, '분석 완료');
+  setText(els.hudHint, '샘플 리포트를 아래에 정리했어요');
+  showReport();
+  return true;
+}
+
+if (els.sampleBtn) els.sampleBtn.addEventListener('click', function(){ runSampleSquat(); });
 
 /* ------------------------------ camera mode ------------------------------ */
 async function startCamera(){
@@ -3957,7 +4414,7 @@ function applyResult(out){
     else if (out.hint && /좋은|좋아요|충분|충족/.test(out.hint)) els.hudPhase.className = 'chip good';
     else els.hudPhase.className = 'chip';
     setText(els.hudFrames, (out.world3d ? '3D' : '2D') + ' 33J · ' + engine.state.frames);
-    setText(els.sessModel, S.modelName + (out.world3d ? ' · 3D' : ' · 2D'));
+    setText(els.sessModel, S.sample ? '샘플 체험 · 합성 자세' : (S.modelName + (out.world3d ? ' · 3D' : ' · 2D')));
     /* v17: 루틴 — 목표 횟수/시간을 채우면 자동으로 휴식으로 */
     routineOnResult(out);
   } else {
@@ -4103,13 +4560,25 @@ function showReport(){
   const kind = S.exercise;
   const isPlank = kind === 'plank';
   const isRun = kind === 'running';
+  const isSample = !!S.sample;
   const sc = isPlank ? sum.score : sum.avgScore;
   els.report.hidden = false;
-  if (els.repNew) els.repNew.hidden = S.mode !== 'video';
-  if (els.repAgain) els.repAgain.textContent = (S.mode === 'video' && S.hasVideo) ? '다시 분석' : '다시 분석하기';
+  if (els.repNew) els.repNew.hidden = S.mode !== 'video' || isSample;
+  if (els.repAgain) els.repAgain.textContent = isSample
+    ? '샘플 다시 보기'
+    : ((S.mode === 'video' && S.hasVideo) ? '다시 분석' : '다시 분석하기');
   const lvNow = LEVELS[sum.level] || LEVELS.beginner;
-  setText(els.repMeta, lvNow.emoji + ' ' + lvNow.name + ' · ' + EXERCISES[kind].name + ' · ' + (S.mode === 'camera' ? '실시간 카메라' : (S.fileName || '동영상'))
+  const srcName = isSample ? '샘플 영상' : (S.mode === 'camera' ? '실시간 카메라' : (S.fileName || '동영상'));
+  setText(els.repMeta, (isSample ? '🎬 샘플 체험 · ' : '') + lvNow.emoji + ' ' + lvNow.name + ' · ' + EXERCISES[kind].name + ' · ' + srcName
     + (isRun && sum.cadence ? ' · 분당 ' + sum.cadence + '걸음' : '') + (sum.world3d ? ' · 3D' : ''));
+  if (els.repSampleTag) els.repSampleTag.hidden = !isSample;
+  if (els.repSampleNote){
+    els.repSampleNote.hidden = !isSample;
+    els.repSampleNote.innerHTML = isSample
+      ? '<b>샘플 체험</b> — 앱이 만든 합성 스쿼트를 실제 분석 엔진에 넣은 결과예요. 내 운동 기록에는 자동으로 쌓이지 않아요. 진짜로 남기고 싶으면 아래 <b>내 기록에 저장</b>을 누르세요.'
+      : '';
+  }
+  if (els.repSaveSample) els.repSaveSample.hidden = !isSample || S.sampleSaved;
   if (isPlank){
     setText(els.repCount, fmtClock(sum.holdMs));
     setText(els.repCountUnit, '');
@@ -4164,19 +4633,57 @@ function showReport(){
       els.repTimeline.appendChild(li);
     });
   }
-  const savedRec = saveSessionRecord(sum, sc);
-  if (savedRec) S.lastRecord = savedRec;
+  if (isSample){
+    S.lastSample = sampleRecord(sum, sc);
+    S.lastRecord = S.lastSample;
+  } else {
+    const savedRec = saveSessionRecord(sum, sc);
+    if (savedRec) S.lastRecord = savedRec;
+  }
   els.report.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+/* 샘플 결과는 저장하지 않고, 보기만 하는 기록 객체로 만든다 */
+function sampleRecord(sum, sc){
+  const rec = buildRecord(sum, 'squat', Date.now());
+  rec.comment = commentFor(sc, 'squat', sum, sum.level);
+  if (rec.score === null) rec.score = Math.round(sc);
+  rec.sample = true;
+  rec.source = '샘플 영상';
+  return rec;
+}
+/* 사용자가 직접 고르면 샘플 기록을 내 기록에 남긴다 */
+function saveSampleRecord(){
+  if (!S.lastSample || S.sampleSaved) return null;
+  const at = Date.now();
+  const rec = Object.assign({}, S.lastSample, {
+    id: at.toString(36) + Math.random().toString(36).slice(2, 7),
+    date: new Date(at).toISOString(),
+    sample: false,
+    source: '샘플 체험'
+  });
+  upsertRecord(rec);
+  S.sampleSaved = true;
+  S.lastSample = rec;
+  S.lastRecord = rec;
+  if (els.repSaveSample) els.repSaveSample.hidden = true;
+  toast('샘플 기록을 내 운동 기록에 저장했어요');
+  return rec;
 }
 els.reportBtn.addEventListener('click', showReport);
 els.repClose.addEventListener('click', function(){ els.report.hidden = true; });
 els.repAgain.addEventListener('click', function(){
   els.report.hidden = true;
+  if (S.sample){ runSampleSquat(); return; }
   if (S.mode === 'video' && S.hasVideo) startScan();
   else resetAll();
 });
 els.repNew.addEventListener('click', function(){ els.fileInput.click(); });
-els.resetBtn.addEventListener('click', function(){ if (S.scanning) cancelScan(true); resetAll(); });
+if (els.repSaveSample) els.repSaveSample.addEventListener('click', function(){ saveSampleRecord(); });
+els.resetBtn.addEventListener('click', function(){
+  if (S.scanning) cancelScan(true);
+  if (S.sampleRunning){ cancelSample(true); return; }
+  resetAll();
+});
 
 /* =====================================================================
    v6 · 내 기록 (localStorage) · 결과 카드(PNG) · Prehealth Pro
@@ -4301,6 +4808,7 @@ function renderRecords(){
 
 /* 세션 리포트가 만들어질 때 한 번 저장되고, 같은 세션에서 다시 보면 같은 기록을 갱신한다 */
 function saveSessionRecord(sum, sc){
+  if (S.sample) return null;   // v18: 샘플 체험은 내 운동 기록을 건드리지 않는다
   if (!sum || !(sum.frames > 0)) return null;
   if (sc === null || sc === undefined) return null;
   if (!((sum.reps || 0) > 0 || (sum.holdMs || 0) >= 1000)) return null;
@@ -4317,6 +4825,8 @@ function saveSessionRecord(sum, sc){
 
 /* --------------------------- 결과 카드 (1080×1350) --------------------------- */
 const CARD_W = 1080, CARD_H = 1350;
+/* v18: 결과 이미지 하단 면책 문구 */
+const CARD_DISCLAIMER = '자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.';
 function cardFont(weight, size){
   return weight + ' ' + size + 'px "Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,-apple-system,sans-serif';
 }
@@ -4404,7 +4914,21 @@ function drawResultCard(g, rec){
 
   /* 종목 */
   g.fillStyle = MINT2; g.font = cardFont(800, 21);
-  drawTracked(g, '운동 결과', 82, 348, 2);
+  const resW = drawTracked(g, '운동 결과', 82, 348, 2);
+  /* v18: 샘플 체험 배지 */
+  if (rec.sample){
+    const st = '샘플 체험';
+    g.font = cardFont(800, 19);
+    const stW = g.measureText(st).width + 28;
+    const stX = Math.min(W - 80 - stW, 82 + resW + 16);
+    roundRect(g, stX, 326, stW, 34, 17);
+    g.fillStyle = '#121816'; g.fill();
+    g.strokeStyle = '#2C5748'; g.lineWidth = 1.5; g.stroke();
+    g.fillStyle = MINT2;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(st, stX + stW / 2, 344);
+    g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  }
   g.fillStyle = INK; g.font = cardFont(900, 104);
   const cardName = rec.exerciseName || '운동';
   g.fillText(cardName, 80, 468);
@@ -4481,10 +5005,13 @@ function drawResultCard(g, rec){
   g.strokeStyle = LINE; g.lineWidth = 2;
   g.beginPath(); g.moveTo(80, 1222); g.lineTo(W - 80, 1222); g.stroke();
   g.fillStyle = DIM2; g.font = cardFont(700, 22);
-  g.fillText('prefixkr11-lgtm.github.io/prefix-health', 80, 1272);
+  g.fillText('prefixkr11-lgtm.github.io/prefix-health', 80, 1262);
   g.fillStyle = DIM; g.font = cardFont(800, 19);
   g.textAlign = 'left';
-  drawTracked(g, 'PREHEALTH', W - 236, 1272, 4);
+  drawTracked(g, 'PREHEALTH', W - 236, 1262, 4);
+  /* v18: 의료 면책 — 카드 하단 */
+  g.fillStyle = DIM2; g.font = cardFont(700, 19);
+  g.fillText(CARD_DISCLAIMER, 80, 1306, W - 160);
   g.fillStyle = MINT; g.fillRect(0, H - 8, W, 8);
 }
 function resultCard(rec){
@@ -4548,9 +5075,69 @@ function bumpProInterest(){
 }
 function openPro(){
   setText(els.proCount, String(proInterestCount()));
+  paintProForm();
   els.proModal.hidden = false;
   lockScroll(true);
   try { els.proClose.focus({ preventScroll: true }); } catch (e) {}
+}
+
+/* ------------------- v18-4: Pro 출시 알림 신청 (원하는 플랜 · 기능 · 연락처) -------------------
+   백엔드가 없으므로 신청 내용은 이 기기(localStorage)에만 저장한다. */
+const PRO_WAIT_KEY = 'prehealth:pro-waitlist:v1';
+let proPlan = 'monthly';
+
+function readProWaitlist(){
+  const raw = readStore(PRO_WAIT_KEY);
+  if (!raw) return null;
+  try {
+    const v = JSON.parse(raw);
+    return (v && typeof v === 'object') ? v : null;
+  } catch (e){ return null; }
+}
+function proFeaturesPicked(){
+  if (!els.proFeatures) return [];
+  return Array.prototype.slice.call(els.proFeatures.querySelectorAll('.planChip'))
+    .filter(function(b){ return b.getAttribute('aria-pressed') === 'true'; })
+    .map(function(b){ return b.getAttribute('data-feat'); });
+}
+function paintProForm(row){
+  const w = (row === undefined) ? readProWaitlist() : row;
+  proPlan = (w && w.plan === 'yearly') ? 'yearly' : 'monthly';
+  document.querySelectorAll('.plan').forEach(function(b){
+    b.setAttribute('aria-pressed', String(b.getAttribute('data-plan') === proPlan));
+  });
+  const feats = (w && w.features && w.features.length) ? w.features : [];
+  if (els.proFeatures){
+    Array.prototype.slice.call(els.proFeatures.querySelectorAll('.planChip')).forEach(function(b){
+      b.setAttribute('aria-pressed', String(feats.indexOf(b.getAttribute('data-feat')) >= 0));
+    });
+  }
+  if (els.proContact) els.proContact.value = (w && w.contact) ? String(w.contact) : '';
+  if (els.proDone) els.proDone.hidden = !w;
+  setText(els.proCta, w ? '신청 완료 ✓ · 다시 신청' : '출시 알림 신청');
+  return w || null;
+}
+function saveProWaitlist(){
+  const contact = els.proContact ? String(els.proContact.value || '').trim().slice(0, 80) : '';
+  const n = bumpProInterest();
+  const row = {
+    plan: proPlan,
+    features: proFeaturesPicked(),
+    contact: contact,
+    at: new Date().toISOString(),
+    count: n,
+    version: 'v18'
+  };
+  writeStore(PRO_WAIT_KEY, JSON.stringify(row));
+  if (els.proDone) els.proDone.hidden = false;
+  setText(els.proCta, '신청 완료 ✓ · 다시 신청');
+  toast('출시 알림 신청 완료 · 이 기기에 저장했어요');
+  return row;
+}
+function proWaitlistOptions(){
+  if (!els.proFeatures) return [];
+  return Array.prototype.slice.call(els.proFeatures.querySelectorAll('.planChip'))
+    .map(function(b){ return { id: b.getAttribute('data-feat'), label: b.textContent.trim() }; });
 }
 function closePro(){
   if (els.proModal.hidden) return;
@@ -4588,14 +5175,21 @@ els.proLock.addEventListener('click', openPro);
 els.proClose.addEventListener('click', closePro);
 els.proModalBackdrop.addEventListener('click', closePro);
 els.proCta.addEventListener('click', function(){
-  bumpProInterest();
-  toast('결제는 아직 준비 중이에요. 관심 있다고 표시해 뒀어요');
+  saveProWaitlist();
 });
 document.querySelectorAll('.plan').forEach(function(b){
   b.addEventListener('click', function(){
+    proPlan = (b.getAttribute('data-plan') === 'yearly') ? 'yearly' : 'monthly';
     document.querySelectorAll('.plan').forEach(function(o){ o.setAttribute('aria-pressed', String(o === b)); });
   });
 });
+if (els.proFeatures){
+  els.proFeatures.addEventListener('click', function(e){
+    const b = e.target && e.target.closest ? e.target.closest('.planChip') : null;
+    if (!b) return;
+    b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+  });
+}
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
   if (!els.cardModal.hidden) { closeCardModal(); return; }
@@ -5436,7 +6030,7 @@ loadEngine();
 
 /* ------------------------------ 테스트/자동화용 공개 API ------------------------------ */
 window.Prehealth = {
-  version: 'v17',
+  version: 'v18',
   recordsKey: REC_KEY,
   proKey: PRO_KEY,
   levelKey: LEVEL_KEY,
@@ -5471,6 +6065,40 @@ window.Prehealth = {
   scanPlan: scanPlan,
   scanFrameSize: scanFrameSize,
   scan: SCAN,
+  /* v18 */
+  engine: {
+    setProgress: setEngineProgress,
+    progress: function(){ return { pct: S.enginePct, stage: S.engineStage, ready: !!S.modelReady }; },
+    ready: function(){ return !!S.modelReady; },
+    panelHidden: function(){ return !!(els.engineLoad && els.engineLoad.hidden); }
+  },
+  shootGuide: {
+    render: renderShootGuide,
+    text: function(){ return els.shootGuide ? (els.shootGuide.textContent || '').replace(/\s+/g, ' ').trim() : ''; },
+    view: function(){ return els.shootGuide ? els.shootGuide.getAttribute('data-view') : null; }
+  },
+  sample: {
+    config: SAMPLE,
+    frames: SAMPLE_FRAMES,
+    poseAt: samplePoseAt,
+    analyze: analyzeSampleSquat,
+    run: runSampleSquat,
+    cancel: cancelSample,
+    running: function(){ return !!S.sampleRunning; },
+    active: function(){ return !!S.sample; },
+    record: function(){ return S.lastSample; },
+    save: saveSampleRecord,
+    saved: function(){ return !!S.sampleSaved; }
+  },
+  proWaitlist: {
+    key: PRO_WAIT_KEY,
+    read: readProWaitlist,
+    save: saveProWaitlist,
+    options: proWaitlistOptions,
+    paint: paintProForm,
+    plan: function(){ return proPlan; }
+  },
+  disclaimer: CARD_DISCLAIMER,
   menuOpen: menuOpen,
   openMenu: openMenu,
   closeMenu: closeMenu,

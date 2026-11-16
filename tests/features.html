@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prehealth · v17 기능 테스트 (플랫 스타일·기록·카드·Pro·레벨·일시정지·인트로·☰ 메뉴·휴식 타이머·고속 스캔·오늘의 루틴)</title>
+<title>Prehealth · v18 기능 테스트 (촬영 안내·샘플 체험·엔진 진행률·Pro 출시 알림·면책)</title>
 <style>
   body{background:#0F0F11;color:#F2F2F0;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
   h1{font-size:15px;letter-spacing:.02em}
@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h1>Prehealth v17 · 기능 테스트 (플랫·매트 스타일 / 기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로 / ☰ 메뉴·휴식 타이머 / 고속 스캔 / 오늘의 루틴)</h1>
+<h1>Prehealth v18 · 기능 테스트 (촬영 안내 / 샘플 체험 / 엔진 진행률 / Pro 출시 알림 / 면책 + 기존 v17 기능)</h1>
 <pre id="out">index.html을 불러오는 중…</pre>
 <iframe id="app" src="../index.html" title="Prehealth 앱"></iframe>
 <script>
@@ -114,7 +114,7 @@ function decodeImage(src){
   const P = await until(function(){ return app.Prehealth; }, 30000);
   if (!P){ say('FAIL  window.Prehealth 공개 API를 찾지 못함'); return done(); }
   say('앱 로드 완료 · 버전 ' + P.version);
-  ok(P.version === 'v17', '공개 API 버전 v17 (실제 ' + P.version + ')');
+  ok(P.version === 'v18', '공개 API 버전 v18 (실제 ' + P.version + ')');
   say('');
 
   const q = function(sel){ return doc.querySelector(sel); };
@@ -447,9 +447,9 @@ function decodeImage(src){
   ok(txt('#proCount') === String(startCount), '관심 카운트 초기값 표시 (' + txt('#proCount') + ')');
   q('#proCta').click();
   await wait(120);
-  ok(P.proInterest() === startCount + 1, '결제 테스트 클릭 → 관심 카운트 +1 (' + P.proInterest() + ')');
-  ok(q('#toast').classList.contains('show') && (q('#toast').textContent || '').indexOf('결제는 아직 준비 중이에요') !== -1,
-     '토스트 문구 노출: ' + (q('#toast').textContent || ''));
+  ok(P.proInterest() === startCount + 1, '출시 알림 신청 → 관심 카운트 +1 (' + P.proInterest() + ')');
+  ok(q('#toast').classList.contains('show') && (q('#toast').textContent || '').indexOf('출시 알림 신청 완료') !== -1,
+     '신청 완료 토스트: ' + (q('#toast').textContent || ''));
   ok(txt('#proCount') === String(startCount + 1), '모달 안 로컬 카운트 갱신');
   const yearly = q('.plan[data-plan="yearly"]');
   if (yearly){
@@ -841,8 +841,164 @@ function decodeImage(src){
   P.routine.clearCustom();
   say('');
 
-  /* ---------- 10) 콘솔 에러 ---------- */
-  say('▸ 10. 에러 확인');
+  /* ---------- 10) v18-1 첫 화면 촬영 안내 ---------- */
+  say('▸ 10. v18 첫 화면 “옆에서 찍기” 안내');
+  ok(!!q('#shootGuide') && q('#shootGuide').hidden === false, '분석 무대 위 촬영 안내 배지가 처음부터 보임');
+  q('.ex-btn[data-ex="squat"]').click();
+  const pos = q('#shootGuide').compareDocumentPosition(q('#stage'));
+  ok((pos & app.Node.DOCUMENT_POSITION_FOLLOWING) !== 0, '안내 배지는 분석 무대 바로 위에 있음');
+  ok(txt('#shootGuideBadge') === '측면' && txt('#shootGuideTitle') === '옆에서 머리~발끝 다 보이게 찍으세요',
+     '스쿼트 안내: [' + txt('#shootGuideBadge') + '] ' + txt('#shootGuideTitle'));
+  ok((q('#shootGuideText').textContent || '').indexOf('허리 높이') !== -1, '촬영 거리 안내도 같이 (' + txt('#shootGuideText') + ')');
+  q('.ex-btn[data-ex="pullup"]').click();
+  ok(txt('#shootGuideBadge') === '정면' && (txt('#shootGuideTitle') || '').indexOf('정면에서 머리~손끝') === 0,
+     '턱걸이는 정면 각도로 바뀜 (' + txt('#shootGuideTitle') + ')');
+  ok((q('#shootGuideText').textContent || '').indexOf('가슴 높이') !== -1, '정면용 거리 안내');
+  q('.ex-btn[data-ex="situp"]').click();
+  ok((txt('#shootGuideTitle') || '').indexOf('머리~무릎') !== -1, '운동마다 보여야 할 범위가 다름 (' + txt('#shootGuideTitle') + ')');
+  q('.ex-btn[data-ex="squat"]').click();
+  ok(P.state.exercise === 'squat' && txt('#shootGuideBadge') === '측면' && (txt('#shootGuideTitle') || '').indexOf('옆에서 머리~발끝') === 0, '스쿼트로 복귀');
+  const sgCS = app.getComputedStyle(q('#shootGuide'));
+  ok(sgCS.borderLeftWidth !== '0px' && sgCS.backgroundColor === 'rgb(18, 24, 22)',
+     '눈에 띄는 단색 배지 판 (좌측 강조선 · 매트 배경)');
+  say('');
+
+  /* ---------- 11) v18-2 샘플 스쿼트 1탭 체험 ---------- */
+  say('▸ 11. 샘플 스쿼트 1탭 체험 → 실제 리포트 → 결과 카드');
+  ok(!!q('#sampleBtn') && (q('#sampleBtn').textContent || '').indexOf('샘플 스쿼트로 바로 체험') !== -1,
+     '“🎬 샘플 스쿼트로 바로 체험하기” 버튼 (' + (txt('#sampleBtn') || '') + ')');
+  ok(!!P.sample && typeof P.sample.run === 'function', '공개 API에 sample 추가');
+  const syn = P.sample.poseAt(1000);
+  ok(Array.isArray(syn) && syn.length === 33, '합성 포즈는 33개 관절 (' + (syn ? syn.length : 0) + ')');
+  ok(!!syn[25] && !!syn[27] && !!syn[11] && syn[27].visibility > 0.6 && syn[27].y > syn[23].y,
+     '무릎·발목·어깨가 실제 좌표로 채워짐 (발목이 골반보다 아래)');
+  ok(P.sample.frames >= 300, '분석 프레임 ' + P.sample.frames + '장');
+  const recBefore = P.loadRecords().length;
+  q('#sampleBtn').click();
+  await wait(60);
+  ok(P.sample.running() === true, '1탭에 샘플 스캔 시작');
+  ok(q('#scanBox').hidden === false && (txt('#scanTitle') || '').indexOf('샘플 분석 중') === 0,
+     '스캔 진행률 표시: ' + txt('#scanTitle'));
+  ok(q('#stage').classList.contains('is-empty') === false && q('#empty').hidden === true, '무대에 샘플 자세가 올라옴');
+  const sDone = await until(function(){ return !P.sample.running() && q('#report').hidden === false; }, 40000, 120);
+  ok(!!sDone, '스캔이 끝나면 리포트가 바로 열림');
+  ok(txt('#repCount') === String(P.sample.config.reps), '실제 분석으로 반복을 셈: ' + txt('#repCount') + '회');
+  const sScore = parseInt(txt('#repScore'), 10);
+  ok(isFinite(sScore) && sScore >= 60 && sScore <= 100, '자세 점수 ' + txt('#repScore') + '점');
+  ok(txt('#repDur') !== '0:00', '분석 시간 ' + txt('#repDur'));
+  ok((txt('#repComment') || '').length >= 10, '한 줄 코멘트: ' + txt('#repComment'));
+  const sIssues = q('#repIssues').querySelectorAll('.issueChip');
+  ok(sIssues.length >= 2, '고칠 점 코칭이 실제로 나옴 (' + sIssues.length + '개)');
+  ok(q('#repTimeline').querySelectorAll('li').length >= 4, '시간 순 코칭 기록 ' + q('#repTimeline').querySelectorAll('li').length + '줄');
+  ok(q('#repSampleTag').hidden === false && txt('#repSampleTag') === '샘플 체험', '리포트에 “샘플 체험” 배지');
+  ok(q('#repSampleNote').hidden === false && (q('#repSampleNote').textContent || '').indexOf('자동으로 쌓이지 않아요') !== -1,
+     '내 기록에 안 쌓인다는 안내');
+  ok(P.loadRecords().length === recBefore, '샘플 체험은 내 운동 기록을 오염시키지 않음 (' + P.loadRecords().length + '건)');
+  const srec = P.sample.record();
+  ok(!!srec && srec.sample === true && typeof srec.score === 'number', '샘플 기록은 sample 표시가 붙은 별도 객체');
+  /* 결과 카드 1080×1350 */
+  q('#repCard').click();
+  await wait(250);
+  ok(q('#cardModal').hidden === false, '“결과 카드 저장” → 카드 미리보기 열림');
+  ok((q('#cardPreview').getAttribute('src') || '').indexOf('data:image/png') === 0, 'PNG data URL 연결');
+  const cardS = P.cardCanvas(srec), cardN = P.cardCanvas(Object.assign({}, srec, { sample: false }));
+  ok(cardS.width === 1080 && cardS.height === 1350, '결과 카드 1080×1350 (' + cardS.width + '×' + cardS.height + ')');
+  const ink = function (c, x, y, w, h){
+    const d = c.getContext('2d').getImageData(x, y, w, h).data;
+    let n = 0;
+    for (let i = 0; i < d.length; i += 4){ if (d[i] > 40 || d[i + 1] > 40 || d[i + 2] > 40) n++; }
+    return n;
+  };
+  const badgeInk = ink(cardS, 170, 318, 140, 48) - ink(cardN, 170, 318, 140, 48);
+  ok(badgeInk > 0, '이미지 안에 “샘플 체험” 배지가 그려짐 (차이 ' + badgeInk + 'px)');
+  ok(ink(cardS, 80, 1286, 900, 30) > 200, '이미지 하단에 면책 문구가 그려짐');
+  P.closeCardModal();
+  /* 저장 선택 */
+  ok(q('#repSaveSample').hidden === false, '“내 기록에 저장” 선택 버튼 노출');
+  q('#repSaveSample').click();
+  await wait(150);
+  ok(P.loadRecords().length === recBefore + 1, '직접 저장을 누르면 그때 기록에 남음 (' + P.loadRecords().length + '건)');
+  ok(P.sample.saved() === true, '저장됨 상태 표시');
+  ok((q('#toast').textContent || '').indexOf('샘플 기록을 내 운동 기록에 저장') !== -1, '저장 토스트: ' + q('#toast').textContent);
+  P.clearRecords();
+  P.renderRecords();
+  q('#repClose').click();
+  ok(q('#report').hidden === true, '리포트 닫기');
+  say('');
+
+  /* ---------- 12) v18-3 AI 엔진 로딩 진행률 ---------- */
+  say('▸ 12. AI 엔진 로딩 진행률 (10% → 50% → 100%)');
+  ok(!!q('#engineProg') && !!q('#engineLoad') && !!q('#engineLoadBar'), '상태칩 진행 막대 + 엔진 준비 상황판 존재');
+  ok(typeof P.engine.setProgress === 'function', '공개 API에 engine.setProgress');
+  P.engine.setProgress(10, '엔진 불러오는 중', true);
+  ok((txt('#engineText') || '').indexOf('10%') !== -1, '상태칩에 퍼센트 (' + txt('#engineText') + ')');
+  ok(txt('#engineLoadText') === '10% 엔진 불러오는 중', '단계 문구: ' + txt('#engineLoadText'));
+  ok(txt('#engineLoadPct') === '10%' && parseFloat(q('#engineLoadBar').style.width) === 10, '진행 막대 10%');
+  ok(q('#engineLoad').hidden === false, '상황판이 보임');
+  P.engine.setProgress(50, '자세 모델 준비 중', true);
+  ok(txt('#engineLoadText') === '50% 자세 모델 준비 중' && parseFloat(q('#engineLoadBar').style.width) === 50,
+     '중간 단계: ' + txt('#engineLoadText'));
+  P.engine.setProgress(100, '준비 완료');
+  ok(txt('#engineLoadText') === '100% 준비 완료' && parseFloat(q('#engineLoadBar').style.width) === 100, '완료 단계: ' + txt('#engineLoadText'));
+  ok((txt('#engineText') || '') === '분석 준비 완료', '상태칩도 준비 완료 (' + txt('#engineText') + ')');
+  ok(q('#engineStatus').getAttribute('data-progress') === '100', 'data-progress=100');
+  await wait(1450);
+  ok(q('#engineLoad').hidden === true, '100% 뒤에는 상황판이 사라져 화면을 가리지 않음');
+  ok(P.engine.progress().pct === 100, '진행률 상태 ' + P.engine.progress().pct + '%');
+  say('');
+
+  /* ---------- 13) v18-4 Pro 출시 알림 신청 ---------- */
+  say('▸ 13. Pro 출시 알림 신청 (플랜 · 기대 기능 · 연락처)');
+  app.localStorage.removeItem(P.proWaitlist.key);
+  ok(!!q('#proFeatures') && !!q('#proContact'), '기대 기능 칩 + 연락처 입력칸');
+  ok(q('#proFeatures').querySelectorAll('.planChip').length >= 3, '기대 기능 칩 ' + q('#proFeatures').querySelectorAll('.planChip').length + '개');
+  ok((q('#proForm').textContent || '').indexOf('이 기기') !== -1, '이 기기에만 저장된다는 안내');
+  const proBefore = P.proInterest();
+  P.openPro();
+  ok(q('#proModal').hidden === false, 'Pro 모달 열림');
+  ok(txt('#proCta') === '출시 알림 신청', '처음 CTA 문구 (' + txt('#proCta') + ')');
+  q('.plan[data-plan="yearly"]').click();
+  ok(P.proWaitlist.plan() === 'yearly' && q('.plan[data-plan="yearly"]').getAttribute('aria-pressed') === 'true', '연간 플랜 선택');
+  q('#proFeatures .planChip[data-feat="capture"]').click();
+  q('#proFeatures .planChip[data-feat="weekly"]').click();
+  ok(q('#proFeatures .planChip[data-feat="capture"]').getAttribute('aria-pressed') === 'true' &&
+     q('#proFeatures .planChip[data-feat="weekly"]').getAttribute('aria-pressed') === 'true', '기능 두 개 선택(복수 선택)');
+  q('#proFeatures .planChip[data-feat="weekly"]').click();
+  q('#proFeatures .planChip[data-feat="weekly"]').click();
+  ok(q('#proFeatures .planChip[data-feat="weekly"]').getAttribute('aria-pressed') === 'true', '다시 눌러도 선택 유지(토글 두 번)');
+  q('#proContact').value = 'prehealth@example.com';
+  q('#proCta').click();
+  await wait(150);
+  const wl = P.proWaitlist.read();
+  ok(!!wl && wl.plan === 'yearly', '플랜 저장 (' + (wl && wl.plan) + ')');
+  ok(!!wl && wl.features.indexOf('capture') >= 0 && wl.features.indexOf('weekly') >= 0 && wl.features.length === 2,
+     '기대 기능 저장 (' + (wl ? wl.features.join(',') : '') + ')');
+  ok(!!wl && wl.contact === 'prehealth@example.com', '연락처 저장 (' + (wl && wl.contact) + ')');
+  ok(app.localStorage.getItem(P.proWaitlist.key) !== null, 'localStorage에 남음 (' + P.proWaitlist.key + ')');
+  ok(q('#proDone').hidden === false && (txt('#proDone') || '').indexOf('출시 알림 신청 완료') !== -1,
+     '“출시 알림 신청 완료” 피드백: ' + txt('#proDone'));
+  ok((q('#toast').textContent || '').indexOf('출시 알림 신청 완료') !== -1, '토스트: ' + q('#toast').textContent);
+  ok(P.proInterest() === proBefore + 1, '관심 카운트도 함께 증가 (' + P.proInterest() + ')');
+  P.closePro();
+  P.openPro();
+  ok(q('.plan[data-plan="yearly"]').getAttribute('aria-pressed') === 'true' && q('#proContact').value === 'prehealth@example.com' &&
+     q('#proDone').hidden === false, '다시 열면 신청 내용이 그대로');
+  ok(txt('#proCta') === '신청 완료 ✓ · 다시 신청', 'CTA 문구도 신청 상태 (' + txt('#proCta') + ')');
+  P.closePro();
+  say('');
+
+  /* ---------- 14) v18-5 의료 면책 문구 ---------- */
+  say('▸ 14. “의료 조언이 아니에요” 면책 문구');
+  const DIS = '자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.';
+  ok(P.disclaimer === DIS, '이미지용 문구 상수');
+  ok((q('footer').textContent || '').indexOf(DIS) !== -1, '앱 하단 푸터에 문구');
+  ok(!!q('#footDisclaimer') && txt('#footDisclaimer') === DIS, '푸터 문구 요소');
+  ok(!!q('#repDisclaimer') && (q('#repDisclaimer').textContent || '').trim() === DIS, '결과 리포트 카드 하단에 문구');
+  ok((q('#repDisclaimer').parentNode || {}).id === 'report', '리포트 안, 버튼 줄 아래에 위치');
+  say('');
+
+  /* ---------- 15) 콘솔 에러 ---------- */
+  say('▸ 15. 에러 확인');
   const real = errors.filter(function(e){ return e && e.indexOf('ResizeObserver') === -1; });
   ok(real.length === 0, '앱에서 발생한 JS 에러 0건' + (real.length ? ' → ' + real.join(' | ') : ''));
   const collected = (app.__prehealthErrors || []).filter(function(e){ return String(e).indexOf('ResizeObserver') === -1; });
