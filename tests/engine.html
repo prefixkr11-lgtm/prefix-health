@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prehealth · 엔진 스모크 테스트</title>
+<title>Prehealth · 엔진 정밀도 테스트</title>
 <style>
   body{background:#141416;color:#F5F2EB;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
   h1{font-size:15px;letter-spacing:.02em}
@@ -12,7 +12,7 @@
 </style>
 </head>
 <body>
-<h1>Prehealth · 자세 엔진 스모크 테스트</h1>
+<h1>Prehealth · 자세 엔진 정밀도 테스트 (3D·가시성·One-Euro·레벨)</h1>
 <pre id="out">index.html에서 엔진을 불러오는 중…</pre>
 <script>
 window.addEventListener('error', function (e) {
@@ -24,7 +24,6 @@ window.addEventListener('unhandledrejection', function (e) {
 });
 </script>
 <script type="module">
-const LF = String.fromCharCode(10);
 const outEl = document.getElementById('out');
 const lines = [];
 function say(s) { lines.push(s); outEl.textContent = lines.join('\n'); }
@@ -42,169 +41,627 @@ const html = await (await fetch('../index.html?v=' + Date.now(), { cache: 'no-st
 const a = html.lastIndexOf('/*', html.indexOf('CORE START'));
 const b = html.lastIndexOf('/*', html.indexOf('CORE END'));
 if (a < 0 || b < 0) { say('index.html에서 CORE 블록을 찾지 못했습니다'); throw new Error('no core'); }
-const src = html.slice(a, b) + 'export { createEngine, RUN, EXERCISES, angleAt, torsoLean, buildRecord, recordStats, recordStreak, dateKeyOf, clockText };';
+const EXPORTS = 'export { createEngine, LEVELS, RUN, TUNE, EXERCISES, COPY, angleAt, leanFromVertical, bodyLine, createOneEuro, oneEuroAlpha, valgusMeasure, overstride, assessQuality, sayCopy, buildRecord, recordStats, recordStreak, dateKeyOf, clockText };';
+const src = html.slice(a, b) + EXPORTS;
 const mod = await import(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
-const createEngine = mod.createEngine, RUN = mod.RUN, EXERCISES = mod.EXERCISES;
-const buildRecord = mod.buildRecord, recordStats = mod.recordStats, recordStreak = mod.recordStreak, clockText = mod.clockText;
-say('코어 로드 완료 · 운동 ' + Object.keys(EXERCISES).join(', '));
+say('코어 로드 완료 · 운동 ' + Object.keys(mod.EXERCISES).join(', ') + ' · 레벨 ' + Object.keys(mod.LEVELS).join(', '));
 say('');
 
-/* ---------- 합성 포즈 ---------- */
-const TORSO = 0.20, L1 = 0.17, L2 = 0.17;
-function P33() { return new Array(33).fill(null); }
-function put(L, i, x, y, v) { L[i] = { x: x, y: y, z: 0, visibility: v === undefined ? 0.92 : v }; }
+/* CASES START — tests/engine.html 과 로컬 하네스가 함께 쓰는 검증 케이스 */
+function runCases(M, ok, say){
+  const createEngine = M.createEngine, LEVELS = M.LEVELS, TUNE = M.TUNE, EXERCISES = M.EXERCISES;
+  const angleAt = M.angleAt, createOneEuro = M.createOneEuro, bodyLine = M.bodyLine;
+  const valgusMeasure = M.valgusMeasure, overstride = M.overstride, assessQuality = M.assessQuality;
+  const sayCopy = M.sayCopy, COPY = M.COPY, leanFromVertical = M.leanFromVertical;
+  const buildRecord = M.buildRecord, recordStats = M.recordStats, recordStreak = M.recordStreak, clockText = M.clockText;
+  const RUN = M.RUN;
+  const FPS = 30, DT = 1000 / FPS;
 
-function runner(o) {
-  const L = P33();
-  const lean = (o.lean === undefined ? 8 : o.lean) * Math.PI / 180;
-  const hipY = o.hipY === undefined ? 0.52 : o.hipY;
-  const hip = { x: 0.48, y: hipY };
-  const sh = { x: hip.x + TORSO * Math.sin(lean), y: hip.y - TORSO * Math.cos(lean) };
-  put(L, 11, sh.x + 0.012, sh.y + 0.004); put(L, 12, sh.x - 0.012, sh.y + 0.004);
-  put(L, 23, hip.x + 0.012, hip.y); put(L, 24, hip.x - 0.012, hip.y);
-  const drive = o.drive === undefined ? 1 : o.drive;
-
-  for (let leg = 0; leg < 2; leg++) {
-    const f = (o.fase + leg * 0.5) % 1;
-    const swing = Math.max(0, Math.sin(Math.PI * f));
-    const A = (12 + 62 * drive * swing) * Math.PI / 180;
-    const kneeAng = 170 - 110 * swing;
-    const B = A + (180 - kneeAng) * Math.PI / 180;
-    const off = leg === 0 ? 0.012 : -0.012;
-    const hp = { x: hip.x + off, y: hip.y };
-    const knee = { x: hp.x + L1 * Math.sin(A), y: hp.y + L1 * Math.cos(A) };
-    const ank = { x: knee.x + L2 * Math.sin(B), y: knee.y + L2 * Math.cos(B) };
-    const ids = leg === 0 ? [23, 25, 27, 31] : [24, 26, 28, 32];
-    put(L, ids[0], hp.x, hp.y);
-    put(L, ids[1], knee.x, knee.y);
-    put(L, ids[2], ank.x, ank.y);
-    put(L, ids[3], ank.x + 0.04, ank.y + 0.012);
+  function P33(){ return new Array(33).fill(null); }
+  function put(L, i, x, y, v){ L[i] = { x: x, y: y, z: 0, visibility: v === undefined ? 0.92 : v }; }
+  function codesOf(sum){ return sum.issues.map(function(i){ return i.code; }); }
+  function has(sum, code){ return codesOf(sum).indexOf(code) >= 0; }
+  function firstEvent(sum, code){
+    for (let i = 0; i < sum.events.length; i++){ if (sum.events[i].code === code) return sum.events[i]; }
+    return null;
   }
-  const elbow = o.elbow === undefined ? 92 : o.elbow;
-  for (let s = 0; s < 2; s++) {
-    const ids = s === 0 ? [11, 13, 15] : [12, 14, 16];
-    const shp = L[ids[0]];
-    const el = { x: shp.x - 0.015, y: shp.y + 0.105 };
-    const dx = shp.x - el.x, dy = shp.y - el.y;
-    const n = Math.hypot(dx, dy) || 1;
-    const t = elbow * Math.PI / 180;
-    const ux = dx / n, uy = dy / n;
+
+  /* ================= 합성 포즈 ================= */
+  const TORSO = 0.20, L1 = 0.17, L2 = 0.17;
+
+  /* 측면 러닝 (기존 회귀용) */
+  function runner(o){
+    const L = P33();
+    const lean = (o.lean === undefined ? 8 : o.lean) * Math.PI / 180;
+    const hipY = o.hipY === undefined ? 0.52 : o.hipY;
+    const hip = { x: 0.48, y: hipY };
+    const sh = { x: hip.x + TORSO * Math.sin(lean), y: hip.y - TORSO * Math.cos(lean) };
+    put(L, 11, sh.x + 0.012, sh.y + 0.004); put(L, 12, sh.x - 0.012, sh.y + 0.004);
+    put(L, 23, hip.x + 0.012, hip.y); put(L, 24, hip.x - 0.012, hip.y);
+    const drive = o.drive === undefined ? 1 : o.drive;
+    for (let leg = 0; leg < 2; leg++){
+      const f = (o.fase + leg * 0.5) % 1;
+      const swing = Math.max(0, Math.sin(Math.PI * f));
+      const A = (12 + 62 * drive * swing) * Math.PI / 180;
+      const kneeAng = 170 - 110 * swing;
+      const B = A + (180 - kneeAng) * Math.PI / 180;
+      const off = leg === 0 ? 0.012 : -0.012;
+      const hp = { x: hip.x + off, y: hip.y };
+      const knee = { x: hp.x + L1 * Math.sin(A), y: hp.y + L1 * Math.cos(A) };
+      const ank = { x: knee.x + L2 * Math.sin(B), y: knee.y + L2 * Math.cos(B) };
+      const ids = leg === 0 ? [23, 25, 27, 31] : [24, 26, 28, 32];
+      put(L, ids[0], hp.x, hp.y);
+      put(L, ids[1], knee.x, knee.y);
+      put(L, ids[2], ank.x, ank.y);
+      put(L, ids[3], ank.x + 0.04, ank.y + 0.012);
+    }
+    const elbow = o.elbow === undefined ? 92 : o.elbow;
+    for (let s = 0; s < 2; s++){
+      const ids = s === 0 ? [11, 13, 15] : [12, 14, 16];
+      const shp = L[ids[0]];
+      const el = { x: shp.x - 0.015, y: shp.y + 0.105 };
+      const dx = shp.x - el.x, dy = shp.y - el.y;
+      const n = Math.hypot(dx, dy) || 1;
+      const t = elbow * Math.PI / 180;
+      const ux = dx / n, uy = dy / n;
+      const vx = ux * Math.cos(t) - uy * Math.sin(t);
+      const vy = ux * Math.sin(t) + uy * Math.cos(t);
+      put(L, ids[1], el.x, el.y);
+      put(L, ids[2], el.x + 0.09 * vx, el.y + 0.09 * vy);
+    }
+    put(L, 0, sh.x + 0.03, sh.y - 0.05);
+    return L;
+  }
+  function simulate(kind, opts, seconds){
+    const eng = createEngine(kind);
+    const frames = Math.round(seconds * FPS);
+    let last = null;
+    for (let i = 0; i < frames; i++){
+      const t = Math.round(i * DT);
+      const fase = (i / FPS) / (opts.period || 0.7);
+      last = eng.update(runner({ fase: fase, lean: opts.lean, elbow: opts.elbow, drive: opts.drive,
+        hipY: (opts.hipY === undefined ? 0.52 : opts.hipY) +
+          (opts.bounceAmp || 0) * Math.sin(2 * Math.PI * (opts.bounceHz || 1.6) * (i / FPS)) }), 1.0, t);
+    }
+    return { last: last, sum: eng.summary() };
+  }
+
+  /* 측면 스쿼트: 무릎 각도 k(도)·상체 기울기·정강이 기울기를 그대로 재현 */
+  function squatPose(o){
+    const L = P33();
+    const k = (o.knee === undefined ? 168 : o.knee);
+    const lean = (o.lean === undefined ? 12 : o.lean) * Math.PI / 180;
+    const shinT = (o.shin === undefined ? 12 : o.shin) * Math.PI / 180;
+    const ank = { x: 0.50, y: 0.84 };
+    const KN = { x: ank.x + 0.17 * Math.sin(shinT), y: ank.y - 0.17 * Math.cos(shinT) };
+    const dx = ank.x - KN.x, dy = ank.y - KN.y, n = Math.hypot(dx, dy) || 1;
+    const ux = dx / n, uy = dy / n, th = k * Math.PI / 180;
+    const hx = ux * Math.cos(th) - uy * Math.sin(th);
+    const hy = ux * Math.sin(th) + uy * Math.cos(th);
+    const hip = { x: KN.x + 0.18 * hx, y: KN.y + 0.18 * hy };
+    const sh = { x: hip.x + 0.22 * Math.sin(lean), y: hip.y - 0.22 * Math.cos(lean) };
+    const off = 0.010;
+    put(L, 11, sh.x + off, sh.y); put(L, 12, sh.x - off, sh.y);
+    put(L, 13, sh.x + off - 0.02, sh.y + 0.10); put(L, 14, sh.x - off - 0.02, sh.y + 0.10);
+    put(L, 15, sh.x + off - 0.02, sh.y + 0.18); put(L, 16, sh.x - off - 0.02, sh.y + 0.18);
+    put(L, 23, hip.x + off, hip.y); put(L, 24, hip.x - off, hip.y);
+    put(L, 25, KN.x + off, KN.y); put(L, 26, KN.x - off, KN.y);
+    put(L, 27, ank.x + off, ank.y); put(L, 28, ank.x - off, ank.y);
+    put(L, 31, ank.x + 0.045, ank.y + 0.006); put(L, 32, ank.x - 0.005, ank.y + 0.006);
+    put(L, 0, sh.x + 0.02, sh.y - 0.085);
+    return L;
+  }
+  /* 정면 스쿼트: 골반 폭은 있는데 무릎이 중앙선 쪽으로 말리는 자세. d=0 직립 ~ d=1 깊은 앉기 */
+  function squatFrontPose(o){
+    const L = P33();
+    const d = (o.d === undefined ? 1 : o.d);
+    const inward = (o.inward === undefined ? 0.075 : o.inward);   // 무릎이 안쪽으로 들어온 정도
+    const hipY = 0.50 + 0.16 * d;
+    const kneeY = 0.68 + 0.10 * d;
+    const ankY = 0.86;
+    for (let s = 0; s < 2; s++){
+      const sign = s === 0 ? 1 : -1;
+      const hx = 0.5 + sign * 0.115;
+      const kx = 0.5 + sign * (0.115 - inward * d);
+      const ax = 0.5 + sign * 0.125;
+      put(L, 23 + s, hx, hipY); put(L, 25 + s, kx, kneeY); put(L, 27 + s, ax, ankY);
+      put(L, 31 + s, ax + sign * 0.02, ankY + 0.01);
+    }
+    const shY = hipY - 0.16;
+    put(L, 11, 0.5 + 0.10, shY); put(L, 12, 0.5 - 0.10, shY);
+    put(L, 13, 0.5 + 0.13, shY + 0.09); put(L, 14, 0.5 - 0.13, shY + 0.09);
+    put(L, 15, 0.5 + 0.14, shY + 0.17); put(L, 16, 0.5 - 0.14, shY + 0.17);
+    put(L, 0, 0.5, shY - 0.09);
+    return L;
+  }
+  /* 스쿼트 시퀀스: 직립 → 하강 → 바닥 유지 → 상승 (레벨·깊이 테스트용) */
+  function simSquat(level, target, opts){
+    const o = opts || {};
+    const eng = createEngine('squat', level);
+    const reps = o.reps || 2, perRep = 2.6;
+    const total = reps * perRep;
+    const frames = Math.round(total * FPS);
+    let last = null, hints = [], knees = [];
+    const smooth = function(p){ return 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, Math.min(1, p))); };
+    for (let i = 0; i < frames; i++){
+      const t = Math.round(i * DT);
+      const f = ((i / FPS) % perRep) / perRep;
+      let knee;
+      if (f < 0.15) knee = 168;
+      else if (f < 0.42) knee = 168 + (target - 168) * smooth((f - 0.15) / 0.27);
+      else if (f < 0.68) knee = target;
+      else if (f < 0.90) knee = target + (168 - target) * smooth((f - 0.68) / 0.22);
+      else knee = 168;
+      last = eng.update(squatPose({ knee: knee, lean: o.lean, shin: o.shin }), 1.0, t);
+      if (last && last.ok){ hints.push(last.hint); knees.push(knee); }
+    }
+    let hintAtBottom = null, minK = 999;
+    for (let i = 0; i < knees.length; i++){
+      if (knees[i] < minK){ minK = knees[i]; hintAtBottom = hints[i]; }
+    }
+    return { last: last, sum: eng.summary(), hintAtBottom: hintAtBottom };
+  }
+
+  /* 측면 푸시업 */
+  function pushPose(o){
+    const L = P33();
+    const th = (o.elbow === undefined ? 168 : o.elbow);
+    const el = { x: 0.50, y: 0.70 }, wr = { x: 0.56, y: 0.83 };
+    const dx = wr.x - el.x, dy = wr.y - el.y, n = Math.hypot(dx, dy) || 1;
+    const ux = dx / n, uy = dy / n, t = th * Math.PI / 180;
     const vx = ux * Math.cos(t) - uy * Math.sin(t);
     const vy = ux * Math.sin(t) + uy * Math.cos(t);
-    put(L, ids[1], el.x, el.y);
-    put(L, ids[2], el.x + 0.09 * vx, el.y + 0.09 * vy);
+    const sh = { x: el.x + 0.16 * vx, y: el.y + 0.16 * vy };
+    const bx = 0.96, by = 0.28, bn = Math.hypot(bx, by);
+    const ux2 = bx / bn, uy2 = by / bn;
+    const hip = { x: sh.x + 0.30 * ux2, y: sh.y + 0.30 * uy2 + (o.sag || 0) };
+    const ank = { x: sh.x + 0.80 * ux2, y: sh.y + 0.80 * uy2 };
+    const off = 0.010;
+    put(L, 11, sh.x, sh.y + off); put(L, 12, sh.x, sh.y - off);
+    put(L, 13, el.x, el.y + off); put(L, 14, el.x, el.y - off);
+    put(L, 15, wr.x, wr.y + off); put(L, 16, wr.x, wr.y - off);
+    put(L, 23, hip.x, hip.y + off); put(L, 24, hip.x, hip.y - off);
+    put(L, 25, hip.x + 0.30 * ux2, hip.y + 0.30 * uy2 + off);
+    put(L, 26, hip.x + 0.30 * ux2, hip.y + 0.30 * uy2 - off);
+    put(L, 27, ank.x, ank.y + off); put(L, 28, ank.x, ank.y - off);
+    put(L, 31, ank.x + 0.03, ank.y + 0.012); put(L, 32, ank.x - 0.01, ank.y + 0.012);
+    put(L, 0, sh.x + 0.03, sh.y - 0.085 + (o.noseDy || 0));
+    return L;
   }
-  put(L, 0, sh.x + 0.03, sh.y - 0.05);
-  return L;
-}
+  function simPush(level, top, bottom, opts){
+    const o = opts || {};
+    const eng = createEngine('pushup', level);
+    const reps = o.reps || 2, perRep = 2.6;
+    const frames = Math.round(reps * perRep * FPS);
+    let last = null;
+    const smooth = function(p){ return 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, Math.min(1, p))); };
+    for (let i = 0; i < frames; i++){
+      const t = Math.round(i * DT);
+      const f = ((i / FPS) % perRep) / perRep;
+      let e;
+      if (f < 0.15) e = top;
+      else if (f < 0.42) e = top + (bottom - top) * smooth((f - 0.15) / 0.27);
+      else if (f < 0.68) e = bottom;
+      else if (f < 0.90) e = bottom + (top - bottom) * smooth((f - 0.68) / 0.22);
+      else e = top;
+      last = eng.update(pushPose({ elbow: e, sag: o.sag, noseDy: o.noseDy }), 1.0, t);
+    }
+    return { last: last, sum: eng.summary() };
+  }
 
-const FPS = 30, DT = 1000 / FPS;
-function simulate(kind, opts, seconds) {
-  const eng = createEngine(kind);
-  const frames = Math.round(seconds * FPS);
-  let last = null;
-  for (let i = 0; i < frames; i++) {
+  /* 측면 플랭크 */
+  function plankPose(o){
+    const L = P33();
+    const sh = { x: 0.34, y: 0.62 + (o.shDy || 0) };
+    const hip = { x: 0.56, y: 0.62 + (o.hipDy || 0) };
+    const ank = { x: 0.80, y: 0.62 };
+    const off = 0.010;
+    put(L, 11, sh.x, sh.y + off); put(L, 12, sh.x, sh.y - off);
+    put(L, 23, hip.x, hip.y + off); put(L, 24, hip.x, hip.y - off);
+    put(L, 27, ank.x, ank.y + off); put(L, 28, ank.x, ank.y - off);
+    put(L, 31, ank.x + 0.04, ank.y); put(L, 32, ank.x + 0.02, ank.y);
+    put(L, 13, sh.x + 0.005, sh.y + 0.13); put(L, 14, sh.x - 0.005, sh.y + 0.13);
+    put(L, 15, sh.x + 0.02, sh.y + 0.18); put(L, 16, sh.x - 0.02, sh.y + 0.18);
+    put(L, 0, sh.x + 0.03, sh.y - 0.05 + (o.noseDy || 0));
+    return L;
+  }
+  function simPlank(level, seconds, opts){
+    const o = opts || {};
+    const eng = createEngine('plank', level);
+    const frames = Math.round(seconds * FPS);
+    let last = null;
+    for (let i = 0; i < frames; i++){
+      last = eng.update(plankPose(o), 1.0, Math.round(i * DT));
+    }
+    return { last: last, sum: eng.summary() };
+  }
+
+  /* ================= 1) 좋은 러닝 (회귀) ================= */
+  say('▸ 1. 좋은 러닝 (4초, 0.7초 주기)');
+  const good = simulate('running', { lean: 9, elbow: 92, drive: 1, period: 0.7 }, 4);
+  say('   steps=' + good.sum.reps + ' cadence=' + good.sum.cadence + ' avg=' + good.sum.avgScore +
+      ' issues=' + JSON.stringify(good.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(good.sum.reps >= 9 && good.sum.reps <= 13, '스텝 카운트 9~13 (실제 ' + good.sum.reps + ')');
+  ok(good.sum.cadence >= 150 && good.sum.cadence <= 195, '케이던스 150~195 spm (실제 ' + good.sum.cadence + ')');
+  ok(good.sum.avgScore >= 80, '평균 점수 ≥ 80 (실제 ' + good.sum.avgScore + ')');
+  ok(good.sum.events.length > 0, '피드백 이벤트 기록됨');
+  ok(good.last.ok === true && good.last.cadence > 0, '마지막 프레임 ok + cadence 노출');
+  ok(!has(good.sum, 'run_lean_back') && !has(good.sum, 'run_arm_straight'), '좋은 자세에는 상체/팔 교정 없음');
+
+  /* ================= 2) 나쁜 러닝 ================= */
+  say('');
+  say('▸ 2. 나쁜 러닝 (뒤로 젖힘 · 팔 펴짐 · 무릎 낮음)');
+  const bad = simulate('running', { lean: -8, elbow: 158, drive: 0.2, period: 0.7 }, 4);
+  say('   steps=' + bad.sum.reps + ' avg=' + bad.sum.avgScore);
+  ok(has(bad.sum, 'run_lean_back') || has(bad.sum, 'run_lean_back_mid'), '뒤로 젖힌 상체 감지');
+  ok(has(bad.sum, 'run_arm_straight'), '너무 펴진 팔꿈치 감지');
+  ok(has(bad.sum, 'run_drive_low'), '무릎 드라이브 부족 감지');
+  ok(bad.sum.avgScore < 85, '나쁜 자세 평균 점수 < 85 (실제 ' + bad.sum.avgScore + ')');
+
+  /* ================= 3) 과숙임 ================= */
+  say('');
+  say('▸ 3. 상체 과숙임 (32°)');
+  const bent = simulate('running', { lean: 32, elbow: 92, drive: 1, period: 0.7 }, 3);
+  ok(has(bent.sum, 'run_lean_bent'), '과하게 숙인 상체 감지 (' + codesOf(bent.sum).join(',') + ')');
+
+  /* ================= 4) 바운스 ================= */
+  say('');
+  say('▸ 4. 상하 바운스');
+  const bRun = simulate('running', { lean: 8, elbow: 92, drive: 1, period: 0.7 }, 4);
+  const bUp = simulate('running', { lean: 8, elbow: 92, drive: 1, period: 0.7, bounceAmp: 0.035, bounceHz: 1.7 }, 4);
+  say('   안정=' + bRun.sum.bounceAmp.toFixed(3) + ' 흔들림=' + bUp.sum.bounceAmp.toFixed(3));
+  ok(bRun.sum.bounceAmp < bUp.sum.bounceAmp, '정지 러닝 < 흔들리는 러닝 바운스');
+  ok(has(bUp.sum, 'run_bounce') || has(bUp.sum, 'run_bounce_mid'), '상하 흔들림 교정 포인트 생성');
+
+  /* ================= 5) 사람 없음 회귀 ================= */
+  say('');
+  say('▸ 5. 사람 없음 회귀');
+  const sq0 = createEngine('squat'), pu0 = createEngine('pushup'), pl0 = createEngine('plank'), ru0 = createEngine('running');
+  ok(sq0.update(null, 1.0, 0).ok === false, '스쿼트: 사람 없음 → ok:false');
+  ok(pu0.update(null, 1.0, 0).ok === false, '푸시업: 사람 없음 → ok:false');
+  ok(pl0.update(null, 1.0, 0).ok === false, '플랭크: 사람 없음 → ok:false');
+  ok(ru0.update(null, 1.0, 0).ok === false, '러닝: 사람 없음 → ok:false');
+  ok(sq0.summary().reps === 0 && ru0.summary().reps === 0 && ru0.summary().cadence === 0, '초기 카운트 0');
+
+  /* ================= 6) 기록·스트릭 (회귀) ================= */
+  say('');
+  say('▸ 6. 내 기록 · 스트릭');
+  const NOW = new Date(2026, 10, 16, 21, 0, 0).getTime();
+  function recDay(offset, score, kind){
+    const d = new Date(2026, 10, 16, 9, 0, 0);
+    d.setDate(d.getDate() - offset);
+    return { id: 'r' + offset, date: d.toISOString(), exercise: kind || 'squat',
+      exerciseName: '스쿼트', metricLabel: '반복', metricValue: '10', score: score,
+      durationSec: 40, topFeedback: '교정 포인트 없음', comment: '' };
+  }
+  const recs = [recDay(0, 80), recDay(1, 90), recDay(1, 70), recDay(3, 60)];
+  const rst = recordStats(recs, NOW);
+  ok(rst.total === 4 && rst.streak === 2 && rst.avgScore === 75 && rst.bestScore === 90, '기록 통계 4건·2일·평균75·최고90');
+  ok(rst.week.length === 7 && rst.week[6].isToday === true && rst.week[6].avgScore === 80, '7일 윈도우·오늘 평균 80');
+  ok(rst.week[5].count === 2 && rst.week[5].avgScore === 80, '어제 2건·평균 80');
+  ok(recordStreak([recDay(1, 80), recDay(2, 80)], NOW) === 2, '오늘 기록 없어도 어제까지 2일 연속');
+  ok(recordStreak([recDay(2, 80)], NOW) === 0, '이틀 전에서 끊긴 스트릭 = 0');
+  const sqRec = buildRecord({ reps: 12, avgScore: 87, durationMs: 42000, frames: 400,
+    issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 2 },
+             { code: 'squat_ok', label: '좋은 반복', count: 3 }] }, 'squat', NOW);
+  ok(sqRec.metricLabel === '반복' && sqRec.metricValue === '12' && sqRec.score === 87, '스쿼트 기록 반복 12·점수 87');
+  ok(sqRec.topFeedback === '깊이 살짝 부족 ×2', '대표 교정 포인트 (실제 ' + sqRec.topFeedback + ')');
+  const plRec = buildRecord({ reps: null, holdMs: 32000, score: 91, durationMs: 33000, frames: 500, issues: [] }, 'plank', NOW);
+  ok(plRec.metricLabel === '유지 시간' && plRec.metricValue === '0:32' && plRec.score === 91, '플랭크 기록 0:32');
+  ok(clockText(32000) === '0:32' && clockText(59000) === '0:59', 'clockText 표기');
+  const runRec = buildRecord({ reps: 18, avgScore: 84, durationMs: 60000, frames: 900,
+    issues: [{ code: 'run_ok', label: '좋은 스텝', count: 5 }] }, 'running', NOW);
+  ok(runRec.metricLabel === '스텝' && runRec.metricValue === '18' && runRec.topFeedback === '좋은 자세 유지', '러닝 기록 스텝 18');
+  ok(sqRec.level === 'beginner' && sqRec.levelName === '헬린이', '기록에 레벨(기본=헬린이) 저장');
+
+  /* ================= 7) 3D 각도 (비스듬한 카메라) ================= */
+  say('');
+  say('▸ 7. 3D worldLandmarks 각도 보정');
+  /* 정강이가 앞·아래로 꺾인 다리를 카메라가 45° 비스듬에서 보는 상황:
+     3D 실제 무릎 각도 130°, 2D 사영은 140°로 왜곡된다 */
+  const trueAngle = angleAt({ x: 0, y: 0, z: 0 }, { x: 0, y: 0.4, z: 0 }, { x: 0, y: 0.695, z: 0.353 });
+  const proj2d = angleAt({ x: 0, y: 0, z: 0 }, { x: 0, y: 0.4, z: 0 }, { x: -0.2496, y: 0.695, z: 0 });
+  say('   3D=' + trueAngle.toFixed(1) + '° 2D(사영)=' + proj2d.toFixed(1) + '°');
+  ok(trueAngle > 125 && trueAngle < 135, '3D 각도 130° 근처 (실제 ' + trueAngle.toFixed(1) + ')');
+  ok(proj2d > trueAngle + 6, '같은 자세의 2D 사영 각도는 왜곡됨 (실제 ' + proj2d.toFixed(1) + ')');
+
+  const Lm = P33();
+  put(Lm, 23, 0.5, 0.50); put(Lm, 24, 0.5, 0.50);
+  put(Lm, 25, 0.5, 0.64); put(Lm, 26, 0.5, 0.64);
+  put(Lm, 27, 0.2504, 0.935); put(Lm, 28, 0.2504, 0.935);
+  put(Lm, 11, 0.53, 0.28); put(Lm, 12, 0.53, 0.28);
+  put(Lm, 0, 0.55, 0.19);
+  const Wm = [];
+  for (let i = 0; i < 33; i++) Wm.push(null);
+  const wpt = function(x, y, z){ return { x: x, y: y, z: z, visibility: 0.92 }; };
+  Wm[23] = wpt(0, 0, 0); Wm[24] = wpt(0, 0, 0);
+  Wm[25] = wpt(0, 0.4, 0); Wm[26] = wpt(0, 0.4, 0);
+  Wm[27] = wpt(0, 0.695, 0.353); Wm[28] = wpt(0, 0.695, 0.353);
+  Wm[11] = wpt(0.03, -0.2, 0); Wm[12] = wpt(0.03, -0.2, 0);
+  Wm[0] = wpt(0.05, -0.29, 0);
+  Wm[13] = wpt(0.03, -0.1, 0); Wm[14] = wpt(0.03, -0.1, 0);
+  Wm[15] = wpt(0.03, 0, 0); Wm[16] = wpt(0.03, 0, 0);
+  Wm[31] = wpt(0, 0.72, 0.38); Wm[32] = wpt(0, 0.72, 0.38);
+  const eng3d = createEngine('squat', 'advanced');
+  const out3d = eng3d.update(Lm, 1.0, 0, Wm);
+  ok(out3d.ok === true && out3d.world3d === true, 'worldLandmarks 있으면 3D 모드로 판정');
+  ok(eng3d.summary().world3d === true, '세션 요약에 3D 사용 표시');
+  const out2d = createEngine('squat').update(Lm, 1.0, 0, null);
+  ok(out2d.world3d === false, 'worldLandmarks 없으면 2D 폴백');
+  ok(Math.abs(out3d.angles[0].value - Math.round(trueAngle)) <= 8,
+     'HUD 무릎 각도가 3D 값(' + Math.round(trueAngle) + '°)에 근접 (실제 ' + out3d.angles[0].value + '°)');
+  ok(out2d.angles[0].value !== out3d.angles[0].value, '2D 폴백과 3D 결과가 실제로 다름 (' + out2d.angles[0].value + ' vs ' + out3d.angles[0].value + ')');
+
+  /* ================= 8) 가시성 게이팅 ================= */
+  say('');
+  say('▸ 8. 가시성 게이팅 · 전신 안내');
+  const lowPose = squatPose({ knee: 100 });
+  put(lowPose, 27, lowPose[27].x, lowPose[27].y, 0.18);
+  put(lowPose, 28, lowPose[28].x, lowPose[28].y, 0.18);
+  const gLow = createEngine('squat');
+  const outLow = gLow.update(lowPose, 1.0, 0);
+  say('   quality=' + JSON.stringify(outLow.quality && outLow.quality.level) + ' hint=' + outLow.hint);
+  ok(outLow.ok === false, '발목 가시성 0.18 → 각도 계산 안 함(ok:false)');
+  ok(outLow.quality.level === 'bad' && outLow.hint.indexOf('전신') >= 0, '전신 안내 문구 노출 ("' + outLow.hint + '")');
+  let counted = 0;
+  const gGate = createEngine('squat');
+  for (let i = 0; i < 90; i++){
+    const f = (i / 30) % 2.6;
+    const knee = f < 0.15 ? 168 : (f < 1.1 ? 100 : 168);
+    const pose = squatPose({ knee: knee });
+    put(pose, 27, pose[27].x, pose[27].y, 0.18);
+    put(pose, 28, pose[28].x, pose[28].y, 0.18);
+    gGate.update(pose, 1.0, Math.round(i * DT));
+  }
+  counted = gGate.summary().reps;
+  ok(counted === 0, '전신이 안 보이면 반복을 세지 않음 (실제 ' + counted + ')');
+  ok(gGate.summary().avgScore === null, '가려진 프레임은 점수도 깎지 않음');
+
+  /* ================= 9) One-Euro 스무딩 ================= */
+  say('');
+  say('▸ 9. One-Euro 스무딩 (정지 떨림 억제 · 빠른 동작 지연 없음)');
+  const fq = createOneEuro({ minCutoff: 1.25, beta: 0.03 });
+  let iStd = 0, oStd = 0;
+  const inSeq = [], outSeq = [];
+  let seed = 7;
+  const rnd = function(){ seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+  for (let i = 0; i < 180; i++){
+    const noise = (rnd() - 0.5) * 1.2;         // ±0.6° 정지 떨림
+    const raw = 100 + noise;
+    const val = fq(raw, i * DT);
+    if (i > 60){ inSeq.push(raw); outSeq.push(val); }
+  }
+  const std = function(arr){
+    let m = 0; for (let i = 0; i < arr.length; i++) m += arr[i];
+    m /= arr.length;
+    let s = 0; for (let i = 0; i < arr.length; i++) s += (arr[i] - m) * (arr[i] - m);
+    return Math.sqrt(s / arr.length);
+  };
+  iStd = std(inSeq); oStd = std(outSeq);
+  say('   입력 표준편차=' + iStd.toFixed(3) + ' 출력=' + oStd.toFixed(3));
+  ok(oStd < iStd * 0.6, '정지 떨림 억제 · 출력이 입력의 60% 미만 (실제 ' + (oStd / iStd * 100).toFixed(0) + '%)');
+
+  const ff = createOneEuro({ minCutoff: 1.6, beta: 0.04 });
+  let maxOut = -Infinity, lagSum = 0, lagN = 0, lastIn = 0, lastOut = 0;
+  for (let i = 0; i < 120; i++){
+    const raw = 90 + 40 * Math.sin(2 * Math.PI * 2 * (i * DT / 1000));   // 2Hz ±40°
+    const val = ff(raw, i * DT);
+    if (i > 60){ if (val > maxOut) maxOut = val; lagSum += Math.abs(raw - val); lagN++; }
+    lastIn = raw; lastOut = val;
+  }
+  say('   빠른 동작 최대 출력=' + maxOut.toFixed(1) + '° (입력 최대 130°), 평균 추종오차=' + (lagSum / lagN).toFixed(1) + '°');
+  ok(maxOut > 126, '빠른 동작 진폭이 유지됨(≥126°, 실제 ' + maxOut.toFixed(1) + ')');
+  ok(lagSum / lagN < 8, '빠른 동작 추종 오차 < 8° (실제 ' + (lagSum / lagN).toFixed(1) + ')');
+
+  /* ================= 10) 스쿼트 3D 카운트 ================= */
+  say('');
+  say('▸ 10. 스쿼트 깊이 카운트');
+  const sqGood = simSquat('advanced', 100);
+  say('   reps=' + sqGood.sum.reps + ' avg=' + sqGood.sum.avgScore + ' issues=' + JSON.stringify(sqGood.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(sqGood.sum.reps === 2, '스쿼트 2회 카운트 (실제 ' + sqGood.sum.reps + ')');
+  ok(!has(sqGood.sum, 'squat_depth_low'), '100°는 깊이 부족 아님');
+  ok(sqGood.sum.avgScore >= 80, '깊은 스쿼트 평균 점수 ≥ 80 (실제 ' + sqGood.sum.avgScore + ')');
+
+  /* ================= 11) 레벨: 스쿼트 깊이 임계값 ================= */
+  say('');
+  say('▸ 11. 레벨 차이 — 같은 97° 스쿼트');
+  const sq97B = simSquat('beginner', 97);
+  const sq97A = simSquat('advanced', 97);
+  say('   헬린이: ' + JSON.stringify(sq97B.sum.issues.map(function(i){ return i.code; })) + ' 점수 ' + sq97B.sum.avgScore);
+  say('   헬창:   ' + JSON.stringify(sq97A.sum.issues.map(function(i){ return i.code; })) + ' 점수 ' + sq97A.sum.avgScore);
+  ok(sq97B.sum.reps === 2 && sq97A.sum.reps === 2, '두 레벨 모두 2회 카운트');
+  ok(!has(sq97B.sum, 'squat_depth_mid') && !has(sq97B.sum, 'squat_depth_low'), '헬린이는 97°를 통과(105° 기준)');
+  ok(has(sq97A.sum, 'squat_depth_mid') || has(sq97A.sum, 'squat_depth_low'), '헬창은 97°를 지적(92° 기준)');
+  ok(sq97A.sum.avgScore < sq97B.sum.avgScore, '같은 자세에서 헬창 점수가 더 낮음 (' + sq97A.sum.avgScore + ' < ' + sq97B.sum.avgScore + ')');
+  const deep = simSquat('advanced', 88);
+  ok(!has(deep.sum, 'squat_depth_mid') && !has(deep.sum, 'squat_depth_low'), '헬창도 88° 풀뎁스는 깊이 통과');
+
+  /* ================= 12) 레벨: 피드백 톤 ================= */
+  say('');
+  say('▸ 12. 레벨별 피드백 톤');
+  let toneDiff = 0, toneTotal = 0, toneMissing = [];
+  for (const code in COPY){
+    toneTotal++;
+    const b = sayCopy(code, 'beginner', { v: 100 }), a = sayCopy(code, 'advanced', { v: 100 });
+    if (!b || !a) toneMissing.push(code);
+    else if (b !== a) toneDiff++;
+  }
+  say('   문구 ' + toneTotal + '종 중 ' + toneDiff + '종이 톤 분리');
+  ok(toneMissing.length === 0, '모든 코드에 헬린이/헬창 문구 존재' + (toneMissing.length ? ' (누락 ' + toneMissing.join(',') + ')' : ''));
+  ok(toneDiff === toneTotal, '모든 코드의 두 레벨 문구가 서로 다름');
+  ok(sayCopy('squat_depth_low', 'beginner', { v: 120 }).indexOf('조금만 더') >= 0, '헬린이 문구는 격려형');
+  ok(sayCopy('squat_depth_low', 'advanced', { v: 120 }).indexOf('대퇴골') >= 0, '헬창 문구는 수치·전문형');
+  ok(sqGood.hintAtBottom && sq97B.hintAtBottom !== sq97A.hintAtBottom, '실시간 힌트도 레벨별로 다름');
+  const evB = simSquat('beginner', 112).sum.events.filter(function(e){ return !/_ok$/.test(e.code) && !/_(recover|mile)$/.test(e.code); })[0];
+  const evA = simSquat('advanced', 112).sum.events.filter(function(e){ return !/_ok$/.test(e.code) && !/_(recover|mile)$/.test(e.code); })[0];
+  say('   헬린이 이벤트: ' + (evB ? evB.text : '-'));
+  say('   헬창 이벤트:   ' + (evA ? evA.text : '-'));
+  ok(!!evB && evB.lv === 'beginner' && !!evA && evA.lv === 'advanced', '이벤트에 레벨 표시가 붙음');
+  ok(!!evB && !!evA && evB.text !== evA.text, '같은 동작의 리포트 문구가 레벨에 따라 다름');
+
+  /* ================= 13) 스쿼트 허리 숙임 ================= */
+  say('');
+  say('▸ 13. 스쿼트 허리 숙임(정강이 대비 상체 과전경)');
+  const waist = simSquat('beginner', 105, { lean: 40, shin: 8 });
+  say('   issues=' + JSON.stringify(waist.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(has(waist.sum, 'squat_waist') || has(waist.sum, 'squat_lean_mid') || has(waist.sum, 'squat_lean_bad'),
+     '상체가 정강이보다 과하게 숙여진 자세 감지');
+  const upright = simSquat('beginner', 105, { lean: 14, shin: 16 });
+  ok(!has(upright.sum, 'squat_waist'), '정상 상체 기울기는 허리 숙임 아님');
+
+  /* ================= 14) 스쿼트 무릎 말림 ================= */
+  say('');
+  say('▸ 14. 무릎 안쪽 말림(Valgus)');
+  const vQ = [], vI = [];
+  for (let i = 0; i < 33; i++){ vQ.push(null); vI.push(null); }
+  (function(){
+    const pose = squatFrontPose({ inward: 0.075 });
+    for (let i = 0; i < 33; i++){
+      if (!pose[i]) continue;
+      vI[i] = { x: pose[i].x, y: pose[i].y, z: 0, v: 0.92 };
+      vQ[i] = { x: pose[i].x, y: pose[i].y, z: 0, v: 0.92 };
+    }
+  })();
+  const vIn = valgusMeasure(vQ, vI, false);
+  const poseNormal = squatFrontPose({ inward: 0 });
+  const nQ = [], nI = [];
+  for (let i = 0; i < 33; i++){
+    nQ.push(null); nI.push(null);
+    if (poseNormal[i]){ nQ[i] = { x: poseNormal[i].x, y: poseNormal[i].y, z: 0, v: 0.92 }; nI[i] = nQ[i]; }
+  }
+  const vOk = valgusMeasure(nQ, nI, false);
+  const poseSide = squatPose({ knee: 100 });
+  const sQ = [], sI = [];
+  for (let i = 0; i < 33; i++){
+    sQ.push(null); sI.push(null);
+    if (poseSide[i]){ sQ[i] = { x: poseSide[i].x, y: poseSide[i].y, z: 0, v: 0.92 }; sI[i] = sQ[i]; }
+  }
+  const vSide = valgusMeasure(sQ, sI, false);
+  say('   말림=' + JSON.stringify(vIn) + ' 정상=' + JSON.stringify(vOk) + ' 측면=' + vSide);
+  ok(vIn && vIn.ratio < 0.5, '무릎이 안쪽으로 붕괴한 정면 자세 감지 (ratio ' + (vIn ? vIn.ratio.toFixed(2) : '-') + ')');
+  ok(vOk === null || vOk.ratio > 0.85, '정상 정면 자세는 말림 아님');
+  ok(vSide === null, '측면(골반 폭 좁음)에서는 판정하지 않음');
+  const sqValgus = createEngine('squat');
+  for (let i = 0; i < 150; i++){
     const t = Math.round(i * DT);
-    const fase = (i / FPS) / (opts.period || 0.7);
-    last = eng.update(runner({ fase: fase, lean: opts.lean, elbow: opts.elbow, drive: opts.drive,
-      hipY: (opts.hipY === undefined ? 0.52 : opts.hipY) +
-        (opts.bounceAmp || 0) * Math.sin(2 * Math.PI * (opts.bounceHz || 1.6) * (i / FPS)) }), 1.0, t);
+    const f = ((i / FPS) % 2.6) / 2.6;
+    let d;
+    if (f < 0.15) d = 0;
+    else if (f < 0.42) d = (f - 0.15) / 0.27;
+    else if (f < 0.68) d = 1;
+    else if (f < 0.90) d = 1 - (f - 0.68) / 0.22;
+    else d = 0;
+    sqValgus.update(squatFrontPose({ d: d, inward: 0.075 }), 1.0, t);
   }
-  return { last: last, sum: eng.summary() };
+  ok(has(sqValgus.summary(), 'squat_valgus'), '스쿼트 반복에서 무릎 말림 교정 포인트 생성');
+
+  /* ================= 15) 푸시업 ================= */
+  say('');
+  say('▸ 15. 푸시업 깊이 · 상단 신전');
+  const puGood = simPush('advanced', 168, 85);
+  say('   reps=' + puGood.sum.reps + ' avg=' + puGood.sum.avgScore + ' issues=' + JSON.stringify(puGood.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(puGood.sum.reps === 2, '정상 푸시업 2회 카운트 (실제 ' + puGood.sum.reps + ')');
+  ok(!has(puGood.sum, 'push_depth_low') && !has(puGood.sum, 'push_depth_mid'), '85°는 깊이 충분(헬창 88° 기준)');
+  const puShallowB = simPush('beginner', 168, 108);
+  const puShallowA = simPush('advanced', 168, 108);
+  ok(!has(puShallowB.sum, 'push_depth_low'), '헬린이는 108° 허용(105° 기준)');
+  ok(has(puShallowA.sum, 'push_depth_low') || has(puShallowA.sum, 'push_depth_mid'), '헬창은 108° 지적(88° 기준)');
+  const puTop = simPush('beginner', 150, 92);
+  const puTopA = simPush('advanced', 150, 92);
+  ok(!has(puTop.sum, 'push_top'), '헬린이는 상단 150° 허용(145° 기준)');
+  ok(has(puTopA.sum, 'push_top'), '헬창은 상단 신전 150° 지적(155° 기준)');
+
+  /* ================= 16) 푸시업 허리 처짐 ================= */
+  say('');
+  say('▸ 16. 푸시업 몸통 일직선');
+  const puSag = simPush('beginner', 168, 90, { sag: 0.11 });
+  say('   issues=' + JSON.stringify(puSag.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(has(puSag.sum, 'push_sag') || has(puSag.sum, 'push_bend'), '허리 처짐 감지');
+  const puStraight = simPush('beginner', 168, 90);
+  ok(!has(puStraight.sum, 'push_sag') && !has(puStraight.sum, 'push_pike') && !has(puStraight.sum, 'push_bend'), '일직선 푸시업은 몸통 지적 없음');
+
+  /* ================= 17) 푸시업 고개만 숙임 ================= */
+  say('');
+  say('▸ 17. 고개만 숙이는 동작 배제');
+  const puHead = simPush('beginner', 168, 168, { noseDy: 0.22 });
+  say('   reps=' + puHead.sum.reps + ' issues=' + JSON.stringify(puHead.sum.issues.map(function(i){ return i.code; })));
+  ok(puHead.sum.reps === 0, '팔을 굽히지 않으면 횟수로 세지 않음 (실제 ' + puHead.sum.reps + ')');
+  ok(has(puHead.sum, 'push_head') || puHead.sum.events.some(function(e){ return e.code === 'push_head'; }), '고개 숙임 안내 발생');
+
+  /* ================= 18) 플랭크 + 레벨 ================= */
+  say('');
+  say('▸ 18. 플랭크 유지 시간 · 레벨 임계값');
+  const plGood = simPlank('beginner', 6, {});
+  const plAdv = simPlank('advanced', 6, {});
+  say('   헬린이 ' + Math.round(plGood.sum.holdMs / 100) / 10 + 's / 헬창 ' + Math.round(plAdv.sum.holdMs / 100) / 10 + 's');
+  ok(plGood.sum.holdMs > 4500, '일직선 플랭크는 유효 시간 누적 (실제 ' + Math.round(plGood.sum.holdMs) + 'ms)');
+  ok(plAdv.sum.holdMs > 4500, '헬창도 일직선(180°)은 유효');
+  const pl162B = simPlank('beginner', 6, { hipDy: 0.035 });
+  const pl162A = simPlank('advanced', 6, { hipDy: 0.035 });
+  say('   162° 자세: 헬린이 ' + Math.round(pl162B.sum.holdMs) + 'ms / 헬창 ' + Math.round(pl162A.sum.holdMs) + 'ms');
+  ok(pl162B.sum.holdMs > 3000, '헬린이는 160° 이상이면 유지 시간 인정');
+  ok(pl162A.sum.holdMs < 1000, '헬창은 168° 미만이면 유지 시간 미인정');
+  ok(pl162A.sum.badMs > 3000, '헬창은 이탈 시간으로 집계');
+
+  /* ================= 19) 플랭크 자세 게이트 ================= */
+  say('');
+  say('▸ 19. 실제 플랭크 자세일 때만 카운트');
+  const stand = createEngine('plank');
+  for (let i = 0; i < 120; i++){
+    const L = P33();
+    put(L, 11, 0.42, 0.32); put(L, 12, 0.40, 0.32);
+    put(L, 23, 0.42, 0.55); put(L, 24, 0.40, 0.55);
+    put(L, 27, 0.42, 0.82); put(L, 28, 0.40, 0.82);
+    put(L, 13, 0.44, 0.45); put(L, 14, 0.38, 0.45);
+    put(L, 15, 0.46, 0.58); put(L, 16, 0.36, 0.58);
+    put(L, 0, 0.42, 0.22);
+    stand.update(L, 1.0, Math.round(i * DT));
+  }
+  ok(stand.summary().holdMs === 0, '서 있는 자세는 플랭크 유지 시간 0 (실제 ' + Math.round(stand.summary().holdMs) + 'ms)');
+
+  /* ================= 20) 러닝 오버스트라이드 · 케이던스 ================= */
+  say('');
+  say('▸ 20. 러닝 오버스트라이드 · 케이던스');
+  const osGood = overstride(
+    (function(){ const Q = []; for (let i = 0; i < 33; i++) Q.push(null); Q[25] = { x: 0.5, y: 0.6, z: 0, v: 0.92 }; Q[27] = { x: 0.53, y: 0.76, z: 0, v: 0.92 }; return Q; })(),
+    (function(){ const I = []; for (let i = 0; i < 33; i++) I.push(null); I[25] = { x: 0.5, y: 0.6, z: 0, v: 0.92 }; I[27] = { x: 0.53, y: 0.76, z: 0, v: 0.92 }; return I; })(),
+    SIDES_LIKE(), 1, 0.76);
+  function SIDES_LIKE(){ return { knee: 25, ankle: 27, sh: 11, el: 13, wr: 15, hip: 23, foot: 31 }; }
+  const osBad = overstride(
+    (function(){ const Q = []; for (let i = 0; i < 33; i++) Q.push(null); Q[25] = { x: 0.5, y: 0.6, z: 0, v: 0.92 }; Q[27] = { x: 0.68, y: 0.74, z: 0, v: 0.92 }; return Q; })(),
+    (function(){ const I = []; for (let i = 0; i < 33; i++) I.push(null); I[25] = { x: 0.5, y: 0.6, z: 0, v: 0.92 }; I[27] = { x: 0.68, y: 0.74, z: 0, v: 0.92 }; return I; })(),
+    SIDES_LIKE(), 1, 0.74);
+  say('   정상 착지=' + (isFinite(osGood) ? osGood.toFixed(2) : 'NaN') + ' 과보폭=' + (isFinite(osBad) ? osBad.toFixed(2) : 'NaN'));
+  ok(isFinite(osGood) && osGood < LEVELS.advanced.running.overWarn, '정상 착지는 오버스트라이드 아님 (' + (osGood || 0).toFixed(2) + ')');
+  ok(isFinite(osBad) && osBad > LEVELS.advanced.running.overBad, '발목이 크게 앞선 착지 감지 (' + (osBad || 0).toFixed(2) + ')');
+  const slowRun = simulate('running', { lean: 9, elbow: 92, drive: 1, period: 1.05 }, 6);
+  say('   느린 케이던스=' + slowRun.sum.cadence + 'spm');
+  ok(slowRun.sum.cadence > 0, '느린 러닝 케이던스 측정 (' + slowRun.sum.cadence + 'spm)');
+  ok(!has(slowRun.sum, 'run_cadence_low'), '헬린이는 케이던스로 감점하지 않음');
+  const slowRunA = (function(){
+    const eng = createEngine('running', 'advanced');
+    let last = null;
+    const frames = Math.round(6 * FPS);
+    for (let i = 0; i < frames; i++){
+      const t = Math.round(i * DT);
+      const fase = (i / FPS) / 1.05;
+      last = eng.update(runner({ fase: fase, lean: 9, elbow: 92, drive: 1 }), 1.0, t);
+    }
+    return { last: last, sum: eng.summary() };
+  })();
+  say('   헬창 느린 러닝=' + slowRunA.sum.cadence + 'spm issues=' + JSON.stringify(slowRunA.sum.issues.map(function(i){ return i.code; })));
+  ok(has(slowRunA.sum, 'run_cadence_low'), '헬창은 170spm 미만 케이던스를 지적');
+
+  /* ================= 21) 기록 레벨 ================= */
+  say('');
+  say('▸ 21. 기록 레벨 필드');
+  const recA = buildRecord({ level: 'advanced', reps: 5, avgScore: 88, durationMs: 30000, frames: 300, issues: [] }, 'squat', NOW);
+  ok(recA.level === 'advanced' && recA.levelName === '헬창' && recA.levelEmoji === '🔥', '헬창 기록에 레벨·이름·이모지 저장');
+  ok(buildRecord({ level: 'beginner', reps: 5, avgScore: 88 }, 'squat', NOW).levelName === '헬린이', '헬린이 기록 저장');
+  ok(buildRecord({ reps: 5, avgScore: 88 }, 'squat', NOW).level === 'beginner', '레벨 미지정 시 기본 헬린이');
 }
-const codesOf = function (sum) { return sum.issues.map(function (i) { return i.code; }); };
-
-/* ---------- 1) 좋은 러닝 ---------- */
-say('▸ 1. 좋은 러닝 (4초, 0.7초 주기)');
-const good = simulate('running', { lean: 9, elbow: 92, drive: 1, period: 0.7 }, 4);
-say('   steps=' + good.sum.reps + ' cadence=' + good.sum.cadence + ' avg=' + good.sum.avgScore +
-    ' issues=' + JSON.stringify(good.sum.issues) + ' events=' + good.sum.events.length);
-ok(good.sum.reps >= 9 && good.sum.reps <= 13, '스텝 카운트 9~13 (실제 ' + good.sum.reps + ')');
-ok(good.sum.cadence >= 150 && good.sum.cadence <= 195, '케이던스 150~195 spm (실제 ' + good.sum.cadence + ')');
-ok(good.sum.avgScore >= 80, '평균 점수 ≥ 80 (실제 ' + good.sum.avgScore + ')');
-ok(good.sum.events.length > 0, '피드백 이벤트 기록됨');
-ok(good.last.ok === true && good.last.cadence > 0, '마지막 프레임 ok + cadence 노출');
-ok(codesOf(good.sum).indexOf('run_lean_back') < 0 && codesOf(good.sum).indexOf('run_arm_straight') < 0,
-   '좋은 자세에는 상체/팔 교정 없음');
-say('');
-
-/* ---------- 2) 뒤로 젖힘 + 팔 펴짐 + 낮은 무릎 드라이브 ---------- */
-say('▸ 2. 나쁜 러닝 (뒤로 젖힘 · 팔 펴짐 · 무릎 낮음)');
-const bad = simulate('running', { lean: -8, elbow: 158, drive: 0.2, period: 0.7 }, 4);
-say('   steps=' + bad.sum.reps + ' avg=' + bad.sum.avgScore + ' issues=' + JSON.stringify(bad.sum.issues));
-const bc = codesOf(bad.sum);
-ok(bc.indexOf('run_lean_back') >= 0 || bc.indexOf('run_lean_back_mid') >= 0, '뒤로 젖힌 상체 감지');
-ok(bc.indexOf('run_arm_straight') >= 0, '너무 펴진 팔꿈치 감지');
-ok(bc.indexOf('run_drive_low') >= 0, '무릎 드라이브 부족 감지');
-ok(bad.sum.avgScore < 85, '나쁜 자세 평균 점수 < 85 (실제 ' + bad.sum.avgScore + ')');
-say('');
-
-/* ---------- 3) 과하게 숙임 ---------- */
-say('▸ 3. 상체 과숙임 (32°)');
-const bent = simulate('running', { lean: 32, elbow: 92, drive: 1, period: 0.7 }, 3);
-ok(codesOf(bent.sum).indexOf('run_lean_bent') >= 0, '과하게 숙인 상체 감지 (' + codesOf(bent.sum).join(',') + ')');
-say('');
-
-/* ---------- 4) 바운스 ---------- */
-say('▸ 4. 상하 바운스');
-const bRun = simulate('running', { lean: 8, elbow: 92, drive: 1, period: 0.7 }, 4);
-say('   안정 러닝 bounceAmp=' + bRun.sum.bounceAmp.toFixed(3));
-ok(bRun.sum.bounceAmp >= 0 && bRun.sum.bounceAmp < RUN.bounceBad, '안정 러닝 바운스 < ' + RUN.bounceBad);
-const bUp = simulate('running', { lean: 8, elbow: 92, drive: 1, period: 0.7, bounceAmp: 0.035, bounceHz: 1.7 }, 4);
-say('   흔들리는 러닝 bounceAmp=' + bUp.sum.bounceAmp.toFixed(3) + ' issues=' + JSON.stringify(bUp.sum.issues));
-ok(bUp.sum.bounceAmp >= RUN.bounceBad, '큰 흔들림 감지 (bounceAmp ' + bUp.sum.bounceAmp.toFixed(3) + ' ≥ ' + RUN.bounceBad + ')');
-ok(codesOf(bUp.sum).indexOf('run_bounce') >= 0 || codesOf(bUp.sum).indexOf('run_bounce_mid') >= 0, '상하 흔들림 교정 포인트 생성');
-say('');
-
-/* ---------- 5) 기존 운동 회귀 ---------- */
-say('▸ 5. 기존 운동 회귀');
-const sq = createEngine('squat'), pu = createEngine('pushup'), pl = createEngine('plank'), ru = createEngine('running');
-ok(sq.update(null, 1.0, 0).ok === false, '스쿼트: 사람 없음 → ok:false');
-ok(pu.update(null, 1.0, 0).ok === false, '푸시업: 사람 없음 → ok:false');
-ok(pl.update(null, 1.0, 0).ok === false, '플랭크: 사람 없음 → ok:false');
-ok(ru.update(null, 1.0, 0).ok === false, '러닝: 사람 없음 → ok:false');
-ok(sq.summary().reps === 0 && ru.summary().reps === 0 && ru.summary().cadence === 0, '초기 카운트 0');
-say('');
-
-/* ---------- 6) 내 기록 · 스트릭 (순수 계산) ---------- */
-say('▸ 6. 내 기록 · 스트릭');
-const NOW = new Date(2026, 10, 16, 21, 0, 0).getTime();   // 2026-11-16 21:00 로컬
-function recDay(offset, score, kind) {
-  const d = new Date(2026, 10, 16, 9, 0, 0);
-  d.setDate(d.getDate() - offset);
-  return { id: 'r' + offset, date: d.toISOString(), exercise: kind || 'squat',
-    exerciseName: '스쿼트', metricLabel: '반복', metricValue: '10', score: score,
-    durationSec: 40, topFeedback: '교정 포인트 없음', comment: '' };
-}
-const recs = [recDay(0, 80), recDay(1, 90), recDay(1, 70), recDay(3, 60)];
-const rst = recordStats(recs, NOW);
-say('   total=' + rst.total + ' streak=' + rst.streak + ' avg=' + rst.avgScore +
-    ' week=' + JSON.stringify(rst.week.map(function (d) { return d.avgScore; })));
-ok(rst.total === 4, '총 기록 4건 (실제 ' + rst.total + ')');
-ok(rst.streak === 2, '오늘+어제 연속 = 2일 (실제 ' + rst.streak + ')');
-ok(rst.avgScore === 75, '평균 점수 75 (실제 ' + rst.avgScore + ')');
-ok(rst.bestScore === 90, '최고 점수 90 (실제 ' + rst.bestScore + ')');
-ok(rst.week.length === 7 && rst.week[6].isToday === true, '7일 윈도우 · 마지막이 오늘');
-ok(rst.week[6].count === 1 && rst.week[6].avgScore === 80, '오늘 1건 · 평균 80');
-ok(rst.week[5].count === 2 && rst.week[5].avgScore === 80, '어제 2건 · 평균 80 (실제 ' + JSON.stringify(rst.week[5]) + ')');
-ok(rst.week[3].avgScore === 60 && rst.week[4].count === 0, '3일 전 1건 · 2일 전 공백');
-ok(recordStreak([recDay(1, 80), recDay(2, 80)], NOW) === 2, '오늘 기록 없어도 어제까지 2일 연속');
-ok(recordStreak([recDay(2, 80)], NOW) === 0, '이틀 전에서 끊긴 스트릭 = 0');
-ok(recordStreak([], NOW) === 0 && recordStats([], NOW).avgScore === null, '빈 기록 안전');
-
-const sqRec = buildRecord({ reps: 12, avgScore: 87, durationMs: 42000, frames: 400,
-  issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 2 }, { code: 'squat_ok', label: '좋은 반복', count: 3 }] }, 'squat', NOW);
-ok(sqRec.metricLabel === '반복' && sqRec.metricValue === '12', '스쿼트 → 반복 12');
-ok(sqRec.score === 87 && sqRec.durationSec === 42 && sqRec.exerciseName === '스쿼트', '점수·시간·종목 저장');
-ok(sqRec.topFeedback === '깊이 살짝 부족 ×2', '대표 교정 포인트 (실제 ' + sqRec.topFeedback + ')');
-ok(!!sqRec.id && !!Date.parse(sqRec.date), 'id · date 생성');
-const plRec = buildRecord({ reps: null, holdMs: 32000, score: 91, durationMs: 33000, frames: 500, issues: [] }, 'plank', NOW);
-ok(plRec.metricLabel === '유지 시간' && plRec.metricValue === '0:32' && plRec.score === 91, '플랭크 → 유지 시간 0:32');
-ok(clockText(32000) === '0:32' && clockText(59000) === '0:59', 'clockText 표기');
-const runRec = buildRecord({ reps: 18, avgScore: 84, durationMs: 60000, frames: 900,
-  issues: [{ code: 'run_ok', label: '좋은 스텝', count: 5 }] }, 'running', NOW);
-ok(runRec.metricLabel === '스텝' && runRec.metricValue === '18' && runRec.topFeedback === '좋은 자세 유지', '러닝 → 스텝 18 · 교정 없음 표기');
-say('');
+/* CASES END */
+runCases(mod, ok, say);
 
 lines.push(fails ? 'RESULT: FAIL (' + fails + '건)' : 'RESULT: ALL PASS');
 outEl.innerHTML = lines.map(function (l) {

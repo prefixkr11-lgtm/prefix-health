@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prehealth · v6 기능 테스트 (기록·카드·Pro)</title>
+<title>Prehealth · v8 기능 테스트 (기록·카드·Pro·레벨·일시정지)</title>
 <style>
   body{background:#141416;color:#F5F2EB;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
   h1{font-size:15px;letter-spacing:.02em}
@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h1>Prehealth v6 · 기능 테스트 (기록 저장 / 결과 카드 PNG / Pro 모달)</h1>
+<h1>Prehealth v8 · 기능 테스트 (기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지)</h1>
 <pre id="out">index.html을 불러오는 중…</pre>
 <iframe id="app" src="../index.html" title="Prehealth 앱"></iframe>
 <script>
@@ -212,10 +212,88 @@ function decodeImage(src){
   ok(q('#proBadge') && q('#fileInput') && !q('#repCard').disabled, '무료 기능(분석·리포트·카드)은 잠기지 않음');
   say('');
 
-  /* ---------- 6) 콘솔 에러 ---------- */
-  say('▸ 6. 에러 확인');
+  /* ---------- 6) 헬린이 / 헬창 레벨 모드 ---------- */
+  say('▸ 6. 헬린이 / 헬창 레벨 모드');
+  ok(!!q('.lv-btn[data-level="beginner"]') && !!q('.lv-btn[data-level="advanced"]'), '레벨 전환 버튼 2개 존재');
+  ok(q('.lv-btn[data-level="beginner"]').textContent.indexOf('헬린이') !== -1, '헬린이 버튼 라벨');
+  ok(q('.lv-btn[data-level="advanced"]').textContent.indexOf('헬창') !== -1, '헬창 버튼 라벨');
+  P.setLevel('beginner', true);
+  ok(P.getLevel() === 'beginner', '기본 레벨 = 헬린이 (실제 ' + P.getLevel() + ')');
+  ok(q('.lv-btn[data-level="beginner"]').getAttribute('aria-pressed') === 'true', '헬린이 버튼 선택 표시');
+  ok(app.localStorage.getItem(P.levelKey) === 'beginner', '레벨이 localStorage에 저장');
+  ok(app.document.body.getAttribute('data-level') === 'beginner', 'body[data-level] 반영');
+  const descB = txt('#lvDesc');
+  q('.lv-btn[data-level="advanced"]').click();
+  ok(P.getLevel() === 'advanced', '헬창으로 전환 (실제 ' + P.getLevel() + ')');
+  ok(q('.lv-btn[data-level="advanced"]').getAttribute('aria-pressed') === 'true' &&
+     q('.lv-btn[data-level="beginner"]').getAttribute('aria-pressed') === 'false', '버튼 상태가 헬창으로 전환');
+  ok(app.localStorage.getItem(P.levelKey) === 'advanced', '전환된 레벨 저장');
+  ok(txt('#lvDesc') !== descB && txt('#lvDesc').indexOf('상급') >= 0, '설명 문구도 바뀜 (' + txt('#lvDesc') + ')');
+  ok(app.document.body.getAttribute('data-level') === 'advanced', 'body 속성도 헬창');
+  ok(q('#toast').textContent.indexOf('헬창') !== -1, '전환 토스트 표시 (' + q('#toast').textContent + ')');
+
+  /* 같은 점수라도 레벨에 따라 코멘트 톤이 다르다 */
+  const cmtB = P.commentFor(75, 'squat', { reps: 5, level: 'beginner' }, 'beginner');
+  const cmtA = P.commentFor(75, 'squat', { reps: 5, level: 'advanced' }, 'advanced');
+  ok(cmtB !== cmtA, '리포트 한 줄 코멘트가 레벨별로 다름');
+  ok(cmtB.indexOf('좋아요') >= 0 || cmtB.indexOf('볼까요') >= 0, '헬린이 코멘트는 격려형: ' + cmtB);
+  ok(cmtA.indexOf('감점') >= 0 || cmtA.indexOf('교정') >= 0, '헬창 코멘트는 수치·교정형: ' + cmtA);
+
+  /* 기록·카드에 레벨 배지 */
+  P.clearRecords();
+  const recB = P.buildRecord({ level: 'beginner', reps: 10, avgScore: 82, durationMs: 40000, frames: 400,
+    issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 1 }] }, 'squat', Date.now());
+  const recA = P.buildRecord({ level: 'advanced', reps: 10, avgScore: 82, durationMs: 40000, frames: 400,
+    issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 1 }] }, 'squat', Date.now() - 1000);
+  ok(recA.level === 'advanced' && recA.levelName === '헬창', '헬창 기록에 레벨 필드 저장');
+  P.saveRecords([recA, recB]);
+  P.renderRecords();
+  const lvEls = q('#recList').querySelectorAll('.lv');
+  ok(lvEls.length === 2, '최근 기록 2건에 레벨 배지 (실제 ' + lvEls.length + ')');
+  ok((q('#recList').textContent || '').indexOf('헬창') !== -1 && (q('#recList').textContent || '').indexOf('헬린이') !== -1,
+     '기록 리스트에 헬린이·헬창 배지 표시');
+  ok(lvEls[0].getAttribute('data-level') === 'advanced' && lvEls[0].textContent.indexOf('🔥') !== -1, '헬창 배지 스타일·이모지');
+  const cardA = P.cardCanvas(recA);
+  ok(cardA.width === 1080 && cardA.height === 1350, '레벨 기록도 결과 카드 1080×1350');
+  const urlA = P.cardDataUrl(recA);
+  ok(urlA.indexOf('data:image/png;base64,') === 0 && urlA.length > 20000, '레벨 배지 포함 PNG 생성 (' + Math.round(urlA.length / 1024) + 'KB)');
+  P.clearRecords();
+  q('.lv-btn[data-level="beginner"]').click();
+  ok(P.getLevel() === 'beginner', '헬린이로 복귀');
+  say('');
+
+  /* ---------- 7) 실시간 카메라 일시정지 / 재개 ---------- */
+  say('▸ 7. 실시간 카메라 일시정지 / 재개');
+  ok(!!q('#camPause'), '일시정지 버튼 존재');
+  q('.modes button[data-mode="camera"]').click();
+  ok(txt('#camPause') === '⏸ 일시정지', '기본 라벨 = 일시정지');
+  ok(q('#camPause').disabled === true, '카메라 시작 전에는 비활성');
+  ok(q('#hudPause').hidden === true, '일시정지 배지는 처음에 숨김');
+  /* 실제 카메라 없이 상태 기계만 검증 */
+  P.state.stream = { getTracks: function(){ return []; } };
+  q('#camPause').disabled = false;
+  ok(P.setCameraPaused(true) === true, '일시정지 진입');
+  ok(P.isCameraPaused() === true, 'state.paused = true');
+  ok(txt('#camPause') === '▶ 재개', '버튼이 재개로 바뀜');
+  ok(q('#hudPause').hidden === false, '“일시정지 중” 배지 표시');
+  ok(q('#stage').classList.contains('paused'), '프리뷰가 어두워지는 일시정지 상태');
+  ok(txt('#hudPhase') === '일시정지', 'HUD 상태 문구 일시정지');
+  ok(P.setCameraPaused(false) === true, '재개');
+  ok(P.isCameraPaused() === false, 'state.paused = false');
+  ok(txt('#camPause') === '⏸ 일시정지', '버튼 라벨 원복');
+  ok(q('#hudPause').hidden === true && !q('#stage').classList.contains('paused'), '일시정지 배지·어둡게 처리 해제');
+  /* 정리: 영상 모드로 돌아가면 카메라·루프가 정리된다 */
+  q('.modes button[data-mode="video"]').click();
+  await wait(150);
+  ok(P.state.stream === null && q('#camPause').disabled === true, '영상 모드 복귀 시 일시정지 버튼 비활성');
+  say('');
+
+  /* ---------- 8) 콘솔 에러 ---------- */
+  say('▸ 8. 에러 확인');
   const real = errors.filter(function(e){ return e && e.indexOf('ResizeObserver') === -1; });
   ok(real.length === 0, '앱에서 발생한 JS 에러 0건' + (real.length ? ' → ' + real.join(' | ') : ''));
+  const collected = (app.__prehealthErrors || []).filter(function(e){ return String(e).indexOf('ResizeObserver') === -1; });
+  ok(collected.length === 0, '앱 자체 오류 수집기도 0건' + (collected.length ? ' → ' + collected.join(' | ') : ''));
 
   /* 테스트가 남긴 기록 정리 */
   P.clearRecords();
