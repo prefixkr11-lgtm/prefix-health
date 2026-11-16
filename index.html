@@ -570,7 +570,7 @@ window.addEventListener('unhandledrejection', function (e) {
 
   <section class="intro">
     <h1>자세를 <b>보고</b>, 바로 <b>고쳐주는</b> 트레이너.</h1>
-    <p>동영상을 올리거나 카메라를 켜면 관절 33개를 실시간으로 추적해서 무릎·팔꿈치 각도, 몸통 일직선, 반복 횟수까지 세어 줍니다. 영상은 브라우저 밖으로 나가지 않아요.</p>
+    <p>동영상을 올리거나 카메라를 켜면 몸의 관절 33곳을 실시간으로 따라가며 무릎·팔꿈치가 얼마나 굽었는지, 몸이 곧은지, 몇 번 했는지 세어 줘요. 영상은 이 기기 밖으로 나가지 않아요.</p>
   </section>
 
   <section class="levelbar" aria-label="코칭 레벨">
@@ -592,7 +592,7 @@ window.addEventListener('unhandledrejection', function (e) {
     </button>
     <button class="ex-btn" role="tab" data-ex="pushup" aria-selected="false">
       <span class="no">02</span><span class="nm">푸시업</span><span class="en">PUSH-UP</span>
-      <span class="fc">팔꿈치 각도 · 몸통 일직선</span>
+      <span class="fc">팔꿈치 각도 · 몸이 곧은지</span>
     </button>
     <button class="ex-btn" role="tab" data-ex="plank" aria-selected="false">
       <span class="no">03</span><span class="nm">플랭크</span><span class="en">PLANK</span>
@@ -600,7 +600,7 @@ window.addEventListener('unhandledrejection', function (e) {
     </button>
     <button class="ex-btn" role="tab" data-ex="running" aria-selected="false">
       <span class="no">04</span><span class="nm">러닝</span><span class="en">RUNNING</span>
-      <span class="fc">상체 기울기 · 팔 스윙 · 케이던스</span>
+      <span class="fc">상체 기울기 · 팔 스윙 · 발걸음 속도</span>
     </button>
   </section>
 
@@ -622,13 +622,13 @@ window.addEventListener('unhandledrejection', function (e) {
             <div class="chip quality" id="hudQuality" data-state="fair">카메라 확인 중</div>
             <div class="chip pause" id="hudPause" hidden>⏸ 일시정지 중</div>
           </div>
-          <div class="chip" id="hudFrames">33 JOINTS</div>
+          <div class="chip" id="hudFrames">관절 33곳</div>
         </div>
 
         <div class="hudBottom">
           <div class="hint" id="hudHint">동영상을 올리거나 카메라를 켜 주세요</div>
           <div class="bigCount">
-            <span class="k" id="hudCountKey">REPS</span>
+            <span class="k" id="hudCountKey">횟수</span>
             <span class="v" id="hudCount">0</span><span class="u" id="hudCountUnit">회</span>
           </div>
         </div>
@@ -640,7 +640,7 @@ window.addEventListener('unhandledrejection', function (e) {
             <path d="M36 22h0M20 57l-4 12M52 57l4 12" stroke="#6DB79B" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
           </svg>
           <h2 id="emptyTitle">동영상을 올려 주세요</h2>
-          <p id="emptyText">mp4 · mov · webm 파일을 고르면 재생하면서 프레임마다 관절을 분석해요.</p>
+          <p id="emptyText">mp4 · mov · webm 파일을 고르면 재생하면서 장면마다 자세를 분석해요.</p>
           <p class="cam-note" id="emptyNote">옆에서 찍은 영상이 가장 정확해요.</p>
         </div>
       </div>
@@ -659,8 +659,8 @@ window.addEventListener('unhandledrejection', function (e) {
           <option value="1.5">1.5x</option>
           <option value="2">2x</option>
         </select>
-        <button class="btn icon" id="stepBack" title="한 프레임 뒤로" disabled>⟨</button>
-        <button class="btn icon" id="stepFwd" title="한 프레임 앞으로" disabled>⟩</button>
+        <button class="btn icon" id="stepBack" title="한 장면 뒤로" disabled>⟨</button>
+        <button class="btn icon" id="stepFwd" title="한 장면 앞으로" disabled>⟩</button>
         <button class="btn icon" id="muteBtn" title="소리" disabled>🔈</button>
         <button class="btn ghost" id="reportBtn" disabled>리포트 보기</button>
         <button class="btn ghost" id="resetBtn" disabled>초기화</button>
@@ -690,17 +690,17 @@ window.addEventListener('unhandledrejection', function (e) {
         <div class="metric"><span class="mlabel" id="ml2">자세 점수</span><span class="mv" id="mv2">–</span><span class="mu" id="mu2">점</span></div>
       </div>
       <div class="card">
-        <h3>FEEDBACK LOG</h3>
+        <h3>실시간 코칭</h3>
         <ul class="logList" id="logList"><li class="logEmpty">피드백이 여기에 쌓여요.</li></ul>
       </div>
       <div class="card">
-        <h3>SESSION</h3>
+        <h3>이번 운동</h3>
         <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);font-weight:700">
           <span id="sessLabel">분석 시간</span><span class="mono" id="sessTime">0:00</span>
         </div>
         <div class="scoreBar"><i id="sessBar"></i></div>
         <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim2);margin-top:6px;font-weight:700">
-          <span id="sessModel">모델 대기 중</span><span id="sessFrames">0 frames</span>
+          <span id="sessModel">분석 준비 중</span><span id="sessFrames">0컷 분석</span>
         </div>
       </div>
     </aside>
@@ -708,7 +708,7 @@ window.addEventListener('unhandledrejection', function (e) {
 
   <section class="report" id="report" hidden>
     <div class="reportHead">
-      <span class="tag">SESSION REPORT</span>
+      <span class="tag">운동 리포트</span>
       <span class="meta" id="repMeta">—</span>
     </div>
     <div class="reportGrid">
@@ -718,7 +718,7 @@ window.addEventListener('unhandledrejection', function (e) {
     </div>
     <p class="repComment" id="repComment"></p>
     <div class="repIssues" id="repIssues"></div>
-    <h4>주요 교정 포인트 · 타임라인</h4>
+    <h4>자주 나온 고칠 점 · 시간 순</h4>
     <ul class="timeline" id="repTimeline"></ul>
     <div class="reportActions">
       <button class="btn primary" id="repCard">결과 카드 저장</button>
@@ -728,8 +728,8 @@ window.addEventListener('unhandledrejection', function (e) {
     <button class="proLock" id="proLock" type="button" aria-haspopup="dialog">
       <span class="plIcon" aria-hidden="true">🔒</span>
       <span class="plBody">
-        <span class="plTitle">Pro 심층 관절 리포트</span>
-        <span class="plSub">관절별 각도 편차 · 좌우 밸런스 · 4주 점수 추이</span>
+        <span class="plTitle">Pro 관절별 자세 리포트</span>
+        <span class="plSub">관절마다 얼마나 흔들렸는지 · 좌우 균형 · 4주 점수 변화</span>
       </span>
       <span class="plChip">미리보기</span>
     </button>
@@ -738,8 +738,8 @@ window.addEventListener('unhandledrejection', function (e) {
   <section class="records" id="records">
     <div class="recordsHead">
       <div>
-        <div class="tagline">MY RECORDS</div>
-        <h2>내 운동 기록</h2>
+        <div class="tagline">내 운동 기록</div>
+        <h2>운동 기록 한눈에 보기</h2>
       </div>
       <button class="btn ghost" id="recordsClear" type="button">기록 초기화</button>
     </div>
@@ -761,8 +761,8 @@ window.addEventListener('unhandledrejection', function (e) {
   </section>
 
   <footer>
-    Prehealth · 자세 분석 프로토타입 (프로토타입 0.1) — 관절 인식은 MediaPipe Pose Landmarker, 모든 처리는 이 기기의 브라우저 안에서만 이루어집니다. 업로드한 영상은 서버로 전송되지 않아요.<br>
-    각도 판정은 3D 월드 랜드마크(실측 좌표) 기준이라 카메라가 비스듬해도 오차를 줄였습니다. 가려진 관절은 판정에서 자동으로 빠집니다. 통증이 있는 동작은 무리하지 마세요.
+    Prehealth · 자세 분석 프로토타입 (0.1) — 자세 인식은 MediaPipe Pose Landmarker를 쓰고, 모든 계산은 이 기기 브라우저 안에서만 해요. 올린 영상은 서버로 보내지 않아요.<br>
+    각도는 실제 3D 좌표로 계산해서 카메라가 비스듬해도 정확해요. 가려진 관절은 판정에서 자동으로 빼요. 통증이 있는 동작은 무리하지 마세요.
   </footer>
 </main>
 
@@ -794,7 +794,7 @@ window.addEventListener('unhandledrejection', function (e) {
       <h3 id="proModalTitle">Prehealth<span class="proTag">PRO</span></h3>
       <button class="sheetClose" id="proClose" type="button" aria-label="닫기">✕</button>
     </div>
-    <p class="sheetLead">자세 점수 다음에 오는 <b>관절 단위 심층 리포트</b>. 무릎·팔꿈치 각도 편차와 좌우 밸런스까지 숫자로 보여드려요.</p>
+    <p class="sheetLead">점수 하나로는 알 수 없는 걸 <b>더 자세히</b> 봐요. 무릎·팔꿈치가 얼마나 흔들렸는지, 좌우가 얼마나 다른지 숫자로 보여드려요.</p>
 
     <div class="plans" role="group" aria-label="요금제">
       <button class="plan" type="button" data-plan="monthly" aria-pressed="true">
@@ -808,17 +808,17 @@ window.addEventListener('unhandledrejection', function (e) {
     </div>
 
     <ul class="benefits">
-      <li><span class="bi" aria-hidden="true">🔬</span><span><b>관절별 심층 분석</b> — 무릎·팔꿈치 각도 편차, 좌우 밸런스, 반복별 점수 분포</span></li>
-      <li><span class="bi" aria-hidden="true">📈</span><span><b>4주 추이 리포트</b> — 주간 점수 변화와 부상 위험 구간 알림</span></li>
-      <li><span class="bi" aria-hidden="true">🎯</span><span><b>맞춤 교정 루틴</b> — 내 교정 포인트만 모은 5분 훈련</span></li>
-      <li><span class="bi" aria-hidden="true">📤</span><span><b>카드·기록 무제한</b> — 결과 카드 고해상도 저장과 기록 백업</span></li>
+      <li><span class="bi" aria-hidden="true">🔬</span><span><b>관절별 자세 분석</b> — 무릎·팔꿈치가 얼마나 흔들렸는지, 좌우 균형, 몇 번째 반복에서 점수가 떨어졌는지</span></li>
+      <li><span class="bi" aria-hidden="true">📈</span><span><b>4주 변화 리포트</b> — 주마다 점수가 어떻게 달라지는지, 다칠 수 있는 구간 알림</span></li>
+      <li><span class="bi" aria-hidden="true">🎯</span><span><b>나만의 5분 루틴</b> — 내가 자주 틀리는 동작만 모아서 알려줘요</span></li>
+      <li><span class="bi" aria-hidden="true">📤</span><span><b>카드·기록 무제한</b> — 결과 카드를 높은 화질로 저장하고 기록도 백업</span></li>
     </ul>
 
     <div class="sheetActions">
-      <button class="btn primary" id="proCta" type="button">출시 알림 · 결제 테스트</button>
+      <button class="btn primary" id="proCta" type="button">출시되면 알려 주세요</button>
     </div>
-    <div class="proCount">이 기기 관심 카운트 <b id="proCount">0</b>회 · 결제는 아직 연동되지 않았어요</div>
-    <p class="proNote">분석·기록·결과 카드 저장은 Pro와 관계없이 지금처럼 모두 무료로 쓸 수 있어요. Pro는 심층 리포트만 담당합니다.</p>
+    <div class="proCount">이 기기에서 관심 표시 <b id="proCount">0</b>번 · 결제는 아직 안 돼요</div>
+    <p class="proNote">분석·기록·결과 카드 저장은 지금처럼 모두 무료예요. Pro는 더 자세한 리포트만 맡아요.</p>
   </div>
 </div>
 
@@ -870,10 +870,10 @@ const SKELETON = [
   [23,25],[25,27],[27,31],[24,26],[26,28],[28,32],[11,0],[12,0]
 ];
 const EXERCISES = {
-  squat:  { name: '스쿼트', en: 'SQUAT',   unit: '회', tip: '옆에서 발끝까지 전신이 들어오게 찍어 주세요.' },
+  squat:  { name: '스쿼트', en: 'SQUAT',   unit: '회', tip: '옆에서 머리부터 발끝까지 다 보이게 찍어 주세요.' },
   pushup: { name: '푸시업', en: 'PUSH-UP', unit: '회', tip: '옆에서 머리부터 발끝까지 한 화면에 담아 주세요.' },
   plank:  { name: '플랭크', en: 'PLANK',   unit: '',   tip: '옆에서 어깨·엉덩이·발목이 모두 보이게 찍어 주세요.' },
-  running:{ name: '러닝',   en: 'RUNNING', unit: '스텝', tip: '옆에서 머리부터 발끝까지 들어오게, 10초 이상 달려 주세요.' }
+  running:{ name: '러닝',   en: 'RUNNING', unit: '스텝', tip: '옆에서 머리부터 발끝까지 다 보이게, 10초 넘게 달려 주세요.' }
 };
 
 /* ---------- 인식 품질 기준 ---------- */
@@ -888,7 +888,7 @@ const LEVELS = {
   beginner: {
     key: 'beginner', name: '헬린이', emoji: '🐣',
     tag: '입문 · 부상 없이 기본기부터, 친절한 코칭',
-    desc: '입문 · 부상 없이 기본기부터, 친절한 코칭',
+    desc: '입문 · 부상 없이 기본기부터, 친절하게 코칭해요',
     squat:   { deep: 105, ok: 122, leanWarn: 42, leanBad: 55, waist: 30, valgus: 0.50, pen: 0.75 },
     pushup:  { deep: 105, ok: 118, top: 145, body: 148, sag: 0.075, pen: 0.75 },
     plank:   { lo: 160, hi: 180, sag: 0.085, drift: 0.55, head: 0.20 },
@@ -898,8 +898,8 @@ const LEVELS = {
   },
   advanced: {
     key: 'advanced', name: '헬창', emoji: '🔥',
-    tag: '상급 · 풀 가동범위 & 칼각 정렬, 수치 교정',
-    desc: '상급 · 풀 가동범위와 칼각 정렬, 수치로 교정',
+    tag: '고급 · 끝까지 깊게, 숫자로 교정',
+    desc: '고급 · 더 깊게, 더 정확하게 숫자로 봐요',
     squat:   { deep: 92, ok: 104, leanWarn: 30, leanBad: 42, waist: 20, valgus: 0.68, pen: 1 },
     pushup:  { deep: 88, ok: 98, top: 155, body: 160, sag: 0.05, pen: 1 },
     plank:   { lo: 168, hi: 180, sag: 0.06, drift: 0.38, head: 0.13 },
@@ -916,139 +916,139 @@ const RUN = LEVELS.beginner.running;
 const COPY = {
   squat_ok: {
     b: '좋아요! 이 깊이 그대로 한 번 더!',
-    a: 'Rep 유효 · 각도·정렬 모두 기준 이내'
+    a: '좋아요 — 깊이도 각도도 딱 맞았어요'
   },
   squat_depth_low: {
-    b: '조금만 더 앉아 볼까요? 무릎에 무리 안 가게 엉덩이를 뒤로 살짝 빼면서 내려가요 ({v}°)',
-    a: '가동범위 부족 · 대퇴골 수평 이하까지 내려가세요 ({v}°)'
+    b: '조금만 더 앉아 볼까요? 엉덩이를 뒤로 살짝 빼면서 내려가요 (무릎 {v}도)',
+    a: '허벅지가 바닥과 나란해질 때까지 더 내려가 주세요 (무릎 {v}도)'
   },
   squat_depth_mid: {
-    b: '거의 다 왔어요! 한 뼘만 더 내려가 볼까요? ({v}°)',
-    a: '얕은 가동범위 · 패럴렐까지 1~2cm 부족합니다 ({v}°)'
+    b: '거의 다 왔어요! 한 뼘만 더 내려가 볼까요? (무릎 {v}도)',
+    a: '한 뼘만 더 — 허벅지가 바닥과 나란해지면 충분해요 (무릎 {v}도)'
   },
   squat_lean_bad: {
-    b: '상체가 앞으로 많이 쏠렸어요. 가슴을 살짝만 세워 볼까요? ({v}°)',
-    a: '체간 전경 과다 · 흉추 신전 유지, 상체 {v}° 이탈'
+    b: '상체가 앞으로 많이 쏠렸어요. 가슴을 살짝만 세워 볼까요? (상체 {v}도)',
+    a: '상체가 너무 앞으로 숙었어요. 가슴을 펴고 배에 힘을 주세요 (상체 {v}도)'
   },
   squat_lean_mid: {
-    b: '가슴을 조금만 더 세우면 허리가 편해요 ({v}°)',
-    a: '상체 전경 {v}° · 복압으로 체간 고정 필요'
+    b: '가슴을 조금만 더 세우면 허리가 편해요 (상체 {v}도)',
+    a: '상체가 조금 앞으로 쏠렸어요. 가슴을 펴 주세요 (상체 {v}도)'
   },
   squat_waist: {
     b: '허리를 말고 앉는 느낌이에요. 배에 힘을 주고 가슴부터 내려가요',
-    a: '골반 후방 경사 · 요추 굴곡으로 숙여졌습니다, 흉추 주도 하강'
+    a: '허리가 둥글게 말렸어요. 배에 힘을 주고 엉덩이를 뒤로 빼며 앉아 주세요'
   },
   squat_valgus: {
     b: '무릎이 안쪽으로 모이고 있어요. 무릎을 발끝 방향으로 살짝 벌려 주세요',
-    a: 'Knee valgus 감지 · 무릎이 발끝 라인 안쪽으로 붕괴, 중둔근 활성 필요'
+    a: '무릎이 안쪽으로 모였어요. 무릎을 발끝 쪽으로 밀어 주세요'
   },
   push_ok: {
     b: '좋아요! 몸통이 일직선으로 잘 유지됐어요',
-    a: 'Rep 유효 · 주관절 각도·체간 정렬 기준 충족'
+    a: '좋아요 — 팔 각도도 몸통도 기준에 맞았어요'
   },
   push_depth_low: {
-    b: '가슴을 조금만 더 내려 볼까요? 무리되면 무릎 대고 해도 좋아요 ({v}°)',
-    a: '가동범위 부족 · 주관절 {v}°, 가슴이 손바닥 높이까지 내려가야 합니다'
+    b: '가슴을 조금만 더 내려 볼까요? 무리되면 무릎 대고 해도 좋아요 (팔꿈치 {v}도)',
+    a: '가슴이 손바닥 높이까지 내려와야 해요 (팔꿈치 {v}도)'
   },
   push_depth_mid: {
-    b: '거의 다 왔어요! 한 번 더 깊게 내려가 볼까요? ({v}°)',
-    a: '가동범위 {v}° · 상완이 수평 이하까지 부족'
+    b: '거의 다 왔어요! 한 번 더 깊게 내려가 볼까요? (팔꿈치 {v}도)',
+    a: '한 번 더 깊게 — 가슴을 손바닥 높이까지 (팔꿈치 {v}도)'
   },
   push_top: {
-    b: '올라올 때 팔을 끝까지 펴 주면 더 좋아요 ({v}°)',
-    a: '상단 신전 부족 · 주관절 {v}°, 완전 신전(155°) 미달'
+    b: '올라올 때 팔을 끝까지 펴 주면 더 좋아요 (팔꿈치 {v}도)',
+    a: '팔을 끝까지 다 펴 주세요 (팔꿈치 {v}도)'
   },
   push_sag: {
     b: '허리가 아래로 처졌어요. 배에 힘을 주고 일직선을 만들어요',
-    a: '요추 과신전(hip sag) · 체간 일직선 이탈, 복압 미유지'
+    a: '허리가 아래로 처졌어요. 배에 힘을 주고 머리부터 발끝까지 한 줄로요'
   },
   push_pike: {
     b: '엉덩이가 위로 솟았어요. 머리부터 발끝까지 일직선으로!',
-    a: 'Hip pike · 골반 굴곡으로 체간 라인 붕괴'
+    a: '엉덩이가 위로 솟았어요. 엉덩이를 내려 머리부터 발끝까지 한 줄로요'
   },
   push_bend: {
     b: '몸통이 살짝 꺾였어요. 머리부터 발끝을 한 줄로 만들어요',
-    a: '체간 라인 이탈 · 견갑–골반–발목 정렬 필요'
+    a: '몸이 중간에서 꺾였어요. 어깨·골반·발목을 한 줄로 맞춰 주세요'
   },
   push_head: {
     b: '고개만 숙이면 횟수로 안 세요. 팔꿈치를 굽혀서 내려가 볼까요?',
-    a: '두경부 굴곡만으로 카운트 불가 · 주관절 굴곡 필요'
+    a: '고개만 숙이면 세지 않아요. 팔꿈치를 굽혀 가슴을 내려 주세요'
   },
   plank_sag: {
     b: '엉덩이가 아래로 처졌어요. 배에 힘을 주고 살짝 들어 올려요',
-    a: 'Hip sag · 골반 전방 경사, 복횡근–둔근 수축으로 라인 복원'
+    a: '엉덩이가 처졌어요. 배와 엉덩이에 힘을 주고 살짝 들어 올려 주세요'
   },
   plank_pike: {
     b: '엉덩이가 너무 올라갔어요. 조금 낮춰서 일직선으로!',
-    a: 'Hip pike · 골반 굴곡, 체간 라인 과상승'
+    a: '엉덩이가 올라갔어요. 조금 낮춰 머리부터 발끝까지 한 줄로요'
   },
   plank_bend: {
     b: '몸통이 꺾였어요. 머리부터 발끝을 한 줄로 맞춰요',
-    a: '체간 정렬 이탈 · 견–골반–발목 168~180° 유지'
+    a: '몸이 꺾였어요. 어깨·골반·발목을 한 줄로 맞춰 주세요'
   },
   plank_shoulder: {
     b: '어깨가 손보다 뒤로 밀렸어요. 팔 아래로 어깨를 세워요',
-    a: '어깨가 지지점 후방 · 견갑을 팔꿈치 위에 재정렬'
+    a: '어깨가 손보다 뒤에 있어요. 어깨를 팔꿈치 바로 위에 두세요'
   },
   plank_head: {
     b: '고개가 떨어졌어요. 시선을 손 앞쪽 바닥에 두고 목을 길게',
-    a: '두경부 굴곡 · 경추 중립 미유지, 시선 전방 30cm'
+    a: '고개가 떨어졌어요. 시선을 손 앞 바닥에 두고 목을 길게 펴 주세요'
   },
   plank_recover: {
     b: '다시 일직선! 이대로 이어서 가요',
-    a: '정렬 복구 · 유지 시간 재개'
+    a: '일직선으로 돌아왔어요. 시간 다시 세요'
   },
   plank_mile: {
     b: '{v}초 유지 — 일직선 좋아요',
-    a: '{v}초 · 체간 정렬 유지'
+    a: '{v}초 — 일직선 유지 중'
   },
   run_ok: {
     b: '리듬 좋아요!',
-    a: 'Stride 유효 · 각도 기준 충족'
+    a: '좋아요 — 자세 기준에 맞았어요'
   },
   run_lean_back: {
-    b: '상체가 뒤로 젖혀졌어요. 배에서 살짝 앞으로 밀어 볼까요? ({v}°)',
-    a: '체간 후방 경사 · 전방 추진력 손실, 체간 {v}°'
+    b: '상체가 뒤로 젖혀졌어요. 배에서 살짝 앞으로 밀어 볼까요? (상체 {v}도)',
+    a: '상체가 뒤로 젖혀졌어요. 배에 힘을 주고 살짝 앞으로 (상체 {v}도)'
   },
   run_lean_back_mid: {
     b: '상체를 아주 살짝 앞으로만 기울여 볼까요?',
-    a: '체간 후경 · 권장 4~16° 미달 ({v}°)'
+    a: '상체를 조금만 앞으로 기울여 주세요 (상체 {v}도)'
   },
   run_lean_bent: {
-    b: '상체가 너무 숙여졌어요. 가슴을 조금 열어 볼까요? ({v}°)',
-    a: '체간 전경 과다 · 호흡 제한·골반 후방 이동 ({v}°)'
+    b: '상체가 너무 숙여졌어요. 가슴을 조금 열어 볼까요? (상체 {v}도)',
+    a: '상체가 너무 숙었어요. 가슴을 펴면 숨이 편해져요 (상체 {v}도)'
   },
   run_lean_bent_mid: {
-    b: '가슴을 조금만 더 열어 주세요 ({v}°)',
-    a: '체간 전경 16° 초과 · 권장 범위 이탈 ({v}°)'
+    b: '가슴을 조금만 더 열어 주세요 (상체 {v}도)',
+    a: '상체를 조금 세워 주세요 (상체 {v}도)'
   },
   run_arm_straight: {
-    b: '팔을 90도로 접어 가볍게 앞뒤로 흔들어 봐요 ({v}°)',
-    a: '주관절 신전 과다 · 주관절 65~115° 유지 ({v}°)'
+    b: '팔을 90도로 접어 가볍게 앞뒤로 흔들어 봐요 (팔꿈치 {v}도)',
+    a: '팔꿈치를 90도 정도로 접어 주세요 (팔꿈치 {v}도)'
   },
   run_arm_mid: {
-    b: '팔꿈치를 조금만 더 접어 주세요 ({v}°)',
-    a: '주관절 각도 상한 근접 · 스윙 폭 축소 ({v}°)'
+    b: '팔꿈치를 조금만 더 접어 주세요 (팔꿈치 {v}도)',
+    a: '팔꿈치를 조금 더 접으면 팔이 가벼워져요 (팔꿈치 {v}도)'
   },
   run_bounce: {
     b: '위아래로 많이 튀고 있어요. 힘을 빼고 앞으로만!',
-    a: '수직 바운스 과다 · 착지 충격 증가, 상하 진폭 축소'
+    a: '위아래로 너무 튀어요. 발을 몸 아래에 가볍게 디뎌 주세요'
   },
   run_bounce_mid: {
     b: '위아래 흔들림을 조금만 줄여 볼까요',
-    a: '수직 진폭 기준 초과 · 골반 안정화 필요'
+    a: '위아래 흔들림이 조금 커요. 힘을 빼 주세요'
   },
   run_drive_low: {
     b: '무릎을 조금 더 들어 올려 볼까요?',
-    a: 'Knee drive 부족 · 대퇴 전방 상승 미흡'
+    a: '무릎을 조금 더 앞으로 들어 올려 주세요'
   },
   run_overstride: {
-    b: '발이 몸보다 앞에 착지하고 있어요. 몸 아래로 살짝만!',
-    a: '오버스트라이딩 감지 · 무게중심 아래 착지, 케이던스 상향'
+    b: '발이 몸보다 앞에 닿고 있어요. 몸 아래에 살짝만!',
+    a: '발이 너무 앞에 닿아요. 발을 몸 아래에 디뎌 주세요'
   },
   run_cadence_low: {
-    b: '발을 조금 더 자주, 가볍게 디뎌 볼까요? ({v}spm)',
-    a: '케이던스 {v}spm · 170 이상 권장'
+    b: '발을 조금 더 자주, 가볍게 디뎌 볼까요? (분당 {v}걸음)',
+    a: '발걸음이 느려요 — 분당 170걸음 이상이 좋아요 (지금 분당 {v}걸음)'
   }
 };
 function sayCopy(code, level, vars){
@@ -1255,16 +1255,16 @@ function assessQuality(I, Q, kind, is3d){
   let level, text, hint;
   if (r.best < TUNE.minVis){
     level = 'bad';
-    text = '전신 거리 조절 필요';
-    hint = '전신(머리~발목)이 보이게 조금 뒤로 가 주세요';
+    text = '조금 뒤로 가 주세요';
+    hint = '머리부터 발끝까지 다 보이게 조금 뒤로 가 주세요';
   } else if (r.best < TUNE.goodVis || cutFoot || cutHead){
     level = 'fair';
-    text = '추적 안정화 중';
+    text = '자세 확인 중';
     hint = cutFoot ? '발끝까지 보이게 조금 뒤로 가 주세요'
       : (cutHead ? '머리까지 보이게 조금 뒤로 가 주세요' : '조금 더 가까이, 정면으로 서 주세요');
   } else {
     level = 'good';
-    text = is3d ? '3D 정밀 추적 중' : '정밀 추적 중';
+    text = is3d ? '자세 잘 보이는 중' : '자세 잘 보이는 중';
     hint = '';
   }
   return { level: level, text: text, hint: hint, vis: r.best, side: r.side,
@@ -1403,7 +1403,7 @@ function createEngine(kind, level){
     return {
       ok: false,
       quality: q || null,
-      hint: hint || (q && q.hint) || '전신이 화면에 들어오게 해 주세요',
+      hint: hint || (q && q.hint) || '머리부터 발끝까지 다 보이게 해 주세요',
       phase: phase || (q && q.level === 'bad' ? '화면 확인' : '대기'),
       angles: [], badJoints: []
     };
@@ -1418,12 +1418,12 @@ function createEngine(kind, level){
     const bottom = st.bottom, leanMax = st.leanMax, waistMax = st.waistMax;
     const valg = st.valgusMax;
     const issues = [];
-    if (bottom > L.ok) issues.push({ code: 'squat_depth_low', label: '깊이 부족', pen: 30 * L.pen, lv: 'bad', v: Math.round(bottom) });
-    else if (bottom > L.deep) issues.push({ code: 'squat_depth_mid', label: '깊이 살짝 부족', pen: 12 * L.pen, lv: 'warn', v: Math.round(bottom) });
-    if (leanMax > L.leanBad) issues.push({ code: 'squat_lean_bad', label: '상체 쏠림', pen: 22 * L.pen, lv: 'bad', v: Math.round(leanMax) });
-    else if (leanMax > L.leanWarn) issues.push({ code: 'squat_lean_mid', label: '상체 숙임', pen: 9 * L.pen, lv: 'warn', v: Math.round(leanMax) });
-    else if (waistMax > L.waist) issues.push({ code: 'squat_waist', label: '허리 숙임', pen: 10 * L.pen, lv: 'warn' });
-    if (valg > 0.001) issues.push({ code: 'squat_valgus', label: '무릎 안쪽 말림', pen: 14 * L.pen, lv: 'bad' });
+    if (bottom > L.ok) issues.push({ code: 'squat_depth_low', label: '더 깊이 앉기', pen: 30 * L.pen, lv: 'bad', v: Math.round(bottom) });
+    else if (bottom > L.deep) issues.push({ code: 'squat_depth_mid', label: '조금 더 깊이', pen: 12 * L.pen, lv: 'warn', v: Math.round(bottom) });
+    if (leanMax > L.leanBad) issues.push({ code: 'squat_lean_bad', label: '상체가 앞으로 쏠림', pen: 22 * L.pen, lv: 'bad', v: Math.round(leanMax) });
+    else if (leanMax > L.leanWarn) issues.push({ code: 'squat_lean_mid', label: '상체가 조금 숙음', pen: 9 * L.pen, lv: 'warn', v: Math.round(leanMax) });
+    else if (waistMax > L.waist) issues.push({ code: 'squat_waist', label: '허리가 말림', pen: 10 * L.pen, lv: 'warn' });
+    if (valg > 0.001) issues.push({ code: 'squat_valgus', label: '무릎이 안쪽으로 모임', pen: 14 * L.pen, lv: 'bad' });
 
     let sc = 100;
     for (let i = 0; i < issues.length; i++) sc -= issues[i].pen;
@@ -1489,14 +1489,14 @@ function createEngine(kind, level){
       { label: '상체', value: isFinite(lean) ? Math.round(lean) : null, at: s.sh, bad: badLean }
     ];
     let hint;
-    if (badLean) hint = T('상체가 앞으로 쏠렸어요 — 가슴을 살짝 세워요', '체간 전경 과다 — 흉추 신전으로 세우세요');
-    else if (st.inDown) hint = knee > L.ok ? T('조금 더 앉아 볼까요?', '가동범위 부족 — 더 내려가세요')
-      : (knee > L.deep ? T('한 뼘만 더 내려가요', '패럴렐까지 1~2cm 부족') : T('좋은 깊이예요!', '가동범위 충족'));
-    else hint = knee > st.top - 12 ? T('준비 — 천천히 내려가 볼까요', 'Set — 하강 준비') : T('일어나는 중 — 끝까지 펴 주세요', '상승 — 완전 신전');
+    if (badLean) hint = T('상체가 앞으로 쏠렸어요 — 가슴을 살짝 세워요', '상체가 많이 쏠렸어요 — 가슴을 펴고 배에 힘 주세요');
+    else if (st.inDown) hint = knee > L.ok ? T('조금 더 앉아 볼까요?', '더 깊이 — 허벅지가 바닥과 나란히')
+      : (knee > L.deep ? T('한 뼘만 더 내려가요', '1~2cm만 더 — 허벅지가 바닥과 나란히') : T('좋은 깊이예요!', '깊이 좋아요 — 그대로 유지'));
+    else hint = knee > st.top - 12 ? T('준비 — 천천히 내려가 볼까요', '준비 — 이제 내려가요') : T('일어나는 중 — 끝까지 펴 주세요', '일어나는 중 — 무릎을 끝까지 펴요');
 
     const phases = st.inDown
-      ? (knee < L.deep ? '깊이 충분' : (knee > L.ok ? '깊이 부족' : '하강'))
-      : (knee < st.top - 20 ? '상승' : '준비');
+      ? (knee < L.deep ? '깊이 좋아요' : (knee > L.ok ? '더 내려가기' : '내려가는 중'))
+      : (knee < st.top - 20 ? '올라오는 중' : '준비');
     st.phase = phases;
 
     return {
@@ -1513,14 +1513,14 @@ function createEngine(kind, level){
     const L = cfg.pushup;
     const bottom = st.bottom, bodyMin = st.bodyMin, sagMax = st.sagMax, topAtRep = st.repTop;
     const issues = [];
-    if (bottom > L.ok) issues.push({ code: 'push_depth_low', label: '가슴이 덜 내려감', pen: 28 * L.pen, lv: 'bad', v: Math.round(bottom) });
-    else if (bottom > L.deep) issues.push({ code: 'push_depth_mid', label: '가동범위 살짝 부족', pen: 12 * L.pen, lv: 'warn', v: Math.round(bottom) });
-    if (isFinite(topAtRep) && topAtRep < L.top) issues.push({ code: 'push_top', label: '상단 신전 부족', pen: 8 * L.pen, lv: 'warn', v: Math.round(topAtRep) });
+    if (bottom > L.ok) issues.push({ code: 'push_depth_low', label: '가슴을 더 내리기', pen: 28 * L.pen, lv: 'bad', v: Math.round(bottom) });
+    else if (bottom > L.deep) issues.push({ code: 'push_depth_mid', label: '조금 더 깊이', pen: 12 * L.pen, lv: 'warn', v: Math.round(bottom) });
+    if (isFinite(topAtRep) && topAtRep < L.top) issues.push({ code: 'push_top', label: '팔을 끝까지 펴기', pen: 8 * L.pen, lv: 'warn', v: Math.round(topAtRep) });
     if (Math.abs(sagMax) > L.sag){
-      if (sagMax > 0) issues.push({ code: 'push_sag', label: '허리 처짐', pen: 24 * L.pen, lv: 'bad' });
-      else issues.push({ code: 'push_pike', label: '엉덩이 솟음', pen: 18 * L.pen, lv: 'warn' });
+      if (sagMax > 0) issues.push({ code: 'push_sag', label: '허리가 처짐', pen: 24 * L.pen, lv: 'bad' });
+      else issues.push({ code: 'push_pike', label: '엉덩이가 솟음', pen: 18 * L.pen, lv: 'warn' });
     } else if (isFinite(bodyMin) && bodyMin < L.body){
-      issues.push({ code: 'push_bend', label: '몸통 꺾임', pen: 14 * L.pen, lv: 'warn' });
+      issues.push({ code: 'push_bend', label: '몸이 꺾임', pen: 14 * L.pen, lv: 'warn' });
     }
     let sc = 100;
     for (let i = 0; i < issues.length; i++) sc -= issues[i].pen;
@@ -1597,13 +1597,13 @@ function createEngine(kind, level){
       { label: '몸통', value: isFinite(body) ? Math.round(body) : null, at: s.hip, bad: badBody }
     ];
     let hint;
-    if (sag > L.sag) hint = T('허리가 처졌어요 — 배에 힘을 주세요', 'Hip sag — 복압 유지, 골반 후방 경사');
-    else if (sag < -L.sag) hint = T('엉덩이가 올라갔어요 — 일직선으로', 'Hip pike — 골반 굴곡 교정');
-    else if (st.inDown) hint = elb > L.ok ? T('조금 더 내려가 주세요', '가동범위 부족 — 더 내려가세요')
-      : T('좋아요, 가슴까지 내려왔어요', '가동범위 충족 — 상단까지 밀어 올리세요');
-    else hint = elb > st.top - 20 ? T('준비 — 팔꿈치를 접어 내려가요', 'Set — 주관절 굴곡 준비') : T('밀어 올리는 중', '상승 — 완전 신전까지');
-    st.phase = st.inDown ? (elb < L.deep ? '충분히 내려감' : (elb > L.ok ? '가동범위 부족' : '하강'))
-      : (elb < st.top - 25 ? '상승' : '준비');
+    if (sag > L.sag) hint = T('허리가 처졌어요 — 배에 힘을 주세요', '허리가 처졌어요 — 배에 힘 주고 골반을 살짝 말아요');
+    else if (sag < -L.sag) hint = T('엉덩이가 올라갔어요 — 일직선으로', '엉덩이가 올라갔어요 — 일직선으로 낮춰요');
+    else if (st.inDown) hint = elb > L.ok ? T('조금 더 내려가 주세요', '가슴을 조금 더 내려 주세요')
+      : T('좋아요, 가슴까지 내려왔어요', '깊이 좋아요 — 이제 위로 끝까지 밀어요');
+    else hint = elb > st.top - 20 ? T('준비 — 팔꿈치를 접어 내려가요', '준비 — 팔꿈치를 굽혀 내려가요') : T('밀어 올리는 중', '밀어 올리는 중 — 팔을 끝까지 펴요');
+    st.phase = st.inDown ? (elb < L.deep ? '깊이 좋아요' : (elb > L.ok ? '더 내려가기' : '내려가는 중'))
+      : (elb < st.top - 25 ? '올라오는 중' : '준비');
 
     return {
       ok: true, phase: st.phase, hint: hint, quality: q,
@@ -1650,11 +1650,11 @@ function createEngine(kind, level){
       }
       const drift = shoulderDrift(I, s);
       if (drift !== null && drift > L.drift && log(t, 'plank_shoulder', issueText('plank_shoulder'), 'warn', 7000)){
-        note('plank_shoulder', '어깨 밀림');
+        note('plank_shoulder', '어깨가 뒤로 밀림');
       }
       const hd = headDrop(I, s);
       if (hd !== null && hd > L.head && log(t, 'plank_head', issueText('plank_head'), 'warn', 7000)){
-        note('plank_head', '고개 떨굼');
+        note('plank_head', '고개가 떨어짐');
       }
     } else {
       st.badMs += dt;
@@ -1663,9 +1663,9 @@ function createEngine(kind, level){
         st.broken = true;
         if (sag > L.sag) note('plank_sag', '엉덩이 처짐');
         else if (sag < -L.sag) note('plank_pike', '엉덩이 솟음');
-        else note('plank_bend', '몸통 꺾임');
+        else note('plank_bend', '몸이 꺾임');
       }
-      if (!lying) log(t, 'plank_bend', T('엎드린 자세에서 시작해 볼까요? 팔꿈치를 바닥에 대고 몸을 일직선으로', 'Plank 자세 미성립 · 견–골반–발목 정렬 필요'), 'warn', 5000);
+      if (!lying) log(t, 'plank_bend', T('엎드린 자세에서 시작해 볼까요? 팔꿈치를 바닥에 대고 몸을 일직선으로', '플랭크 자세가 안 잡혔어요 — 팔꿈치를 바닥에 대고 몸을 일직선으로'), 'warn', 5000);
       else if (sag > L.sag) log(t, 'plank_sag', issueText('plank_sag'), 'bad', 2800);
       else if (sag < -L.sag) log(t, 'plank_pike', issueText('plank_pike'), 'warn', 2800);
       else log(t, 'plank_bend', issueText('plank_bend'), 'warn', 2800);
@@ -1673,15 +1673,15 @@ function createEngine(kind, level){
 
     const total = Math.max(st.holdMs + st.badMs, 1);
     if (st.holdMs + st.badMs > 400) st.score = clamp(Math.round(100 - 60 * (st.badMs / total)), 15, 100);
-    st.phase = good ? '유지 중' : (!lying ? '자세 미성립' : (sag > L.sag ? '엉덩이 처짐' : (sag < -L.sag ? '엉덩이 솟음' : '자세 이탈')));
+    st.phase = good ? '유지 중' : (!lying ? '자세 다시 잡기' : (sag > L.sag ? '엉덩이 처짐' : (sag < -L.sag ? '엉덩이 솟음' : '자세 이탈')));
 
     const angles = [{ label: '몸통', value: Math.round(ang), at: s.hip, bad: !good }];
     let hint;
-    if (good) hint = T('좋아요, 일직선 유지 중 — 호흡 놓지 마세요', '정렬 유지 · 복압 유지, 흉곽–골반 중립');
-    else if (!lying) hint = T('엎드려서 팔꿈치를 바닥에 대고 일직선을 만들어요', 'Plank 자세 미성립 — 견갑–골반–발목 정렬');
-    else if (sag > L.sag) hint = T('엉덩이가 처졌어요 — 배에 힘을 주세요', 'Hip sag — 복압으로 골반 들기');
-    else if (sag < -L.sag) hint = T('엉덩이가 올라갔어요 — 낮춰 주세요', 'Hip pike — 골반 굴곡 내리기');
-    else hint = T('몸통을 일직선으로 — 머리부터 발끝까지', '체간 라인 이탈 — 168~180° 유지');
+    if (good) hint = T('좋아요, 일직선 유지 중 — 호흡 놓지 마세요', '일직선 유지 중 — 배에 힘을 계속 주세요');
+    else if (!lying) hint = T('엎드려서 팔꿈치를 바닥에 대고 일직선을 만들어요', '플랭크 자세가 안 잡혔어요 — 팔꿈치를 대고 일직선으로');
+    else if (sag > L.sag) hint = T('엉덩이가 처졌어요 — 배에 힘을 주세요', '엉덩이가 처졌어요 — 배와 엉덩이에 힘 주고 들어 올려요');
+    else if (sag < -L.sag) hint = T('엉덩이가 올라갔어요 — 낮춰 주세요', '엉덩이가 올라갔어요 — 조금 낮춰 주세요');
+    else hint = T('몸통을 일직선으로 — 머리부터 발끝까지', '몸을 일직선으로 — 어깨·골반·발목을 한 줄로');
 
     return {
       ok: true, phase: st.phase, hint: hint, quality: q,
@@ -1707,23 +1707,23 @@ function createEngine(kind, level){
     const issues = [];
 
     if (isFinite(leanAvg)){
-      if (leanAvg < -1) issues.push({ code: 'run_lean_back', label: '상체 뒤로 젖힘', pen: 22 * L.pen, lv: 'bad', v: Math.round(Math.abs(leanAvg)) });
-      else if (leanAvg < L.leanLo) issues.push({ code: 'run_lean_back_mid', label: '상체 살짝 뒤', pen: 8 * L.pen, lv: 'warn', v: Math.round(leanAvg) });
-      else if (leanAvg > L.leanBad) issues.push({ code: 'run_lean_bent', label: '상체 과숙임', pen: 22 * L.pen, lv: 'bad', v: Math.round(leanAvg) });
-      else if (leanAvg > L.leanHi) issues.push({ code: 'run_lean_bent_mid', label: '상체 숙임', pen: 8 * L.pen, lv: 'warn', v: Math.round(leanAvg) });
+      if (leanAvg < -1) issues.push({ code: 'run_lean_back', label: '상체가 뒤로 젖혀짐', pen: 22 * L.pen, lv: 'bad', v: Math.round(Math.abs(leanAvg)) });
+      else if (leanAvg < L.leanLo) issues.push({ code: 'run_lean_back_mid', label: '상체가 살짝 뒤로', pen: 8 * L.pen, lv: 'warn', v: Math.round(leanAvg) });
+      else if (leanAvg > L.leanBad) issues.push({ code: 'run_lean_bent', label: '상체가 너무 숙음', pen: 22 * L.pen, lv: 'bad', v: Math.round(leanAvg) });
+      else if (leanAvg > L.leanHi) issues.push({ code: 'run_lean_bent_mid', label: '상체가 조금 숙음', pen: 8 * L.pen, lv: 'warn', v: Math.round(leanAvg) });
     }
     if (isFinite(elbowMax)){
-      if (elbowMax > L.elbBad) issues.push({ code: 'run_arm_straight', label: '팔 펴짐', pen: 16 * L.pen, lv: 'warn', v: Math.round(elbowMax) });
-      else if (elbowMax > L.elbHi) issues.push({ code: 'run_arm_mid', label: '팔 살짝 펴짐', pen: 6 * L.pen, lv: 'warn', v: Math.round(elbowMax) });
+      if (elbowMax > L.elbBad) issues.push({ code: 'run_arm_straight', label: '팔이 펴짐', pen: 16 * L.pen, lv: 'warn', v: Math.round(elbowMax) });
+      else if (elbowMax > L.elbHi) issues.push({ code: 'run_arm_mid', label: '팔이 살짝 펴짐', pen: 6 * L.pen, lv: 'warn', v: Math.round(elbowMax) });
     }
-    if (bounce > L.bounceBad) issues.push({ code: 'run_bounce', label: '상하 흔들림', pen: 14 * L.pen, lv: 'warn' });
-    else if (bounce > L.bounceWarn) issues.push({ code: 'run_bounce_mid', label: '바운스 있음', pen: 6 * L.pen, lv: 'warn' });
+    if (bounce > L.bounceBad) issues.push({ code: 'run_bounce', label: '위아래 흔들림', pen: 14 * L.pen, lv: 'warn' });
+    else if (bounce > L.bounceWarn) issues.push({ code: 'run_bounce_mid', label: '위아래로 조금 튐', pen: 6 * L.pen, lv: 'warn' });
     if (st.reps.length >= 3 && sg.driveMax > 0 && sg.driveMax < L.driveLow)
-      issues.push({ code: 'run_drive_low', label: '무릎 드라이브 부족', pen: 8 * L.pen, lv: 'warn' });
-    if (sg.overMax > L.overBad) issues.push({ code: 'run_overstride', label: '오버스트라이딩', pen: 12 * L.pen, lv: 'warn' });
-    else if (sg.overMax > L.overWarn) issues.push({ code: 'run_overstride_mid', label: '보폭 살짝 김', pen: 6 * L.pen, lv: 'warn' });
+      issues.push({ code: 'run_drive_low', label: '무릎을 덜 들어 올림', pen: 8 * L.pen, lv: 'warn' });
+    if (sg.overMax > L.overBad) issues.push({ code: 'run_overstride', label: '발이 너무 앞에 닿음', pen: 12 * L.pen, lv: 'warn' });
+    else if (sg.overMax > L.overWarn) issues.push({ code: 'run_overstride_mid', label: '보폭이 살짝 김', pen: 6 * L.pen, lv: 'warn' });
     if (L.cadLow > 0 && st.reps.length >= 4 && (st.runCadence || 0) > 0 && st.runCadence < L.cadLow)
-      issues.push({ code: 'run_cadence_low', label: '케이던스 낮음', pen: 8 * L.pen, lv: 'warn', v: Math.round(st.runCadence) });
+      issues.push({ code: 'run_cadence_low', label: '발걸음이 느림', pen: 8 * L.pen, lv: 'warn', v: Math.round(st.runCadence) });
 
     let sc = 100;
     for (let i = 0; i < issues.length; i++) sc -= issues[i].pen;
@@ -1746,7 +1746,7 @@ function createEngine(kind, level){
     const q = assessQuality(I, Q, 'running', G.is3d);
     if (q.level === 'bad') return miss(q);
     const r = chooseSide(Q, ['sh', 'hip', 'knee', 'ankle'], TUNE.softVis);
-    if (!r.ok) return miss(q, T('옆에서 머리부터 발끝까지 한 화면에 담아 주세요', '측면 촬영 필요 — 머리~발끝 프레임'));
+    if (!r.ok) return miss(q, T('옆에서 머리부터 발끝까지 한 화면에 담아 주세요', '카메라를 옆으로 — 머리부터 발끝까지 한 화면에'));
     const L = cfg.running;
     const s = SIDES[r.side];
     const sh = Q[s.sh], hip = Q[s.hip];
@@ -1865,15 +1865,15 @@ function createEngine(kind, level){
     const badOver = isFinite(os) && os > L.overWarn;
 
     let hint;
-    if (isFinite(lean) && lean < -1) hint = T('상체가 뒤로 젖혀졌어요. 살짝 앞으로 기울여 볼까요?', '체간 후경 — 전방 추진력 손실');
-    else if (isFinite(lean) && lean > L.leanBad) hint = T('상체가 앞으로 너무 숙여졌어요', '체간 전경 과다 — 가슴 열기');
-    else if (badArm) hint = T('팔꿈치를 90° 정도로 접어 스윙해 주세요', '주관절 65~115° 유지');
-    else if (badOver) hint = T('발이 몸 앞으로 나가 착지해요 — 몸 아래로 디뎌요', '오버스트라이드 — 무게중심 아래 착지');
-    else if (badBounce) hint = T('위아래 흔들림이 커요, 힘을 빼고 앞으로!', '수직 바운스 과다 — 진폭 축소');
-    else if (steps === 0) hint = T('발이 보이게 서서 달려 주세요', '하체 가시성 필요 — 전신 프레임');
-    else hint = T('리듬 좋아요 — 상체는 살짝 앞으로', 'Stride 안정 — 체간 4~16° 유지');
+    if (isFinite(lean) && lean < -1) hint = T('상체가 뒤로 젖혀졌어요. 살짝 앞으로 기울여 볼까요?', '상체가 뒤로 젖혀졌어요 — 배에 힘 주고 살짝 앞으로');
+    else if (isFinite(lean) && lean > L.leanBad) hint = T('상체가 앞으로 너무 숙여졌어요', '상체가 너무 숙였어요 — 가슴을 펴 주세요');
+    else if (badArm) hint = T('팔꿈치를 90° 정도로 접어 스윙해 주세요', '팔꿈치를 90도 정도로 접어 주세요');
+    else if (badOver) hint = T('발이 몸 앞으로 나가 착지해요 — 몸 아래로 디뎌요', '발이 너무 앞에 닿아요 — 몸 아래에 디뎌 주세요');
+    else if (badBounce) hint = T('위아래 흔들림이 커요, 힘을 빼고 앞으로!', '위아래로 너무 튀어요 — 힘을 빼고 앞으로만');
+    else if (steps === 0) hint = T('발이 보이게 서서 달려 주세요', '발끝까지 보이게 서서 달려 주세요');
+    else hint = T('리듬 좋아요 — 상체는 살짝 앞으로', '리듬 좋아요 — 상체는 살짝 앞으로, 그대로');
     st.phase = steps === 0 ? '대기'
-      : (badLean ? '상체 각도' : (badArm ? '팔 스윙' : (badOver ? '오버스트라이드' : (badBounce ? '바운스 큼' : '리듬 좋음'))));
+      : (badLean ? '상체 각도' : (badArm ? '팔 각도' : (badOver ? '발 앞착지' : (badBounce ? '위아래 튐' : '리듬 좋아요'))));
 
     const angles = [
       { label: '상체', value: isFinite(lean) ? Math.round(lean) : null, at: s.sh, bad: badLean },
@@ -1906,9 +1906,9 @@ function createEngine(kind, level){
 
     if (!landmarks || !landmarks.length){
       return {
-        ok: false, hint: '사람이 보이지 않아요 — 전신이 화면에 들어오게 해 주세요',
+        ok: false, hint: '사람이 안 보여요 — 머리부터 발끝까지 다 보이게 해 주세요',
         phase: '대기', angles: [], badJoints: [],
-        quality: { level: 'bad', text: '사람 인식 안 됨', hint: '전신이 화면에 들어오게 해 주세요', vis: 0 }
+        quality: { level: 'bad', text: '사람이 안 보여요', hint: '머리부터 발끝까지 다 보이게 해 주세요', vis: 0 }
       };
     }
     st.frames++;
@@ -1998,7 +1998,7 @@ function buildRecord(sum, kind, nowMs){
     top = (issues[i].label || code) + ' ×' + (issues[i].count || 1);
     break;
   }
-  if (!top) top = issues.length ? '좋은 자세 유지' : '수집된 피드백 없음';
+  if (!top) top = issues.length ? '좋은 자세 유지' : '기록 없음';
   return {
     id: at.toString(36) + Math.random().toString(36).slice(2, 7),
     date: new Date(at).toISOString(),
@@ -2176,14 +2176,14 @@ function setEngine(state, text){
 
 /* ------------------------------ engine load ------------------------------ */
 async function loadEngine(){
-  setEngine('loading', 'AI 엔진 준비 중');
+  setEngine('loading', '분석 준비 중');
   let mod;
   try {
     mod = await import(CDN.module);
   } catch (err){
-    setEngine('error', 'AI 엔진 연결 실패');
+    setEngine('error', '분석 엔진 연결 실패');
     showNotice('bad',
-      '<b>분석 엔진을 불러오지 못했어요.</b><br>인터넷 연결을 확인해 주세요. 이 파일은 처음 열 때 MediaPipe(CDN)를 내려받기 때문에, 오프라인이거나 사내망에서 CDN이 막혀 있으면 동작하지 않아요.',
+      '<b>분석 엔진을 불러오지 못했어요.</b><br>인터넷 연결을 확인해 주세요. 처음 열 때 분석 프로그램을 내려받기 때문에, 인터넷이 끊겼거나 회사·학교 네트워크에서 막혀 있으면 동작하지 않아요.',
       { label: '다시 시도', primary: true, onClick: function(){ hideNotice(); loadEngine(); } });
     return;
   }
@@ -2192,15 +2192,15 @@ async function loadEngine(){
   try {
     fileset = await FilesetResolver.forVisionTasks(CDN.wasm);
   } catch (err){
-    setEngine('error', 'WASM 로드 실패');
-    showNotice('bad', '<b>분석 엔진 파일(.wasm)을 내려받지 못했어요.</b><br>잠시 후 다시 시도해 주세요.',
+    setEngine('error', '분석 파일 로드 실패');
+    showNotice('bad', '<b>분석에 필요한 파일을 내려받지 못했어요.</b><br>잠시 후 다시 시도해 주세요.',
       { label: '다시 시도', primary: true, onClick: function(){ hideNotice(); loadEngine(); } });
     return;
   }
   const attempts = [
-    { model: CDN.modelFull, delegate: 'GPU', label: 'Pose Full · GPU' },
-    { model: CDN.modelFull, delegate: 'CPU', label: 'Pose Full · CPU' },
-    { model: CDN.modelLite, delegate: 'CPU', label: 'Pose Lite · CPU' }
+    { model: CDN.modelFull, delegate: 'GPU', label: '정밀 분석' },
+    { model: CDN.modelFull, delegate: 'CPU', label: '정밀 분석 (느린 기기)' },
+    { model: CDN.modelLite, delegate: 'CPU', label: '가벼운 분석' }
   ];
   let lastErr = null;
   for (let i = 0; i < attempts.length; i++){
@@ -2217,12 +2217,12 @@ async function loadEngine(){
       });
       S.modelReady = true;
       S.modelName = a.label;
-      setEngine('ready', 'AI 엔진 준비 완료');
+      setEngine('ready', '분석 준비 완료');
       setText(els.sessModel, a.label);
       if (i > 0){
         showNotice('warn', (a.model === CDN.modelLite)
-          ? '이 기기에서는 <b>가벼운 모델(Lite)</b>로 분석해요. 정확도만 조금 낮아집니다.'
-          : '이 기기에서는 <b>GPU 대신 CPU</b>로 분석해요. 조금 느릴 수 있어요.');
+          ? '이 기기에서는 <b>가벼운 분석</b>으로 해요. 정확도만 조금 낮아져요.'
+          : '이 기기에서는 <b>조금 느린 방식</b>으로 분석해요. 결과는 같아요.');
       }
       if (!document.hidden && S.hasVideo && els.video.paused) drawIdle();
       if (S.pendingPlay){ S.pendingPlay = false; tryPlay(); }
@@ -2231,8 +2231,8 @@ async function loadEngine(){
       lastErr = err;
     }
   }
-  setEngine('error', '모델 로드 실패');
-  showNotice('bad', '<b>자세 인식 모델을 불러오지 못했어요.</b><br>' + (lastErr ? String(lastErr.message || lastErr) : '') + '<br>네트워크 상태를 확인한 뒤 다시 시도해 주세요.',
+  setEngine('error', '분석 모델 로드 실패');
+  showNotice('bad', '<b>자세를 알아보는 프로그램을 불러오지 못했어요.</b><br>' + (lastErr ? String(lastErr.message || lastErr) : '') + '<br>인터넷 연결을 확인한 뒤 다시 시도해 주세요.',
     { label: '다시 시도', primary: true, onClick: function(){ hideNotice(); loadEngine(); } });
 }
 
@@ -2261,8 +2261,8 @@ function setLevel(level, silent){
   if (!changed) return S.level;
   resetSession(true);
   if (!silent) toast(S.level === 'advanced'
-    ? '🔥 헬창 모드 — 풀 가동범위·엄격 판정으로 분석해요'
-    : '🐣 헬린이 모드 — 부상 없이 기본기부터, 친절하게 코칭해요');
+    ? '🔥 헬창 모드 — 더 깊게, 더 엄격하게 볼게요'
+    : '🐣 헬린이 모드 — 부상 없이 기본기부터 알려 드릴게요');
   if (S.modelReady && S.mode === 'video' && S.hasVideo) detectOnce();
   return S.level;
 }
@@ -2272,7 +2272,7 @@ const METRIC_DEFS = {
   squat:  [{ l: '반복', u: '회' }, { l: '무릎 각도', u: '°' }, { l: '자세 점수', u: '점' }],
   pushup: [{ l: '반복', u: '회' }, { l: '팔꿈치 각도', u: '°' }, { l: '자세 점수', u: '점' }],
   plank:  [{ l: '유지 시간', u: '' }, { l: '최고 기록', u: '' }, { l: '자세 점수', u: '점' }],
-  running:[{ l: '스텝', u: '스텝' }, { l: '케이던스', u: 'spm' }, { l: '자세 점수', u: '점' }]
+  running:[{ l: '스텝', u: '스텝' }, { l: '발걸음 속도', u: '분당' }, { l: '자세 점수', u: '점' }]
 };
 function applyExerciseUI(kind){
   S.exercise = kind;
@@ -2286,7 +2286,7 @@ function applyExerciseUI(kind){
     setText($('#ml' + i), defs[i].l);
     setText($('#mu' + i), defs[i].u);
   }
-  setText(els.hudCountKey, kind === 'plank' ? 'HOLD' : (kind === 'running' ? 'STEPS' : 'REPS'));
+  setText(els.hudCountKey, kind === 'plank' ? '유지' : (kind === 'running' ? '발걸음' : '횟수'));
   setText(els.repCountLabel, kind === 'plank' ? '총 유지 시간' : (kind === 'running' ? '총 스텝' : '총 반복'));
   setText(els.repCountUnit, kind === 'plank' ? '' : (kind === 'running' ? '스텝' : '회'));
   els.emptyNote.textContent = ex.tip;
@@ -2324,7 +2324,7 @@ function setMode(mode){
       S.hasVideo = false;
       els.seekRow.hidden = true;
       resetSession(true);
-      showEmpty('동영상을 올려 주세요', 'mp4 · mov · webm 파일을 고르면 재생하면서 프레임마다 관절을 분석해요.');
+      showEmpty('동영상을 올려 주세요', 'mp4 · mov · webm 파일을 고르면 재생하면서 장면마다 자세를 분석해요.');
     }
   } else {
     els.video.pause();
@@ -2381,7 +2381,7 @@ function resetSession(silent){
   setText(els.hudQuality, '카메라 확인 중');
   els.hudQuality.setAttribute('data-state', 'fair');
   setText(els.sessTime, '0:00');
-  setText(els.sessFrames, '0 frames');
+  setText(els.sessFrames, '0컷 분석');
   els.sessBar.style.width = '0%';
   els.report.hidden = true;
   clearOverlay();
@@ -2586,7 +2586,7 @@ async function startCamera(){
     els.camPause.disabled = false;
     els.stage.classList.remove('paused');
     els.hudPause.hidden = true;
-    setText(els.hudHint, '몸 전체가 화면에 들어오게 서 주세요');
+    setText(els.hudHint, '머리부터 발끝까지 다 보이게 서 주세요');
     startLoop();
   } catch (err){
     if (S.stream) stopCamera(true);
@@ -2683,7 +2683,7 @@ els.camStop.addEventListener('click', function(){
 els.camReset.addEventListener('click', function(){
   resetSession(false);
   S.camStartAt = performance.now();
-  setText(els.hudHint, '몸 전체가 화면에 들어오게 서 주세요');
+  setText(els.hudHint, '머리부터 발끝까지 다 보이게 서 주세요');
 });
 
 /* ------------------------------ detection loop ------------------------------ */
@@ -2726,7 +2726,7 @@ function runDetect(mpTs, analysisMs){
   } catch (err){
     if (!S.detectErrorShown){
       S.detectErrorShown = true;
-      showNotice('warn', '프레임 분석 중 문제가 생겼어요. 잠시 후 다시 시도해 주세요.');
+      showNotice('warn', '분석 중에 문제가 생겼어요. 잠시 후 다시 시도해 주세요.');
     }
     return;
   }
@@ -2881,11 +2881,11 @@ function applyResult(out){
   } else {
     setText(els.hudPhase, out.phase || '사람 없음');
     els.hudPhase.className = 'chip warn';
-    setText(els.hudHint, out.hint || '전신이 화면에 들어오게 해 주세요');
+    setText(els.hudHint, out.hint || '머리부터 발끝까지 다 보이게 해 주세요');
   }
   const sum = engine.summary();
   setText(els.sessTime, fmtClock(sum.durationMs));
-  setText(els.sessFrames, sum.frames + ' frames');
+  setText(els.sessFrames, sum.frames + '컷 분석');
   const sc = isPlank ? sum.score : sum.avgScore;
   els.sessBar.style.width = (sc === null || sc === undefined ? 0 : clamp(sc, 0, 100)) + '%';
   els.sessBar.style.background = (sc !== null && sc !== undefined && sc < 60) ? '#D9AC57' : '#4FBE86';
@@ -2919,56 +2919,56 @@ function commentFor(score, kind, sum, level){
   const none = (score === null || score === undefined);
   if (kind === 'running'){
     if (none || !sum.reps) return adv
-      ? '스텝을 충분히 잡지 못했습니다. 측면 전신(머리~발끝) 프레임으로 다시 촬영하세요.'
-      : '스텝을 충분히 잡지 못했어요. 옆에서 머리부터 발끝까지 한 화면에 들어오게 다시 찍어 볼까요?';
+      ? '발걸음을 충분히 잡지 못했어요. 옆에서 머리부터 발끝까지 한 화면에 담아 다시 찍어 주세요.'
+      : '발걸음을 충분히 잡지 못했어요. 옆에서 머리부터 발끝까지 한 화면에 들어오게 다시 찍어 볼까요?';
     if (score >= 88) return adv
-      ? '체간·주관절 각도 기준 충족. 케이던스를 5~10spm 단위로 올려 볼 차례입니다.'
-      : '상체 각도와 팔 스윙이 안정적이에요. 이 리듬 그대로 케이던스를 조금씩 올려 볼까요?';
+      ? '상체와 팔 각도 모두 좋아요. 이제 발걸음 속도를 분당 5~10걸음씩 올려 보세요.'
+      : '상체와 팔이 안정적이에요. 이 리듬 그대로 발걸음만 조금씩 빠르게 해 볼까요?';
     if (score >= 75) return adv
-      ? '상위 이슈 1~2개만 제거하면 지표가 정리됩니다. 발생 빈도 순으로 처리하세요.'
-      : '전반적으로 좋아요. 아래 교정 포인트 한두 개만 잡으면 훨씬 가벼워져요.';
+      ? '고칠 점이 1~2개예요. 자주 나온 것부터 하나씩 고치면 점수가 확 올라가요.'
+      : '전반적으로 좋아요. 아래 고칠 점 한두 개만 잡으면 훨씬 가벼워져요.';
     if (score >= 60) return adv
-      ? '체간 전경과 주관절 각도가 권장 범위를 벗어났습니다. 이 두 지표부터 고정하세요.'
+      ? '상체 기울기와 팔 각도가 기준을 벗어났어요. 이 두 가지부터 맞춰 보세요.'
       : '기본은 잡혔어요. 상체 기울기와 팔꿈치 각도를 조금만 더 신경 써 볼까요?';
     return adv
-      ? '전 지표 재설정 필요 · 속도 하향, 체간 4~16°, 주관절 90°로 스트라이드를 재구성하세요.'
-      : '지금은 자세를 먼저 만드는 게 좋아요. 속도를 줄이고 상체는 살짝 앞으로, 팔은 90°로 접어 보세요.';
+      ? '처음부터 다시 잡는 게 좋아요. 속도를 줄이고 상체는 살짝 앞으로, 팔은 90도로 접어 보세요.'
+      : '지금은 자세를 먼저 만드는 게 좋아요. 속도를 줄이고 상체는 살짝 앞으로, 팔은 90도로 접어 보세요.';
   }
   if (kind === 'plank'){
     if (none) return adv
-      ? '유효 유지 시간이 없습니다. 견–골반–발목 168~180°로 프레임을 다시 잡으세요.'
-      : '자세를 잡지 못했어요. 옆에서 어깨·엉덩이·발목이 한 화면에 들어오게 다시 시도해 볼까요?';
+      ? '자세가 잡힌 시간이 없어요. 어깨·골반·발목을 한 줄로 만들고 다시 해 주세요.'
+      : '자세를 잡지 못했어요. 옆에서 어깨·엉덩이·발목이 한 화면에 들어오게 다시 해 볼까요?';
     if (score >= 88) return adv
-      ? '체간 정렬 유지 시간 양호 · 세트 시간을 10초 단위로 증량하세요.'
+      ? '일직선을 잘 지켰어요. 세트 시간을 10초씩 늘려 보세요.'
       : '일직선이 아주 잘 유지됐어요. 시간을 조금씩 늘려 볼 차례예요.';
     if (score >= 72) return adv
-      ? '이탈 구간만 국소 교정하면 됩니다. 복압 유지 구간을 확인하세요.'
+      ? '무너진 구간만 잡으면 돼요. 배에 힘을 놓친 순간을 확인해 보세요.'
       : '전체적으로 안정적이에요. 무너졌던 구간만 배에 힘을 더 주면 되겠어요.';
     if (score >= 55) return adv
-      ? '유지 시간보다 체간 정렬이 우선입니다. 니플랭크로 정렬부터 확보하세요.'
+      ? '시간보다 자세가 먼저예요. 무릎을 꿇은 플랭크로 일직선부터 잡아 보세요.'
       : '유지 시간보다 자세가 먼저예요. 무릎을 꿇은 플랭크로 일직선을 잡아 보세요.';
     return adv
-      ? '체간 라인 붕괴 빈도가 높습니다. 시간을 줄이고 정렬을 먼저 고정하세요.'
+      ? '일직선이 자주 무너져요. 시간을 줄이고 자세부터 다시 잡아 보세요.'
       : '일직선이 자주 무너졌어요. 시간을 줄이고 자세를 먼저 잡는 걸 추천해요.';
   }
   if (none) return adv
-    ? '유효 Rep 없음 · 가동범위와 프레임을 재설정한 뒤 다시 측정하세요.'
-    : '반복이 감지되지 않았어요. 전신이 화면에 다 들어오는지, 자세가 옆에서 잘 보이는지 확인한 뒤 다시 해 볼까요?';
+    ? '동작이 잡히지 않았어요. 머리부터 발끝까지 다 보이게 하고 다시 해 주세요.'
+    : '반복이 세어지지 않았어요. 머리부터 발끝까지 다 보이는지, 옆에서 자세가 잘 보이는지 확인한 뒤 다시 해 볼까요?';
   if (sum.reps === 0) return adv
-    ? '유효 Rep 0 · 동작 범위를 기준 이상으로 키우세요.'
+    ? '센 반복이 없어요. 동작을 기준보다 크게 해 주세요.'
     : '반복이 없어 점수를 낼 수 없어요. 동작을 한 번 더 크게 해 볼까요?';
   if (score >= 90) return adv
-    ? '각도·정렬 기준 충족. 이 가동범위와 템포를 유지하세요.'
+    ? '각도도 자세도 좋아요. 이 깊이와 속도를 그대로 유지하세요.'
     : '자세가 아주 안정적이에요. 이 리듬과 깊이 그대로 유지해 볼까요?';
   if (score >= 75) return adv
-    ? '감점 항목 1~2개 · 발생 빈도가 높은 지표부터 제거하세요.'
-    : '전반적으로 좋아요. 아래 교정 포인트 한두 개만 잡으면 훨씬 깔끔해져요.';
+    ? '고칠 점이 1~2개예요. 자주 나온 것부터 하나씩 고쳐 보세요.'
+    : '전반적으로 좋아요. 아래 고칠 점 한두 개만 잡으면 훨씬 깔끔해져요.';
   if (score >= 60) return adv
-    ? '가동범위와 체간 정렬이 기준 미달입니다. 두 지표를 우선 교정하세요.'
-    : '기본은 잡혔어요. 깊이와 몸통 정렬을 조금만 더 신경 써 볼까요?';
+    ? '깊이와 몸통 자세가 기준에 조금 못 미쳐요. 이 두 가지부터 맞춰 보세요.'
+    : '기본은 잡혔어요. 깊이와 몸통 자세를 조금만 더 신경 써 볼까요?';
   return adv
-    ? '전체 재설정 권장 · 템포를 낮추고 가동범위부터 확보하세요.'
-    : '지금은 자세를 먼저 만드는 게 좋아요. 속도를 줄이고 가동범위부터 확보해 볼까요?';
+    ? '처음부터 다시 잡는 게 좋아요. 속도를 줄이고 깊이부터 확보하세요.'
+    : '지금은 자세를 먼저 만드는 게 좋아요. 속도를 줄이고 조금 더 깊이 내려가 보세요.';
 }
 function showReport(){
   const sum = engine.summary();
@@ -2979,7 +2979,7 @@ function showReport(){
   els.report.hidden = false;
   const lvNow = LEVELS[sum.level] || LEVELS.beginner;
   setText(els.repMeta, lvNow.emoji + ' ' + lvNow.name + ' · ' + EXERCISES[kind].name + ' · ' + (S.mode === 'camera' ? '실시간 카메라' : (S.fileName || '동영상'))
-    + (isRun && sum.cadence ? ' · 케이던스 ' + sum.cadence + ' spm' : '') + (sum.world3d ? ' · 3D' : ''));
+    + (isRun && sum.cadence ? ' · 분당 ' + sum.cadence + '걸음' : '') + (sum.world3d ? ' · 3D' : ''));
   if (isPlank){
     setText(els.repCount, fmtClock(sum.holdMs));
     setText(els.repCountUnit, '');
@@ -3001,7 +3001,7 @@ function showReport(){
   if (!sum.issues.length){
     const c = document.createElement('span');
     c.className = 'issueChip';
-    c.textContent = '교정 포인트 없음';
+    c.textContent = '고칠 점 없음';
     els.repIssues.appendChild(c);
   } else {
     sum.issues.slice(0, 8).forEach(function(is){
@@ -3217,11 +3217,11 @@ function wrapText(g, text, maxW, maxLines){
 function cardComment(rec){
   if (rec.comment) return rec.comment;
   const s = rec.score;
-  if (typeof s !== 'number') return '이번엔 점수를 낼 만큼 동작이 잡히지 않았어요. 전신이 다 보이게 다시 찍어 볼까요?';
+  if (typeof s !== 'number') return '이번엔 점수를 낼 만큼 동작이 잡히지 않았어요. 머리부터 발끝까지 다 보이게 다시 찍어 볼까요?';
   if (s >= 90) return '자세가 아주 안정적이에요. 이 리듬 그대로 한 세트 더 가 볼까요?';
-  if (s >= 75) return '전반적으로 좋아요. 교정 포인트 한두 개만 잡으면 훨씬 깔끔해져요.';
-  if (s >= 60) return '기본은 잡혔어요. 가동범위를 조금만 더 확보해 볼까요?';
-  return '지금은 속도보다 자세예요. 가동범위부터 천천히 만들어 봐요.';
+  if (s >= 75) return '전반적으로 좋아요. 고칠 점 한두 개만 잡으면 훨씬 깔끔해져요.';
+  if (s >= 60) return '기본은 잡혔어요. 조금만 더 깊이 움직여 볼까요?';
+  return '지금은 속도보다 자세예요. 깊이부터 천천히 만들어 봐요.';
 }
 function cardMetricUnit(rec){
   if (rec.metricLabel === '반복') return '회';
@@ -3269,7 +3269,7 @@ function drawResultCard(g, rec){
 
   /* 종목 */
   g.fillStyle = MINT2; g.font = cardFont(800, 21);
-  drawTracked(g, 'SESSION RESULT', 82, 348, 7);
+  drawTracked(g, '운동 결과', 82, 348, 7);
   g.fillStyle = INK; g.font = cardFont(900, 104);
   const cardName = rec.exerciseName || '운동';
   g.fillText(cardName, 80, 468);
@@ -3333,7 +3333,7 @@ function drawResultCard(g, rec){
   for (let i = 0; i < lines.length; i++) g.fillText(lines[i], 112, 1000 + i * 47);
 
   /* 교정 포인트 칩 */
-  const fb = '교정 포인트 · ' + (rec.topFeedback || '기록 없음');
+  const fb = '고칠 점 · ' + (rec.topFeedback || '기록 없음');
   g.font = cardFont(700, 24);
   const fbW = Math.min(g.measureText(fb).width + 48, W - 160);
   roundRect(g, 80, 1116, fbW, 56, 28);
@@ -3455,7 +3455,7 @@ els.proClose.addEventListener('click', closePro);
 els.proModalBackdrop.addEventListener('click', closePro);
 els.proCta.addEventListener('click', function(){
   bumpProInterest();
-  toast('결제 연동 준비 중입니다! 관심 카운트 +1');
+  toast('결제는 아직 준비 중이에요. 관심 있다고 표시해 뒀어요');
 });
 document.querySelectorAll('.plan').forEach(function(b){
   b.addEventListener('click', function(){

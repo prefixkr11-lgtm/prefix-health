@@ -87,7 +87,7 @@ function seed(offset, score, kind){
     id: 'seed' + offset + '-' + Math.random().toString(36).slice(2, 6),
     date: dayISO(offset), exercise: kind || 'squat', exerciseName: '스쿼트',
     metricLabel: '반복', metricValue: '12', score: score, durationSec: 41,
-    topFeedback: '깊이 살짝 부족 ×2', comment: '전반적으로 좋아요. 교정 포인트 한두 개만 잡으면 훨씬 깔끔해져요.'
+    topFeedback: '조금 더 깊이 ×2', comment: '전반적으로 좋아요. 고칠 점 한두 개만 잡으면 훨씬 깔끔해져요.'
   };
 }
 function decodeImage(src){
@@ -336,8 +336,8 @@ function decodeImage(src){
   /* ---------- 4) 결과 카드 PNG ---------- */
   say('▸ 4. 결과 카드 (1080×1350 PNG)');
   const rec = P.buildRecord({ reps: 12, avgScore: 87, durationMs: 42000, frames: 400,
-    issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 2 }] }, 'squat', Date.now());
-  rec.comment = '전반적으로 좋아요. 교정 포인트 한두 개만 잡으면 훨씬 깔끔해져요.';
+    issues: [{ code: 'squat_depth_mid', label: '조금 더 깊이', count: 2 }] }, 'squat', Date.now());
+  rec.comment = '전반적으로 좋아요. 고칠 점 한두 개만 잡으면 훨씬 깔끔해져요.';
   const canvas = P.cardCanvas(rec);
   ok(canvas.width === 1080 && canvas.height === 1350, '캔버스 1080×1350 (실제 ' + canvas.width + '×' + canvas.height + ')');
   const url = P.cardDataUrl(rec);
@@ -384,7 +384,7 @@ function decodeImage(src){
   q('#proCta').click();
   await wait(120);
   ok(P.proInterest() === startCount + 1, '결제 테스트 클릭 → 관심 카운트 +1 (' + P.proInterest() + ')');
-  ok(q('#toast').classList.contains('show') && (q('#toast').textContent || '').indexOf('결제 연동 준비 중입니다') !== -1,
+  ok(q('#toast').classList.contains('show') && (q('#toast').textContent || '').indexOf('결제는 아직 준비 중이에요') !== -1,
      '토스트 문구 노출: ' + (q('#toast').textContent || ''));
   ok(txt('#proCount') === String(startCount + 1), '모달 안 로컬 카운트 갱신');
   const yearly = q('.plan[data-plan="yearly"]');
@@ -414,7 +414,7 @@ function decodeImage(src){
   ok(q('.lv-btn[data-level="advanced"]').getAttribute('aria-pressed') === 'true' &&
      q('.lv-btn[data-level="beginner"]').getAttribute('aria-pressed') === 'false', '버튼 상태가 헬창으로 전환');
   ok(app.localStorage.getItem(P.levelKey) === 'advanced', '전환된 레벨 저장');
-  ok(txt('#lvDesc') !== descB && txt('#lvDesc').indexOf('상급') >= 0, '설명 문구도 바뀜 (' + txt('#lvDesc') + ')');
+  ok(txt('#lvDesc') !== descB && txt('#lvDesc').indexOf('고급') >= 0, '설명 문구도 바뀜 (' + txt('#lvDesc') + ')');
   ok(app.document.body.getAttribute('data-level') === 'advanced', 'body 속성도 헬창');
   ok(q('#toast').textContent.indexOf('헬창') !== -1, '전환 토스트 표시 (' + q('#toast').textContent + ')');
 
@@ -423,14 +423,14 @@ function decodeImage(src){
   const cmtA = P.commentFor(75, 'squat', { reps: 5, level: 'advanced' }, 'advanced');
   ok(cmtB !== cmtA, '리포트 한 줄 코멘트가 레벨별로 다름');
   ok(cmtB.indexOf('좋아요') >= 0 || cmtB.indexOf('볼까요') >= 0, '헬린이 코멘트는 격려형: ' + cmtB);
-  ok(cmtA.indexOf('감점') >= 0 || cmtA.indexOf('교정') >= 0, '헬창 코멘트는 수치·교정형: ' + cmtA);
+  ok(cmtA.indexOf('고칠') >= 0 || cmtA.indexOf('고쳐') >= 0, '헬창 코멘트는 수치·구체형: ' + cmtA);
 
   /* 기록·카드에 레벨 배지 */
   P.clearRecords();
   const recB = P.buildRecord({ level: 'beginner', reps: 10, avgScore: 82, durationMs: 40000, frames: 400,
-    issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 1 }] }, 'squat', Date.now());
+    issues: [{ code: 'squat_depth_mid', label: '조금 더 깊이', count: 1 }] }, 'squat', Date.now());
   const recA = P.buildRecord({ level: 'advanced', reps: 10, avgScore: 82, durationMs: 40000, frames: 400,
-    issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 1 }] }, 'squat', Date.now() - 1000);
+    issues: [{ code: 'squat_depth_mid', label: '조금 더 깊이', count: 1 }] }, 'squat', Date.now() - 1000);
   ok(recA.level === 'advanced' && recA.levelName === '헬창', '헬창 기록에 레벨 필드 저장');
   P.saveRecords([recA, recB]);
   P.renderRecords();

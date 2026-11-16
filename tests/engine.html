@@ -342,10 +342,10 @@ function runCases(M, ok, say){
   ok(recordStreak([recDay(1, 80), recDay(2, 80)], NOW) === 2, '오늘 기록 없어도 어제까지 2일 연속');
   ok(recordStreak([recDay(2, 80)], NOW) === 0, '이틀 전에서 끊긴 스트릭 = 0');
   const sqRec = buildRecord({ reps: 12, avgScore: 87, durationMs: 42000, frames: 400,
-    issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 2 },
+    issues: [{ code: 'squat_depth_mid', label: '조금 더 깊이', count: 2 },
              { code: 'squat_ok', label: '좋은 반복', count: 3 }] }, 'squat', NOW);
   ok(sqRec.metricLabel === '반복' && sqRec.metricValue === '12' && sqRec.score === 87, '스쿼트 기록 반복 12·점수 87');
-  ok(sqRec.topFeedback === '깊이 살짝 부족 ×2', '대표 교정 포인트 (실제 ' + sqRec.topFeedback + ')');
+  ok(sqRec.topFeedback === '조금 더 깊이 ×2', '대표 고칠 점 (실제 ' + sqRec.topFeedback + ')');
   const plRec = buildRecord({ reps: null, holdMs: 32000, score: 91, durationMs: 33000, frames: 500, issues: [] }, 'plank', NOW);
   ok(plRec.metricLabel === '유지 시간' && plRec.metricValue === '0:32' && plRec.score === 91, '플랭크 기록 0:32');
   ok(clockText(32000) === '0:32' && clockText(59000) === '0:59', 'clockText 표기');
@@ -402,7 +402,7 @@ function runCases(M, ok, say){
   const outLow = gLow.update(lowPose, 1.0, 0);
   say('   quality=' + JSON.stringify(outLow.quality && outLow.quality.level) + ' hint=' + outLow.hint);
   ok(outLow.ok === false, '발목 가시성 0.18 → 각도 계산 안 함(ok:false)');
-  ok(outLow.quality.level === 'bad' && outLow.hint.indexOf('전신') >= 0, '전신 안내 문구 노출 ("' + outLow.hint + '")');
+  ok(outLow.quality.level === 'bad' && outLow.hint.indexOf('머리부터 발끝') >= 0, '전신 안내 문구 노출 ("' + outLow.hint + '")');
   let counted = 0;
   const gGate = createEngine('squat');
   for (let i = 0; i < 90; i++){
@@ -490,7 +490,7 @@ function runCases(M, ok, say){
   ok(toneMissing.length === 0, '모든 코드에 헬린이/헬창 문구 존재' + (toneMissing.length ? ' (누락 ' + toneMissing.join(',') + ')' : ''));
   ok(toneDiff === toneTotal, '모든 코드의 두 레벨 문구가 서로 다름');
   ok(sayCopy('squat_depth_low', 'beginner', { v: 120 }).indexOf('조금만 더') >= 0, '헬린이 문구는 격려형');
-  ok(sayCopy('squat_depth_low', 'advanced', { v: 120 }).indexOf('대퇴골') >= 0, '헬창 문구는 수치·전문형');
+  ok(sayCopy('squat_depth_low', 'advanced', { v: 120 }).indexOf('허벅지') >= 0, '헬창 문구는 수치·구체형');
   ok(sqGood.hintAtBottom && sq97B.hintAtBottom !== sq97A.hintAtBottom, '실시간 힌트도 레벨별로 다름');
   const evB = simSquat('beginner', 112).sum.events.filter(function(e){ return !/_ok$/.test(e.code) && !/_(recover|mile)$/.test(e.code); })[0];
   const evA = simSquat('advanced', 112).sum.events.filter(function(e){ return !/_ok$/.test(e.code) && !/_(recover|mile)$/.test(e.code); })[0];
