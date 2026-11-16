@@ -50,7 +50,7 @@ window.addEventListener('unhandledrejection', function (e) {
   html,body{margin:0;padding:0}
   body{
     background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Noto Sans CJK KR","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     -webkit-font-smoothing:antialiased;line-height:1.5;
     min-height:100vh;font-size:15px;
   }
@@ -113,9 +113,6 @@ window.addEventListener('unhandledrejection', function (e) {
   .ex-btn[aria-selected="true"]{background:var(--emerald-soft);border-color:#2C5748}
   .ex-btn[aria-selected="true"] .nm{color:var(--emerald-2)}
   .ex-btn[aria-selected="true"] .no{color:var(--emerald-2);opacity:.75}
-  .ex-btn[aria-selected="true"]::after{
-    content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--emerald-3);
-  }
   @media (max-width:520px){
     .ex-btn{padding:8px 9px;gap:5px}
     .ex-btn .nm{font-size:12.5px}
@@ -144,12 +141,7 @@ window.addEventListener('unhandledrejection', function (e) {
   .grid{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(290px,1fr);gap:14px;align-items:start}
   @media (max-width:900px){ .grid{grid-template-columns:1fr} }
 
-  .modes{display:inline-flex;background:#131315;border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px;margin-bottom:10px}
-  .modes button{
-    background:none;border:0;border-radius:8px;padding:7px 13px;font-size:12.5px;font-weight:700;
-    color:var(--dim);cursor:pointer;transition:.15s;
-  }
-  .modes button[aria-selected="true"]{background:var(--emerald-btn);color:#fff}
+  /* v19: 입력 모드 2단 카드는 .heroModes / .modeCard 규칙을 쓴다 (아래 v19 블록) */
 
   .stage{
     position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:14px;
@@ -343,47 +335,7 @@ window.addEventListener('unhandledrejection', function (e) {
     .engine span{font-size:10.5px}
   }
 
-  /* ================= v16: 우상단 ☰ 메뉴 ================= */
-  .menuBtn{
-    flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;
-    background:var(--card);border:1px solid var(--line);border-radius:10px;
-    transition:border-color .15s,background-color .15s;
-  }
-  .menuBtn:hover{border-color:#2C5748;background:#1B1B1E}
-  .menuBtn[aria-expanded="true"]{border-color:#2C5748;background:var(--emerald-soft)}
-  .menuBtn i{display:block;width:15px;height:2px;border-radius:2px;background:var(--ink)}
-  .menuBtn i + i{margin-top:4px}
-  .drawer{position:fixed;inset:0;z-index:70;display:flex;justify-content:flex-end}
-  .drawer[hidden]{display:none}
-  .drawerBackdrop{position:absolute;inset:0;background:rgba(8,8,9,.76);border:0;padding:0;cursor:pointer}
-  .menuSheet{
-    position:relative;width:min(352px,90vw);height:100%;overflow-y:auto;
-    background:var(--card);border-left:1px solid var(--line);
-    padding:calc(14px + env(safe-area-inset-top,0px)) 15px calc(20px + env(safe-area-inset-bottom,0px));
-    animation:drawerIn .2s ease-out;
-  }
-  @keyframes drawerIn{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
-  .menuHead{display:flex;align-items:center;gap:9px;margin-bottom:12px}
-  .menuHead h2{margin:0;font-size:16px;font-weight:800;letter-spacing:-.025em}
-  .menuHead .back{margin-right:-2px}
-  .menuRow{
-    display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;cursor:pointer;
-    background:none;border:0;border-top:1px solid var(--line);padding:13px 2px;
-  }
-  .menuRow:first-of-type{border-top:0}
-  .menuRow:hover .mb b{color:var(--emerald-2)}
-  .menuRow .mi{flex:0 0 auto;width:20px;text-align:center;font-size:14.5px;line-height:1.5}
-  .menuRow .mb{flex:1;min-width:0;display:block}
-  .menuRow .mb b{display:block;font-size:13.5px;font-weight:800;letter-spacing:-.015em;transition:color .15s}
-  .menuRow .mb span{display:block;font-size:11.5px;font-weight:700;color:var(--dim);margin-top:2px;line-height:1.45}
-  .menuRow .ma{flex:0 0 auto;color:var(--dim2);font-size:15px;line-height:1.5}
-  .menuBlock{border-top:1px solid var(--line);padding:13px 0 14px}
-  .menuBlock:first-of-type{border-top:0}
-  .menuBlockHead{display:flex;align-items:flex-start;gap:11px;margin-bottom:10px}
-  .menuBlockHead .mi{flex:0 0 auto;width:20px;text-align:center;font-size:14.5px;line-height:1.5}
-  .menuBlockHead .mb{flex:1;min-width:0;display:block}
-  .menuBlockHead .mb b{display:block;font-size:13.5px;font-weight:800;letter-spacing:-.015em}
-  .menuBlockHead .mb span{display:block;font-size:11.5px;font-weight:700;color:var(--dim);margin-top:2px;line-height:1.45}
+  /* v19: v16의 우상단 ☰ 드로어는 하단 탭 바로 대체됐다 (아래 v19 블록 참고) */
   .timer{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 12px 11px}
   .timerClock{
     font-size:31px;font-weight:800;letter-spacing:-.03em;line-height:1.1;text-align:center;
@@ -687,13 +639,14 @@ window.addEventListener('unhandledrejection', function (e) {
 
   @keyframes riseIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
   .rise{animation:riseIn .56s cubic-bezier(.22,1,.36,1) both}
+  /* 인트로가 끝난 뒤에는 등장 모션을 멈춘다 (탭을 다시 열 때 내용이 비는 일 방지) */
+  body.introDone .rise{animation:none}
 
   @media (prefers-reduced-motion: reduce){
     .splash,.splash.out{animation:none;transition:none;transform:none}
     .splashInner,.splashPH,.splashP,.splashH,.splashWord{animation:none}
     .splashWord{opacity:1}
     .rise{animation:none}
-    .menuSheet{animation:none}
   }
 
   /* ================= v18 =================
@@ -794,6 +747,179 @@ window.addEventListener('unhandledrejection', function (e) {
     margin:10px 0 0;font-size:11.5px;font-weight:800;color:var(--good);
   }
   .pfDone[hidden]{display:none}
+
+  /* ================= v19 =================
+     하단 탭 바 · 라인 SVG 아이콘 · 원형 점수 게이지 · 빨간 관절 강조
+     판·괘선·딥 에메랄드는 그대로 두고, 점수 구간에만 신호색을 쓴다. */
+  :root{
+    --score-good:#34D399;
+    --score-mid:#FFC24B;
+    --score-low:#FF5A5F;
+  }
+  .ic{
+    width:22px;height:22px;flex:0 0 auto;display:block;
+    fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .ic.sm{width:17px;height:17px}
+  .ic.xs{width:14px;height:14px}
+
+  /* ---- 헤더: [P] Prehealth · 난이도 토글 · 엔진 상태칩 ---- */
+  .top{gap:8px;padding:10px 14px}
+  .brand{gap:8px}
+  .brand .word{font-size:15.5px}
+  .brand .ver{font-size:8px;padding:1px 4px;letter-spacing:.12em}
+  .topRight{gap:6px;margin-left:auto}
+  .lvSwitch{padding:2px;border-radius:9px;gap:2px}
+  .lv-btn{padding:5px 8px;gap:4px;font-size:11.5px;border-radius:7px}
+  .lv-btn .ic{opacity:.85}
+  .lv-btn[aria-pressed="true"] .ic{opacity:1}
+  .engine{font-size:10.5px;gap:5px;padding:5px 8px 7px;max-width:130px}
+  .engine span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  @media (max-width:430px){
+    .brand .ver{display:none}
+    .top{padding:9px 12px}
+    .lv-btn{padding:5px 7px;font-size:11px}
+    .engine{max-width:112px}
+  }
+
+  /* ---- 탭 판 ---- */
+  .tabPanel{display:block}
+  .tabPanel[hidden]{display:none!important}
+  .tabPanel .intro{margin:2px 0 12px}
+  .panelHead{margin:2px 0 13px}
+  .panelHead .tagline{font-size:9.5px;letter-spacing:.16em;font-weight:800;color:var(--emerald-2)}
+  .panelHead h2{margin:4px 0 0;font-size:18.5px;font-weight:800;letter-spacing:-.03em;line-height:1.32}
+
+  /* ---- 하단 탭 바 (아이폰 홈 인디케이터 자리까지 비운다) ---- */
+  .tabBar{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    background:rgba(15,15,17,.95);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border-top:1px solid var(--line);
+    padding:5px 8px calc(5px + env(safe-area-inset-bottom, 0px));
+  }
+  .tabBarIn{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+  .tabBtn{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    background:none;border:0;border-radius:11px;padding:7px 4px 6px;cursor:pointer;
+    color:var(--dim);font-size:10.5px;font-weight:800;letter-spacing:-.01em;
+    transition:color .15s,background-color .15s;
+  }
+  .tabBtn:hover{color:var(--ink)}
+  .tabBtn[aria-selected="true"]{color:var(--emerald-2);background:var(--emerald-soft)}
+  .tabBtn span{line-height:1}
+  .wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
+  @media (max-width:700px){ .wrap{padding-bottom:calc(92px + env(safe-area-inset-bottom, 0px))} }
+  .timerPill{bottom:calc(86px + env(safe-area-inset-bottom, 0px))}
+  .toast{bottom:calc(94px + env(safe-area-inset-bottom, 0px))}
+
+  /* ---- 핵심 행동 2단 카드 ---- */
+  .heroModes{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:none;border:0;border-radius:0;padding:0;margin:0 0 14px}
+  .modeCard{
+    display:flex;flex-direction:column;align-items:flex-start;gap:5px;min-height:96px;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:14px 13px 13px;cursor:pointer;text-align:left;
+    transition:border-color .15s,background-color .15s;
+  }
+  .modeCard:hover{border-color:#2C5748}
+  .modeCard .ic{width:25px;height:25px;color:var(--emerald-2);margin-bottom:2px}
+  .modeCard b{font-size:15px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+  .modeCard span{font-size:11px;font-weight:700;color:var(--dim);line-height:1.35}
+  .modeCard[aria-selected="true"]{background:var(--emerald-soft);border-color:#2C5748}
+  .modeCard[aria-selected="true"] b{color:var(--emerald-2)}
+  .modeCard[aria-selected="true"] span{color:rgba(109,183,155,.8)}
+  @media (max-width:360px){ .modeCard{padding:12px 11px;min-height:88px} .modeCard b{font-size:13.5px} }
+
+  /* ---- 운동 8종: 한 줄 가로 스크롤 칩 ---- */
+  .pickHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 2px 7px}
+  .secLabel{margin:0;font-size:10px;letter-spacing:.14em;color:var(--dim2);font-weight:800}
+  .lvDesc{margin:0;font-size:10.5px;color:var(--dim);font-weight:700;text-align:right;max-width:64%;flex:0 1 auto;line-height:1.4}
+  .picker{
+    display:flex;grid-template-columns:none;gap:6px;overflow-x:auto;overflow-y:hidden;
+    margin:0 0 12px;padding:1px 0 5px;scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .picker::-webkit-scrollbar{display:none}
+  .ex-btn{
+    flex:0 0 auto;display:grid;grid-template-columns:auto 1fr;
+    grid-template-areas:"no nm" "fc fc";gap:1px 5px;align-items:center;
+    min-width:88px;padding:7px 11px 8px;border-radius:11px;
+    background:var(--card);border:1px solid var(--line);scroll-snap-align:start;
+    position:relative;overflow:hidden;cursor:pointer;
+    transition:border-color .15s,background-color .15s;
+  }
+  .ex-btn .no{grid-area:no;font-size:8.5px;letter-spacing:.06em;color:var(--dim2);font-weight:800}
+  .ex-btn .nm{grid-area:nm;font-size:13px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+  .ex-btn .fc{grid-area:fc;font-size:9px;color:var(--dim2);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ex-btn .fc::before{content:none}
+  .ex-btn[aria-selected="true"]{background:var(--emerald-soft);border-color:#2C5748}
+  .ex-btn[aria-selected="true"] .nm{color:var(--emerald-2)}
+  .ex-btn[aria-selected="true"] .no{color:var(--emerald-2);opacity:.7}
+  .ex-btn[aria-selected="true"] .fc{color:rgba(109,183,155,.72)}
+  .ex-btn[aria-selected="true"]::after{content:"";position:absolute;left:11px;right:11px;bottom:0;height:2px;background:var(--emerald-2)}
+  .shootGuide .sgCam{color:var(--emerald-2);opacity:.75;margin-top:1px}
+
+  /* ---- 이번 운동 판 ---- */
+  .sessRow{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);font-weight:700}
+  .sessRow.dim{font-size:10.5px;color:var(--dim2);margin-top:6px}
+
+  /* ---- 원형 점수 게이지 ---- */
+  .repTop{display:flex;align-items:center;gap:13px;margin:2px 0 4px}
+  .scoreRing{position:relative;flex:0 0 auto;width:116px;height:116px}
+  .scoreRing svg{display:block;width:100%;height:100%;transform:rotate(-90deg)}
+  .ringTrack{fill:none;stroke:#262629;stroke-width:9}
+  .ringArc{
+    fill:none;stroke:#3A3A3E;stroke-width:9;stroke-linecap:round;
+    stroke-dasharray:326.73;stroke-dashoffset:326.73;
+    transition:stroke-dashoffset .7s cubic-bezier(.22,1,.36,1),stroke .3s;
+  }
+  .ringMid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .ringMid strong{font-size:33px;font-weight:800;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+  .ringMid em{font-style:normal;font-size:10.5px;font-weight:700;color:var(--dim);margin-top:2px}
+  .ringBand{margin-top:5px;font-size:9px;font-weight:800;letter-spacing:.05em;color:var(--dim2)}
+  .scoreRing[data-band="good"] .ringArc{stroke:var(--score-good)}
+  .scoreRing[data-band="good"] .ringMid strong{color:var(--score-good)}
+  .scoreRing[data-band="mid"] .ringArc{stroke:var(--score-mid)}
+  .scoreRing[data-band="mid"] .ringMid strong{color:var(--score-mid)}
+  .scoreRing[data-band="low"] .ringArc{stroke:var(--score-low)}
+  .scoreRing[data-band="low"] .ringMid strong{color:var(--score-low)}
+  .repStats{flex:1;min-width:0;display:grid;gap:8px}
+  @media (max-width:380px){ .scoreRing{width:104px;height:104px} .ringMid strong{font-size:29px} .repTop{gap:10px} }
+
+  /* ---- 기록 점수 색 ---- */
+  .recRow .rs{color:var(--score-good)}
+  .recRow .rs.mid{color:var(--score-mid)}
+  .recRow .rs.low{color:var(--score-low)}
+  .recRow .lv{display:inline-flex;align-items:center;gap:3px}
+  .recRow .lv .ic{width:11px;height:11px;stroke-width:2}
+
+  /* ---- 더보기 ---- */
+  .moreCard{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 13px;margin-bottom:9px}
+  .moreHead{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+  .moreHead .ic{color:var(--emerald-2)}
+  .moreHead b{display:block;font-size:13.5px;font-weight:800;letter-spacing:-.015em}
+  .moreHead em{display:block;font-style:normal;font-size:10.5px;color:var(--dim);font-weight:700;margin-top:1px}
+  .moreRow{
+    display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
+    background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px;
+    margin-bottom:9px;transition:border-color .15s,background-color .15s;
+  }
+  .moreRow:hover{border-color:#2C5748;background:#1A1A1D}
+  .moreRow .ic{color:var(--emerald-2)}
+  .moreRow .mb{flex:1;min-width:0;display:block}
+  .moreRow .mb b{display:block;font-size:14px;font-weight:800;letter-spacing:-.015em}
+  .moreRow .mb span{display:block;font-size:11px;color:var(--dim);font-weight:700;margin-top:2px;line-height:1.45}
+  .moreRow .chev{color:var(--dim2)}
+  .buildRow{margin:2px 0 0}
+  .installTip{margin:0 0 10px}
+  .moreCard .stepGroup:first-child{margin-top:2px}
+
+  /* ---- 루틴 카드 아이콘 ---- */
+  .rCardTop .ic{width:17px;height:17px;color:var(--emerald-2)}
+  .rCardTop b{display:inline-flex;align-items:center;gap:6px}
+  .rCardActs .btn{min-width:0}
+  .menuNote{color:var(--dim2)}
+  .tabPanel .sheetLead{margin:0 0 12px}
 </style>
 </head>
 <body>
@@ -807,400 +933,411 @@ window.addEventListener('unhandledrejection', function (e) {
   </div>
 </div>
 
+<!-- ================= v19 헤더: [P] Prehealth · 난이도 토글 · AI 엔진 상태칩 ================= -->
 <header class="top">
   <div class="brand">
-    <span class="mark" aria-hidden="true">P</span><span class="word">Prehealth</span><span class="ver">PROTO.01</span>
+    <span class="mark" aria-hidden="true">P</span><span class="word">Prehealth</span><span class="ver">V19</span>
   </div>
   <div class="topRight">
-    <div class="engine" id="engineStatus" data-state="loading" data-progress="0"><i></i><span id="engineText">AI 엔진 준비 중</span><b class="engineProg" id="engineProg" aria-hidden="true"></b></div>
-    <button class="menuBtn" id="menuBtn" type="button" aria-haspopup="dialog" aria-controls="menuDrawer" aria-expanded="false" aria-label="메뉴 열기">
-      <span aria-hidden="true"><i></i><i></i><i></i></span>
-    </button>
+    <div class="lvSwitch" role="group" aria-label="난이도 선택">
+      <button class="lv-btn" type="button" data-level="beginner" aria-pressed="true" aria-label="헬린이 — 기본 자세부터">
+        <svg class="ic xs" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>
+        <span class="lvn">헬린이</span>
+      </button>
+      <button class="lv-btn" type="button" data-level="advanced" aria-pressed="false" aria-label="헬창 — 더 깊고 엄격하게">
+        <svg class="ic xs" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        <span class="lvn">헬창</span>
+      </button>
+    </div>
+    <div class="engine" id="engineStatus" data-state="loading" data-progress="0"><i aria-hidden="true"></i><span id="engineText">AI 엔진 준비 중</span><b class="engineProg" id="engineProg" aria-hidden="true"></b></div>
   </div>
 </header>
 
 <main class="wrap">
-  <div class="installTip" id="installTip" hidden>
-    <span class="ti" aria-hidden="true">📲</span>
-    <span class="tx">홈 화면에 추가하면 앱처럼 <b>전체화면</b>으로 쓸 수 있어요</span>
-    <button type="button" id="installTipClose" aria-label="안내 닫기">✕</button>
-  </div>
 
-  <div class="engLoad" id="engineLoad" data-state="loading" aria-live="polite">
-    <div class="engTop">
-      <span class="ed" aria-hidden="true"></span>
-      <span class="et" id="engineLoadText">AI 엔진을 준비하고 있어요</span>
-      <span class="ep" id="engineLoadPct">0%</span>
+  <!-- ================= 탭 1 · 분석 ================= -->
+  <section class="tabPanel" id="tabAnalyze" data-tab="analyze" aria-label="분석">
+
+    <div class="engLoad" id="engineLoad" data-state="loading" aria-live="polite">
+      <div class="engTop">
+        <span class="ed" aria-hidden="true"></span>
+        <span class="et" id="engineLoadText">AI 엔진을 준비하고 있어요</span>
+        <span class="ep" id="engineLoadPct">0%</span>
+      </div>
+      <div class="engTrack" aria-hidden="true"><i id="engineLoadBar"></i></div>
+      <p class="engNote" id="engineLoadNote">처음 한 번만 내려받아요. 다음부터는 바로 시작돼요.</p>
     </div>
-    <div class="engTrack" aria-hidden="true"><i id="engineLoadBar"></i></div>
-    <p class="engNote" id="engineLoadNote">처음 한 번만 내려받아요. 다음부터는 바로 시작돼요.</p>
-  </div>
 
-  <section class="intro">
-    <h1>자세를 <b>보고</b>, 바로 <b>고쳐주는</b> 트레이너.</h1>
-    <p>영상을 올리면 몇 번 했는지, 어디를 고치면 좋은지 바로 알려줘요. 영상은 이 기기 밖으로 나가지 않아요.</p>
-  </section>
-
-  <section class="levelbar" aria-label="코칭 레벨">
-    <div class="lvSwitch" role="group" aria-label="코칭 레벨 선택">
-      <button class="lv-btn" type="button" data-level="beginner" aria-pressed="true">
-        <span class="lve" aria-hidden="true">🐣</span><span class="lvn">헬린이</span>
-      </button>
-      <button class="lv-btn" type="button" data-level="advanced" aria-pressed="false">
-        <span class="lve" aria-hidden="true">🔥</span><span class="lvn">헬창</span>
-      </button>
-    </div>
-    <p class="lvDesc" id="lvDesc">처음이에요 · 기본 자세부터 천천히</p>
-  </section>
-
-  <section class="picker" id="picker" role="tablist" aria-label="운동 선택">
-    <button class="ex-btn" role="tab" data-ex="squat" aria-selected="true">
-      <span class="no">01</span><span class="nm">스쿼트</span><span class="fc">앉는 깊이</span>
-    </button>
-    <button class="ex-btn" role="tab" data-ex="pushup" aria-selected="false">
-      <span class="no">02</span><span class="nm">푸시업</span><span class="fc">팔·허리</span>
-    </button>
-    <button class="ex-btn" role="tab" data-ex="plank" aria-selected="false">
-      <span class="no">03</span><span class="nm">플랭크</span><span class="fc">버티는 시간</span>
-    </button>
-    <button class="ex-btn" role="tab" data-ex="running" aria-selected="false">
-      <span class="no">04</span><span class="nm">러닝</span><span class="fc">자세·발걸음</span>
-    </button>
-    <button class="ex-btn" role="tab" data-ex="lunge" aria-selected="false">
-      <span class="no">05</span><span class="nm">런지</span><span class="fc">무릎·상체</span>
-    </button>
-    <button class="ex-btn" role="tab" data-ex="pullup" aria-selected="false">
-      <span class="no">06</span><span class="nm">턱걸이</span><span class="fc">당기는 각도</span>
-    </button>
-    <button class="ex-btn" role="tab" data-ex="deadlift" aria-selected="false">
-      <span class="no">07</span><span class="nm">데드리프트</span><span class="fc">엉덩이·등</span>
-    </button>
-    <button class="ex-btn" role="tab" data-ex="situp" aria-selected="false">
-      <span class="no">08</span><span class="nm">윗몸일으키기</span><span class="fc">상체 각도</span>
-    </button>
-  </section>
-
-  <div class="grid">
-    <section>
-      <div class="shootGuide" id="shootGuide" role="note" aria-live="polite">
-        <span class="sgBadge" id="shootGuideBadge">측면</span>
-        <span class="sgBody">
-          <b id="shootGuideTitle">옆에서 머리~발끝 다 보이게 찍으세요</b>
-          <span id="shootGuideText">폰을 허리 높이에 두고 2~3걸음 떨어져서 찍으면 관절이 다 보여요.</span>
-        </span>
-        <span class="sgCam" aria-hidden="true">📷</span>
-      </div>
-
-      <div class="modes" role="tablist" aria-label="입력 모드">
-        <button role="tab" data-mode="video" aria-selected="true">동영상 분석</button>
-        <button role="tab" data-mode="camera" aria-selected="false">실시간 카메라</button>
-      </div>
-
-      <!-- v17: 루틴 진행 바 — 무대 위에 지금 몇 번째 운동인지, 목표가 얼마인지 -->
-      <div class="rBar" id="routineBar" hidden>
-        <div class="rBarTop">
-          <span class="rBarText" id="routineBarText">루틴 1/1 · 스쿼트 · 목표 10회</span>
-          <button class="rBarX" id="routineQuit" type="button" aria-label="루틴 그만하기">✕</button>
-        </div>
-        <div class="rBarTrack" aria-hidden="true"><i id="routineBarFill"></i></div>
-        <button class="btn primary rSetDone" id="routineSetDone" type="button">이번 세트 끝 → 휴식</button>
-      </div>
-
-      <div class="stage is-empty" id="stage">
-        <video id="video" playsinline webkit-playsinline muted preload="metadata"></video>
-        <canvas id="overlay"></canvas>
-
-        <div class="scan" id="scanBox" hidden aria-live="polite">
-          <div class="scanCard">
-            <div class="scanTitle" id="scanTitle">영상 분석 중… 0%</div>
-            <div class="scanBar"><i id="scanBar"></i></div>
-            <div class="scanNote" id="scanNote">장면마다 자세를 확인하고 있어요</div>
-            <button class="btn ghost" id="scanCancel" type="button">그만 볼래요</button>
-          </div>
-        </div>
-
-        <div class="hud">
-          <div class="chips">
-            <div class="chip accent" id="hudEx">스쿼트</div>
-            <div class="chip" id="hudPhase">대기</div>
-            <div class="chip quality" id="hudQuality" data-state="fair">카메라 확인 중</div>
-            <div class="chip pause" id="hudPause" hidden>⏸ 일시정지 중</div>
-          </div>
-          <div class="chip" id="hudFrames">관절 33곳</div>
-        </div>
-
-        <div class="hudBottom">
-          <div class="hint" id="hudHint">동영상을 올리거나 카메라를 켜 주세요</div>
-          <div class="bigCount">
-            <span class="k" id="hudCountKey">횟수</span>
-            <span class="v" id="hudCount">0</span><span class="u" id="hudCountUnit">회</span>
-          </div>
-        </div>
-
-        <!-- v17: 세트 사이 휴식 — 0초가 되면 다음 운동으로 자동 전환 -->
-        <div class="rRest" id="routineRest" hidden>
-          <p class="rk">휴식</p>
-          <div class="rclock mono" id="routineRestClock" role="timer" aria-live="off">0:45</div>
-          <p class="rnext" id="routineRestNext">다음 · 푸시업 10회</p>
-          <div class="rRestBtns">
-            <button class="btn primary" id="routineSkip" type="button">건너뛰기</button>
-            <button class="btn ghost" id="routineRestQuit" type="button">그만하기</button>
-          </div>
-        </div>
-
-        <div class="empty" id="empty">
-          <svg width="72" height="88" viewBox="0 0 72 88" fill="none" aria-hidden="true">
-            <circle cx="36" cy="12" r="7" stroke="#6DB79B" stroke-width="2.2" opacity=".85"/>
-            <path d="M36 19v22M36 41l-11 16M36 41l11 16M36 26l-13 9M36 26l13 9" stroke="#F2F2F0" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
-            <path d="M36 22h0M20 57l-4 12M52 57l4 12" stroke="#6DB79B" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
-          </svg>
-          <h2 id="emptyTitle">동영상을 올려 주세요</h2>
-          <p id="emptyText">영상을 올리면 바로 분석해서 몇 회 했는지 알려드려요.</p>
-          <p class="cam-note" id="emptyNote">옆에서 찍은 영상이 가장 정확해요.</p>
-        </div>
-      </div>
-
-      <div class="controls" id="videoControls">
-        <label class="btn primary file" id="fileBtn">
-          <span id="fileBtnText">동영상 선택</span>
-          <input type="file" id="fileInput" accept="video/*,.mp4,.mov,.webm,.m4v" aria-label="동영상 파일 선택">
-        </label>
-        <button class="btn" id="playBtn" disabled>▶︎ 재생</button>
-        <select class="speed" id="speedSelect" aria-label="재생 속도" disabled>
-          <option value="0.25">0.25x</option>
-          <option value="0.5">0.5x</option>
-          <option value="0.75">0.75x</option>
-          <option value="1" selected>1x</option>
-          <option value="1.5">1.5x</option>
-          <option value="2">2x</option>
-        </select>
-        <button class="btn icon" id="stepBack" title="한 장면 뒤로" disabled>⟨</button>
-        <button class="btn icon" id="stepFwd" title="한 장면 앞으로" disabled>⟩</button>
-        <button class="btn icon" id="muteBtn" title="소리" disabled>🔈</button>
-        <button class="btn ghost" id="reportBtn" disabled>결과 보기</button>
-        <button class="btn ghost" id="resetBtn" disabled>초기화</button>
-        <button class="btn sampleBtn" id="sampleBtn" type="button">🎬 샘플 스쿼트로 바로 체험하기</button>
-      </div>
-
-      <div class="seekRow" id="seekRow" hidden>
-        <span class="t" id="tCur">0:00</span>
-        <input type="range" id="seek" min="0" max="1000" value="0" step="1" aria-label="재생 위치">
-        <span class="t" id="tDur">0:00</span>
-      </div>
-
-      <div class="controls" id="cameraControls" hidden>
-        <button class="btn primary" id="camStart">카메라 시작</button>
-        <button class="btn" id="camFlip" disabled>전면/후면</button>
-        <button class="btn" id="camPause" disabled>⏸ 일시정지</button>
-        <button class="btn" id="camStop" disabled>종료하고 리포트</button>
-        <button class="btn ghost" id="camReset" disabled>초기화</button>
-      </div>
-
-      <p class="notice" id="notice" hidden></p>
+    <section class="intro">
+      <h1>자세를 <b>보고</b>, 바로 <b>고쳐주는</b> 트레이너.</h1>
+      <p>영상을 올리면 몇 번 했는지, 어디를 고치면 좋은지 바로 알려줘요. 영상은 이 기기 밖으로 나가지 않아요.</p>
     </section>
 
-    <aside class="side">
-      <div class="metrics">
-        <div class="metric"><span class="mlabel" id="ml0">반복</span><span class="mv" id="mv0">0</span><span class="mu" id="mu0">회</span></div>
-        <div class="metric"><span class="mlabel" id="ml1">무릎 각도</span><span class="mv" id="mv1">–</span><span class="mu" id="mu1">°</span></div>
-        <div class="metric"><span class="mlabel" id="ml2">자세 점수</span><span class="mv" id="mv2">–</span><span class="mu" id="mu2">점</span></div>
-      </div>
-      <div class="card">
-        <h3>이번 운동</h3>
-        <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);font-weight:700">
-          <span id="sessLabel">분석 시간</span><span class="mono" id="sessTime">0:00</span>
-        </div>
-        <div class="scoreBar"><i id="sessBar"></i></div>
-        <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim2);margin-top:6px;font-weight:700">
-          <span id="sessModel">분석 준비 중</span><span id="sessFrames">0컷 분석</span>
-        </div>
-      </div>
-    </aside>
-  </div>
+    <!-- 핵심 행동 2가지 — 가장 크고 뚜렷한 2단 카드 -->
+    <div class="modes heroModes" role="tablist" aria-label="분석 방식">
+      <button class="modeCard" type="button" role="tab" data-mode="video" aria-selected="true">
+        <svg class="ic" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M15 2v5h5"/><path d="m10 11 5 3-5 3Z"/></svg>
+        <b>동영상 분석</b>
+        <span>찍어 둔 영상 올리기</span>
+      </button>
+      <button class="modeCard" type="button" role="tab" data-mode="camera" aria-selected="false">
+        <svg class="ic" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg>
+        <b>실시간 카메라</b>
+        <span>그 자리에서 바로</span>
+      </button>
+    </div>
 
-  <section class="report" id="report" hidden>
-    <div class="reportHead">
-      <span class="tag">운동 결과</span>
-      <span class="tag sampleTag" id="repSampleTag" hidden>샘플 체험</span>
-      <span class="meta" id="repMeta">—</span>
+    <div class="pickHead">
+      <h2 class="secLabel">운동 선택</h2>
+      <p class="lvDesc" id="lvDesc">처음이에요 · 기본 자세부터 천천히</p>
     </div>
-    <div class="reportGrid">
-      <div class="rbig"><span id="repCountLabel">총 반복</span><strong id="repCount">0</strong><em id="repCountUnit">회</em></div>
-      <div class="rbig"><span>평균 자세 점수</span><strong id="repScore">–</strong><em>점</em></div>
-      <div class="rbig"><span>분석 시간</span><strong id="repDur">0:00</strong></div>
-    </div>
-    <p class="repComment" id="repComment"></p>
-    <p class="repSampleNote" id="repSampleNote" hidden></p>
-    <div class="repIssues" id="repIssues"></div>
-    <h4>고칠 점 · 시간 순</h4>
-    <ul class="timeline" id="repTimeline"></ul>
-    <div class="reportActions">
-      <button class="btn primary" id="repCard">결과 카드 저장</button>
-      <button class="btn ghost" id="repSaveSample" type="button" hidden>내 기록에 저장</button>
-      <button class="btn ghost" id="repAgain">다시 분석하기</button>
-      <button class="btn ghost" id="repNew" hidden>다른 영상 올리기</button>
-      <button class="btn ghost" id="repClose">닫기</button>
-    </div>
-    <p class="disclaimer" id="repDisclaimer">자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.</p>
-    <button class="proLock" id="proLock" type="button" aria-haspopup="dialog">
-      <span class="plIcon" aria-hidden="true">🔒</span>
-      <span class="plBody">
-        <span class="plTitle">Pro 관절별 자세 리포트</span>
-        <span class="plSub">관절마다 얼마나 흔들렸는지 · 좌우 균형 · 4주 점수 변화</span>
+
+    <!-- 운동 8종 — 한 줄 가로 스크롤 칩 -->
+    <section class="picker" id="picker" role="tablist" aria-label="운동 선택">
+      <button class="ex-btn" role="tab" data-ex="squat" aria-selected="true">
+        <span class="no">01</span><span class="nm">스쿼트</span><span class="fc">앉는 깊이</span>
+      </button>
+      <button class="ex-btn" role="tab" data-ex="pushup" aria-selected="false">
+        <span class="no">02</span><span class="nm">푸시업</span><span class="fc">팔·허리</span>
+      </button>
+      <button class="ex-btn" role="tab" data-ex="plank" aria-selected="false">
+        <span class="no">03</span><span class="nm">플랭크</span><span class="fc">버티는 시간</span>
+      </button>
+      <button class="ex-btn" role="tab" data-ex="running" aria-selected="false">
+        <span class="no">04</span><span class="nm">러닝</span><span class="fc">자세·발걸음</span>
+      </button>
+      <button class="ex-btn" role="tab" data-ex="lunge" aria-selected="false">
+        <span class="no">05</span><span class="nm">런지</span><span class="fc">무릎·상체</span>
+      </button>
+      <button class="ex-btn" role="tab" data-ex="pullup" aria-selected="false">
+        <span class="no">06</span><span class="nm">턱걸이</span><span class="fc">당기는 각도</span>
+      </button>
+      <button class="ex-btn" role="tab" data-ex="deadlift" aria-selected="false">
+        <span class="no">07</span><span class="nm">데드리프트</span><span class="fc">엉덩이·등</span>
+      </button>
+      <button class="ex-btn" role="tab" data-ex="situp" aria-selected="false">
+        <span class="no">08</span><span class="nm">윗몸일으키기</span><span class="fc">상체 각도</span>
+      </button>
+    </section>
+
+    <div class="shootGuide" id="shootGuide" role="note" aria-live="polite">
+      <span class="sgBadge" id="shootGuideBadge">측면</span>
+      <span class="sgBody">
+        <b id="shootGuideTitle">옆에서 머리~발끝 다 보이게 찍으세요</b>
+        <span id="shootGuideText">폰을 허리 높이에 두고 2~3걸음 떨어져서 찍으면 관절이 다 보여요.</span>
       </span>
+      <svg class="ic sm sgCam" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg>
+    </div>
+
+    <!-- 루틴 진행 바 — 루틴을 시작하면 분석 탭으로 넘어와 여기에 뜬다 -->
+    <div class="rBar" id="routineBar" hidden>
+      <div class="rBarTop">
+        <span class="rBarText" id="routineBarText">루틴 1/1 · 스쿼트 · 목표 10회</span>
+        <button class="rBarX" id="routineQuit" type="button" aria-label="루틴 그만하기">✕</button>
+      </div>
+      <div class="rBarTrack" aria-hidden="true"><i id="routineBarFill"></i></div>
+      <button class="btn primary rSetDone" id="routineSetDone" type="button">이번 세트 끝 → 휴식</button>
+    </div>
+
+    <div class="grid">
+      <section>
+        <div class="stage is-empty" id="stage">
+          <video id="video" playsinline webkit-playsinline muted preload="metadata"></video>
+          <canvas id="overlay"></canvas>
+
+          <div class="scan" id="scanBox" hidden aria-live="polite">
+            <div class="scanCard">
+              <div class="scanTitle" id="scanTitle">영상 분석 중… 0%</div>
+              <div class="scanBar"><i id="scanBar"></i></div>
+              <div class="scanNote" id="scanNote">장면마다 자세를 확인하고 있어요</div>
+              <button class="btn ghost" id="scanCancel" type="button">그만 볼래요</button>
+            </div>
+          </div>
+
+          <div class="hud">
+            <div class="chips">
+              <div class="chip accent" id="hudEx">스쿼트</div>
+              <div class="chip" id="hudPhase">대기</div>
+              <div class="chip quality" id="hudQuality" data-state="fair">카메라 확인 중</div>
+              <div class="chip pause" id="hudPause" hidden>일시정지 중</div>
+            </div>
+            <div class="chip" id="hudFrames">관절 33곳</div>
+          </div>
+
+          <div class="hudBottom">
+            <div class="hint" id="hudHint">동영상을 올리거나 카메라를 켜 주세요</div>
+            <div class="bigCount">
+              <span class="k" id="hudCountKey">횟수</span>
+              <span class="v" id="hudCount">0</span><span class="u" id="hudCountUnit">회</span>
+            </div>
+          </div>
+
+          <div class="rRest" id="routineRest" hidden>
+            <p class="rk">휴식</p>
+            <div class="rclock mono" id="routineRestClock" role="timer" aria-live="off">0:45</div>
+            <p class="rnext" id="routineRestNext">다음 · 푸시업 10회</p>
+            <div class="rRestBtns">
+              <button class="btn primary" id="routineSkip" type="button">건너뛰기</button>
+              <button class="btn ghost" id="routineRestQuit" type="button">그만하기</button>
+            </div>
+          </div>
+
+          <div class="empty" id="empty">
+            <svg width="72" height="88" viewBox="0 0 72 88" fill="none" aria-hidden="true">
+              <circle cx="36" cy="12" r="7" stroke="#6DB79B" stroke-width="2.2" opacity=".85"/>
+              <path d="M36 19v22M36 41l-11 16M36 41l11 16M36 26l-13 9M36 26l13 9" stroke="#F2F2F0" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
+              <path d="M36 22h0M20 57l-4 12M52 57l4 12" stroke="#6DB79B" stroke-width="2.2" stroke-linecap="round" opacity=".7"/>
+            </svg>
+            <h2 id="emptyTitle">동영상을 올려 주세요</h2>
+            <p id="emptyText">영상을 올리면 바로 분석해서 몇 회 했는지 알려드려요.</p>
+            <p class="cam-note" id="emptyNote">옆에서 찍은 영상이 가장 정확해요.</p>
+          </div>
+        </div>
+
+        <div class="controls" id="videoControls">
+          <label class="btn primary file" id="fileBtn">
+            <span id="fileBtnText">동영상 선택</span>
+            <input type="file" id="fileInput" accept="video/*,.mp4,.mov,.webm,.m4v" aria-label="동영상 파일 선택">
+          </label>
+          <button class="btn" id="playBtn" disabled>재생</button>
+          <select class="speed" id="speedSelect" aria-label="재생 속도" disabled>
+            <option value="0.25">0.25x</option>
+            <option value="0.5">0.5x</option>
+            <option value="0.75">0.75x</option>
+            <option value="1" selected>1x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2">2x</option>
+          </select>
+          <button class="btn icon" id="stepBack" title="한 장면 뒤로" aria-label="한 장면 뒤로" disabled>⟨</button>
+          <button class="btn icon" id="stepFwd" title="한 장면 앞으로" aria-label="한 장면 앞으로" disabled>⟩</button>
+          <button class="btn icon" id="muteBtn" title="소리" aria-label="소리" disabled>음소거</button>
+          <button class="btn ghost" id="reportBtn" disabled>결과 보기</button>
+          <button class="btn ghost" id="resetBtn" disabled>초기화</button>
+          <button class="btn sampleBtn" id="sampleBtn" type="button">
+            <svg class="ic sm" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1-.3 2.1.3 2.4 1.3Z"/><path d="m6.2 5.3 3.1 3.9"/><path d="m12.4 3.4 3.1 4"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
+            <span>샘플 스쿼트로 바로 체험하기</span>
+          </button>
+        </div>
+
+        <div class="seekRow" id="seekRow" hidden>
+          <span class="t" id="tCur">0:00</span>
+          <input type="range" id="seek" min="0" max="1000" value="0" step="1" aria-label="재생 위치">
+          <span class="t" id="tDur">0:00</span>
+        </div>
+
+        <div class="controls" id="cameraControls" hidden>
+          <button class="btn primary" id="camStart">카메라 시작</button>
+          <button class="btn" id="camFlip" disabled>전면/후면</button>
+          <button class="btn" id="camPause" disabled>일시정지</button>
+          <button class="btn" id="camStop" disabled>종료하고 리포트</button>
+          <button class="btn ghost" id="camReset" disabled>초기화</button>
+        </div>
+
+        <p class="notice" id="notice" hidden></p>
+      </section>
+
+      <aside class="side">
+        <div class="metrics">
+          <div class="metric"><span class="mlabel" id="ml0">반복</span><span class="mv" id="mv0">0</span><span class="mu" id="mu0">회</span></div>
+          <div class="metric"><span class="mlabel" id="ml1">무릎 각도</span><span class="mv" id="mv1">–</span><span class="mu" id="mu1">°</span></div>
+          <div class="metric"><span class="mlabel" id="ml2">자세 점수</span><span class="mv" id="mv2">–</span><span class="mu" id="mu2">점</span></div>
+        </div>
+        <div class="card">
+          <h3>이번 운동</h3>
+          <div class="sessRow">
+            <span id="sessLabel">분석 시간</span><span class="mono" id="sessTime">0:00</span>
+          </div>
+          <div class="scoreBar"><i id="sessBar"></i></div>
+          <div class="sessRow dim">
+            <span id="sessModel">분석 준비 중</span><span id="sessFrames">0컷 분석</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="report" id="report" hidden>
+      <div class="reportHead">
+        <span class="tag">운동 결과</span>
+        <span class="tag sampleTag" id="repSampleTag" hidden>샘플 체험</span>
+        <span class="meta" id="repMeta">—</span>
+      </div>
+
+      <div class="repTop">
+        <div class="scoreRing" id="scoreRing" data-band="none">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ringTrack" cx="60" cy="60" r="52"></circle>
+            <circle class="ringArc" id="repGaugeArc" cx="60" cy="60" r="52"></circle>
+          </svg>
+          <div class="ringMid">
+            <strong id="repScore" aria-label="자세 점수">–</strong>
+            <em>점</em>
+            <span class="ringBand" id="repBand">자세 점수</span>
+          </div>
+        </div>
+        <div class="repStats">
+          <div class="rbig"><span id="repCountLabel">총 반복</span><strong id="repCount">0</strong><em id="repCountUnit">회</em></div>
+          <div class="rbig"><span>분석 시간</span><strong id="repDur">0:00</strong></div>
+        </div>
+      </div>
+
+      <p class="repComment" id="repComment"></p>
+      <p class="repSampleNote" id="repSampleNote" hidden></p>
+      <div class="repIssues" id="repIssues"></div>
+      <h4>고칠 점 · 시간 순</h4>
+      <ul class="timeline" id="repTimeline"></ul>
+      <div class="reportActions">
+        <button class="btn primary" id="repCard">결과 카드 저장</button>
+        <button class="btn ghost" id="repSaveSample" type="button" hidden>내 기록에 저장</button>
+        <button class="btn ghost" id="repAgain">다시 분석하기</button>
+        <button class="btn ghost" id="repNew" hidden>다른 영상 올리기</button>
+        <button class="btn ghost" id="repClose">닫기</button>
+      </div>
+      <p class="disclaimer" id="repDisclaimer">자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.</p>
+      <button class="proLock" id="proLock" type="button" aria-haspopup="dialog">
+        <svg class="ic sm plIcon" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="plBody">
+          <span class="plTitle">Pro 관절별 자세 리포트</span>
+          <span class="plSub">관절마다 얼마나 흔들렸는지 · 좌우 균형 · 4주 점수 변화</span>
+        </span>
+        <span class="plChip">미리보기</span>
+      </button>
+    </section>
+  </section>
+
+  <!-- ================= 탭 2 · 루틴 ================= -->
+  <section class="tabPanel" id="tabRoutine" data-tab="routine" hidden aria-label="루틴">
+    <div class="panelHead">
+      <div class="tagline">오늘의 루틴</div>
+      <h2>고르면 세트 사이 휴식까지 이어져요</h2>
+    </div>
+
+    <div class="rLive" id="routineLive" hidden>
+      <span id="routineLiveText">루틴 진행 중</span>
+      <button class="btn ghost" id="routineLiveQuit" type="button">그만하기</button>
+    </div>
+
+    <p class="sheetLead">오늘 할 운동을 고르면 <b>세트 사이 휴식까지 알아서</b> 이어져요. 시작하면 <b>분석</b> 탭으로 넘어가 진행 바가 떠요.</p>
+
+    <div id="routinePresetList"></div>
+
+    <h4 class="rSub">나만의 루틴</h4>
+    <div id="routineCustomBox"></div>
+
+    <button class="moreRow buildRow" id="routineBuild" type="button">
+      <svg class="ic sm" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      <span class="mb"><b>나만의 루틴 만들기</b><span>8종 운동에서 골라 목표·휴식 시간을 정해요</span></span>
+      <svg class="ic sm chev" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+
+    <div class="rEditor" id="routineEditor" hidden>
+      <div class="rField">
+        <span>운동</span>
+        <div class="rExChips" id="routineExChips"></div>
+      </div>
+      <div class="rField">
+        <span>목표</span>
+        <div class="rGoalRow">
+          <input id="routineGoal" type="number" inputmode="numeric" min="1" step="1" value="10" aria-label="목표">
+          <span class="rGoalUnit" id="routineGoalUnit">회</span>
+        </div>
+      </div>
+      <div class="rField">
+        <span>운동 사이 휴식</span>
+        <div class="rRestChips" id="routineRestChips"></div>
+      </div>
+      <button class="btn rAddBtn" id="routineAdd" type="button">이 운동 추가</button>
+      <ul class="rDraft" id="routineDraft"></ul>
+      <div class="rNameRow">
+        <input id="routineName" type="text" maxlength="20" placeholder="나만의 루틴" aria-label="루틴 이름">
+      </div>
+      <div class="rEditorBtns">
+        <button class="btn primary" id="routineSave" type="button">저장</button>
+        <button class="btn ghost" id="routineEditorClose" type="button">취소</button>
+      </div>
+    </div>
+
+    <p class="menuNote">루틴은 이 기기에만 저장돼요. 통증이 있으면 바로 그만두세요.</p>
+  </section>
+
+  <!-- ================= 탭 3 · 기록 ================= -->
+  <section class="tabPanel" id="tabRecords" data-tab="records" hidden aria-label="기록">
+    <section class="records" id="records">
+      <div class="recordsHead">
+        <div>
+          <div class="tagline">내 운동 기록</div>
+          <h2>운동 기록 한눈에 보기</h2>
+        </div>
+        <button class="btn ghost" id="recordsClear" type="button">기록 초기화</button>
+      </div>
+      <div class="stats">
+        <div class="stat accent"><span>총 운동</span><strong id="recTotal">0</strong><em>회</em></div>
+        <div class="stat"><span>연속</span><strong id="recStreak">0</strong><em>일</em></div>
+        <div class="stat"><span>평균 점수</span><strong id="recAvg">–</strong><em>점</em></div>
+      </div>
+      <div class="recordsGrid">
+        <div class="card">
+          <h3>최근 7일 점수</h3>
+          <div class="weekBars" id="weekBars"></div>
+        </div>
+        <div class="card">
+          <h3>최근 기록</h3>
+          <ul class="recList" id="recList"><li class="recEmpty">아직 기록이 없어요. 분석을 마치면 자동으로 쌓여요.</li></ul>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ================= 탭 4 · 더보기 ================= -->
+  <section class="tabPanel" id="tabMore" data-tab="more" hidden aria-label="더보기">
+    <div class="panelHead">
+      <div class="tagline">더보기</div>
+      <h2>타이머 · Pro · 촬영 가이드</h2>
+    </div>
+
+    <div class="installTip" id="installTip" hidden>
+      <svg class="ic sm ti" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+      <span class="tx">홈 화면에 추가하면 앱처럼 <b>전체화면</b>으로 쓸 수 있어요</span>
+      <button type="button" id="installTipClose" aria-label="안내 닫기">✕</button>
+    </div>
+
+    <div class="moreCard">
+      <div class="moreHead">
+        <svg class="ic sm" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M10 2h4"/><path d="M12 14v-4"/><circle cx="12" cy="14" r="8"/></svg>
+        <span><b>세트 휴식 타이머</b><em>세트 사이 쉬는 시간을 세어 줄게요</em></span>
+      </div>
+      <div class="timer" id="restTimer" data-running="0" data-done="0">
+        <div class="timerClock" id="timerClock" role="timer" aria-live="off">1:00</div>
+        <div class="timerChips" role="group" aria-label="휴식 시간">
+          <button class="chip" id="timerChip30" type="button" data-sec="30" aria-pressed="false">30초</button>
+          <button class="chip" id="timerChip60" type="button" data-sec="60" aria-pressed="true">60초</button>
+          <button class="chip" id="timerChip90" type="button" data-sec="90" aria-pressed="false">90초</button>
+        </div>
+        <div class="timerBtns">
+          <button class="btn primary" id="timerStart" type="button">시작</button>
+          <button class="btn ghost" id="timerReset" type="button">초기화</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="moreRow" id="morePro" type="button" aria-haspopup="dialog">
+      <svg class="ic sm" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>
+      <span class="mb"><b>Prehealth Pro</b><span>관절별 리포트 · 4주 변화 미리보기</span></span>
       <span class="plChip">미리보기</span>
     </button>
-  </section>
 
-  <section class="records" id="records">
-    <div class="recordsHead">
-      <div>
-        <div class="tagline">내 운동 기록</div>
-        <h2>운동 기록 한눈에 보기</h2>
+    <div class="moreCard">
+      <div class="moreHead">
+        <svg class="ic sm" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3"/></svg>
+        <span><b>촬영 각도 가이드</b><em>운동별로 폰을 어디에 두면 잘 보이나</em></span>
       </div>
-      <button class="btn ghost" id="recordsClear" type="button">기록 초기화</button>
-    </div>
-    <div class="stats">
-      <div class="stat accent"><span>총 운동</span><strong id="recTotal">0</strong><em>회</em></div>
-      <div class="stat"><span>연속</span><strong id="recStreak">0</strong><em>일</em></div>
-      <div class="stat"><span>평균 점수</span><strong id="recAvg">–</strong><em>점</em></div>
-    </div>
-    <div class="recordsGrid">
-      <div class="card">
-        <h3>최근 7일 점수</h3>
-        <div class="weekBars" id="weekBars"></div>
-      </div>
-      <div class="card">
-        <h3>최근 기록</h3>
-        <ul class="recList" id="recList"><li class="recEmpty">아직 기록이 없어요. 분석을 마치면 자동으로 쌓여요.</li></ul>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    Prehealth · 자세 분석 프로토타입 (0.1) — 자세 인식은 MediaPipe Pose Landmarker를 쓰고, 모든 계산은 이 기기 브라우저 안에서만 해요. 올린 영상은 서버로 보내지 않아요.<br>
-    각도는 실제 3D 좌표로 계산해서 카메라가 비스듬해도 정확해요. 가려진 관절은 판정에서 자동으로 빼요. 통증이 있는 동작은 무리하지 마세요.
-    <span class="disc" id="footDisclaimer">자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.</span>
-  </footer>
-</main>
-
-<!-- ================= v16: 우상단 ☰ 메뉴 드로어 ================= -->
-<div class="drawer" id="menuDrawer" hidden role="dialog" aria-modal="true" aria-labelledby="menuTitle">
-  <button class="drawerBackdrop" id="menuBackdrop" type="button" aria-label="메뉴 닫기"></button>
-  <aside class="menuSheet" id="menuSheet">
-    <div class="menuHead">
-      <button class="sheetClose back" id="menuBack" type="button" aria-label="뒤로" hidden>‹</button>
-      <span class="proMark" id="menuMark" aria-hidden="true">P</span>
-      <h2 id="menuTitle">메뉴</h2>
-      <button class="sheetClose" id="menuClose" type="button" aria-label="닫기">✕</button>
-    </div>
-
-    <!-- 메뉴 첫 화면 -->
-    <div class="menuView" id="menuMainView">
-      <button class="menuRow" id="menuRoutine" type="button">
-        <span class="mi" aria-hidden="true">🏋️</span>
-        <span class="mb"><b>오늘의 루틴</b><span>스쿼트 → 휴식 → 푸시업, 알아서 이어져요</span></span>
-        <span class="ma" aria-hidden="true">›</span>
-      </button>
-
-      <button class="menuRow" id="menuRecords" type="button">
-        <span class="mi" aria-hidden="true">📊</span>
-        <span class="mb"><b>내 운동 기록</b><span>요즘 점수와 최근 기록 보기</span></span>
-        <span class="ma" aria-hidden="true">›</span>
-      </button>
-
-      <div class="menuBlock">
-        <div class="menuBlockHead">
-          <span class="mi" aria-hidden="true">⏱️</span>
-          <span class="mb"><b>세트 휴식 타이머</b><span>세트 사이 쉬는 시간을 세어 줄게요</span></span>
-        </div>
-        <div class="timer" id="restTimer" data-running="0" data-done="0">
-          <div class="timerClock" id="timerClock" role="timer" aria-live="off">1:00</div>
-          <div class="timerChips" role="group" aria-label="휴식 시간">
-            <button class="chip" id="timerChip30" type="button" data-sec="30" aria-pressed="false">30초</button>
-            <button class="chip" id="timerChip60" type="button" data-sec="60" aria-pressed="true">60초</button>
-            <button class="chip" id="timerChip90" type="button" data-sec="90" aria-pressed="false">90초</button>
-          </div>
-          <div class="timerBtns">
-            <button class="btn primary" id="timerStart" type="button">시작</button>
-            <button class="btn ghost" id="timerReset" type="button">초기화</button>
-          </div>
-        </div>
-      </div>
-
-      <button class="menuRow" id="menuPro" type="button">
-        <span class="mi" aria-hidden="true">💎</span>
-        <span class="mb"><b>Prehealth Pro</b><span>관절별 리포트·4주 변화 미리보기</span></span>
-        <span class="ma" aria-hidden="true">›</span>
-      </button>
-      <button class="menuRow" id="menuGuide" type="button">
-        <span class="mi" aria-hidden="true">📸</span>
-        <span class="mb"><b>촬영 각도 가이드</b><span>운동별로 폰을 어디에 두면 잘 보이나</span></span>
-        <span class="ma" aria-hidden="true">›</span>
-      </button>
-      <button class="menuRow" id="menuInstall" type="button">
-        <span class="mi" aria-hidden="true">📲</span>
-        <span class="mb"><b>홈 화면에 앱 설치하기</b><span>아이폰·갤럭시에 앱처럼 올려 두기</span></span>
-        <span class="ma" aria-hidden="true">›</span>
-      </button>
-      <p class="menuNote">영상은 이 기기 밖으로 나가지 않아요. 분석·기록·결과 카드 저장은 지금처럼 무료예요.</p>
-    </div>
-
-    <!-- v17: 오늘의 루틴 (추천 3종 · 나만의 루틴) -->
-    <div class="menuView" id="menuRoutineView" hidden>
-      <div class="rLive" id="routineLive" hidden>
-        <span id="routineLiveText">루틴 진행 중</span>
-        <button class="btn ghost" id="routineLiveQuit" type="button">그만하기</button>
-      </div>
-      <p class="sheetLead">오늘 할 운동을 고르면 <b>세트 사이 휴식까지 알아서</b> 이어져요. 카메라를 켜면 목표를 채운 순간 다음 운동으로 넘어가요.</p>
-      <div id="routinePresetList"></div>
-      <h4 class="rSub">나만의 루틴</h4>
-      <div id="routineCustomBox"></div>
-      <button class="menuRow" id="routineBuild" type="button">
-        <span class="mi" aria-hidden="true">➕</span>
-        <span class="mb"><b>나만의 루틴 만들기</b><span>8종 운동에서 골라 목표·휴식 시간을 정해요</span></span>
-        <span class="ma" aria-hidden="true">›</span>
-      </button>
-
-      <div class="rEditor" id="routineEditor" hidden>
-        <div class="rField">
-          <span>운동</span>
-          <div class="rExChips" id="routineExChips"></div>
-        </div>
-        <div class="rField">
-          <span>목표</span>
-          <div class="rGoalRow">
-            <input id="routineGoal" type="number" inputmode="numeric" min="1" step="1" value="10" aria-label="목표">
-            <span class="rGoalUnit" id="routineGoalUnit">회</span>
-          </div>
-        </div>
-        <div class="rField">
-          <span>운동 사이 휴식</span>
-          <div class="rRestChips" id="routineRestChips"></div>
-        </div>
-        <button class="btn rAddBtn" id="routineAdd" type="button">이 운동 추가</button>
-        <ul class="rDraft" id="routineDraft"></ul>
-        <div class="rNameRow">
-          <input id="routineName" type="text" maxlength="20" placeholder="나만의 루틴" aria-label="루틴 이름">
-        </div>
-        <div class="rEditorBtns">
-          <button class="btn primary" id="routineSave" type="button">저장</button>
-          <button class="btn ghost" id="routineEditorClose" type="button">취소</button>
-        </div>
-      </div>
-
-      <p class="menuNote">루틴은 이 기기에만 저장돼요. 통증이 있으면 바로 그만두세요.</p>
-    </div>
-
-    <!-- 촬영 각도 가이드 -->
-    <div class="menuView" id="menuGuideView" hidden>
-      <p class="sheetLead">폰을 세워 두고 <b>옆에서</b> 찍으면 무릎·팔꿈치 각도가 가장 잘 보여요. 아래 한 줄만 맞춰도 분석이 훨씬 정확해져요.</p>
       <div id="camGuideList"></div>
     </div>
 
-    <!-- 홈 화면에 앱 설치 -->
-    <div class="menuView" id="menuInstallView" hidden>
-      <p class="sheetLead">홈 화면에 올려 두면 주소창 없이 <b>앱처럼 전체 화면</b>으로 열려요. 한 번만 해 두면 돼요.</p>
+    <div class="moreCard">
+      <div class="moreHead">
+        <svg class="ic sm" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+        <span><b>홈 화면에 앱 설치하기</b><em>아이폰·갤럭시에 앱처럼 올려 두기</em></span>
+      </div>
       <div class="stepGroup">
         <h4>아이폰 <em>사파리</em></h4>
         <ol class="steps">
@@ -1229,8 +1366,38 @@ window.addEventListener('unhandledrejection', function (e) {
         </ol>
       </div>
     </div>
-  </aside>
-</div>
+
+    <p class="menuNote">영상은 이 기기 밖으로 나가지 않아요. 분석·기록·결과 카드 저장은 지금처럼 무료예요.</p>
+  </section>
+
+  <footer>
+    Prehealth · 자세 분석 프로토타입 (0.1) — 자세 인식은 MediaPipe Pose Landmarker를 쓰고, 모든 계산은 이 기기 브라우저 안에서만 해요. 올린 영상은 서버로 보내지 않아요.<br>
+    각도는 실제 3D 좌표로 계산해서 카메라가 비스듬해도 정확해요. 가려진 관절은 판정에서 자동으로 빼요. 통증이 있는 동작은 무리하지 마세요.
+    <span class="disc" id="footDisclaimer">자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.</span>
+  </footer>
+</main>
+
+<!-- ================= v19 하단 탭 바 (분석 · 루틴 · 기록 · 더보기) ================= -->
+<nav class="tabBar" id="tabBar" role="tablist" aria-label="주요 화면">
+  <div class="tabBarIn">
+    <button class="tabBtn" type="button" role="tab" data-tab="analyze" aria-selected="true" aria-controls="tabAnalyze">
+      <svg class="ic" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span>분석</span>
+    </button>
+    <button class="tabBtn" type="button" role="tab" data-tab="routine" aria-selected="false" aria-controls="tabRoutine">
+      <svg class="ic" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>
+      <span>루틴</span>
+    </button>
+    <button class="tabBtn" type="button" role="tab" data-tab="records" aria-selected="false" aria-controls="tabRecords">
+      <svg class="ic" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+      <span>기록</span>
+    </button>
+    <button class="tabBtn" type="button" role="tab" data-tab="more" aria-selected="false" aria-controls="tabMore">
+      <svg class="ic" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>
+      <span>더보기</span>
+    </button>
+  </div>
+</nav>
 
 <button class="timerPill" id="timerPill" type="button" hidden aria-label="휴식 타이머 열기">
   <span class="tpDot" aria-hidden="true"></span><span id="timerPillText">휴식 1:00</span>
@@ -1278,10 +1445,10 @@ window.addEventListener('unhandledrejection', function (e) {
     </div>
 
     <ul class="benefits">
-      <li><span class="bi" aria-hidden="true">🔬</span><span><b>관절별 자세 분석</b> — 무릎·팔꿈치가 얼마나 흔들렸는지, 좌우 균형, 몇 번째 반복에서 점수가 떨어졌는지</span></li>
-      <li><span class="bi" aria-hidden="true">📈</span><span><b>4주 변화 리포트</b> — 주마다 점수가 어떻게 달라지는지, 다칠 수 있는 구간 알림</span></li>
-      <li><span class="bi" aria-hidden="true">🎯</span><span><b>나만의 5분 루틴</b> — 내가 자주 틀리는 동작만 모아서 알려줘요</span></li>
-      <li><span class="bi" aria-hidden="true">📤</span><span><b>카드·기록 무제한</b> — 결과 카드를 높은 화질로 저장하고 기록도 백업</span></li>
+      <li><svg class="ic sm bi" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M17 10c.7-.7 1.69 0 2.5 0a2.5 2.5 0 1 0 0-5 .5.5 0 0 1-.5-.5 2.5 2.5 0 1 0-5 0c0 .81.7 1.8 0 2.5l-7 7c-.7.7-1.69 0-2.5 0a2.5 2.5 0 0 0 0 5c.28 0 .5.22.5.5a2.5 2.5 0 1 0 5 0c0-.81-.7-1.8 0-2.5Z"/></svg><span><b>관절별 자세 분석</b> — 무릎·팔꿈치가 얼마나 흔들렸는지, 좌우 균형, 몇 번째 반복에서 점수가 떨어졌는지</span></li>
+      <li><svg class="ic sm bi" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg><span><b>4주 변화 리포트</b> — 주마다 점수가 어떻게 달라지는지, 다칠 수 있는 구간 알림</span></li>
+      <li><svg class="ic sm bi" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span><b>나만의 5분 루틴</b> — 내가 자주 틀리는 동작만 모아서 알려줘요</span></li>
+      <li><svg class="ic sm bi" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg><span><b>카드·기록 무제한</b> — 결과 카드를 높은 화질로 저장하고 기록도 백업</span></li>
     </ul>
 
     <div class="proForm" id="proForm">
@@ -1307,12 +1474,12 @@ window.addEventListener('unhandledrejection', function (e) {
   </div>
 </div>
 
-<!-- ================= v17: 루틴 완료 요약 ================= -->
+<!-- ================= 루틴 완료 요약 ================= -->
 <div class="modal" id="routineDone" hidden role="dialog" aria-modal="true" aria-labelledby="routineDoneTitle">
   <button class="modalBackdrop" id="routineDoneBackdrop" type="button" aria-label="닫기"></button>
   <div class="sheet">
     <div class="sheetHead">
-      <span class="proMark" aria-hidden="true">🏋️</span>
+      <span class="proMark" aria-hidden="true"><svg class="ic sm" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true"><path d="M4 9v6"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M20 9v6"/><path d="M7 12h10"/></svg></span>
       <h3 id="routineDoneTitle">루틴 완료</h3>
       <button class="sheetClose" id="routineDoneClose" type="button" aria-label="닫기">✕</button>
     </div>
@@ -3066,11 +3233,11 @@ const els = {
   repCountUnit: $('#repCountUnit'), repScore: $('#repScore'), repDur: $('#repDur'), repComment: $('#repComment'),
   repIssues: $('#repIssues'), repTimeline: $('#repTimeline'), repAgain: $('#repAgain'), repClose: $('#repClose'),
   repCard: $('#repCard'), proLock: $('#proLock'), repNew: $('#repNew'),
-  menuBtn: $('#menuBtn'), menuDrawer: $('#menuDrawer'), menuSheet: $('#menuSheet'),
-  menuClose: $('#menuClose'), menuBack: $('#menuBack'), menuBackdrop: $('#menuBackdrop'),
-  menuTitle: $('#menuTitle'), menuMark: $('#menuMark'),
-  menuMainView: $('#menuMainView'), menuGuideView: $('#menuGuideView'), menuInstallView: $('#menuInstallView'),
-  menuRecords: $('#menuRecords'), menuPro: $('#menuPro'), menuGuide: $('#menuGuide'), menuInstall: $('#menuInstall'),
+  /* v19: 원형 점수 게이지 */
+  scoreRing: $('#scoreRing'), repGaugeArc: $('#repGaugeArc'), repBand: $('#repBand'),
+  /* v19: 하단 탭 바 — 분석 · 루틴 · 기록 · 더보기 */
+  tabBar: $('#tabBar'), tabAnalyze: $('#tabAnalyze'), tabRoutine: $('#tabRoutine'),
+  tabRecords: $('#tabRecords'), tabMore: $('#tabMore'), morePro: $('#morePro'),
   camGuideList: $('#camGuideList'),
   restTimer: $('#restTimer'), timerClock: $('#timerClock'), timerStartBtn: $('#timerStart'),
   timerResetBtn: $('#timerReset'), timerPill: $('#timerPill'), timerPillText: $('#timerPillText'),
@@ -3085,7 +3252,6 @@ const els = {
   routineQuit: $('#routineQuit'), routineSetDone: $('#routineSetDone'),
   routineRest: $('#routineRest'), routineRestClock: $('#routineRestClock'), routineRestNext: $('#routineRestNext'),
   routineSkip: $('#routineSkip'), routineRestQuit: $('#routineRestQuit'),
-  menuRoutine: $('#menuRoutine'), menuRoutineView: $('#menuRoutineView'),
   routineLive: $('#routineLive'), routineLiveText: $('#routineLiveText'), routineLiveQuit: $('#routineLiveQuit'),
   routinePresetList: $('#routinePresetList'), routineCustomBox: $('#routineCustomBox'),
   routineBuild: $('#routineBuild'), routineEditor: $('#routineEditor'), routineExChips: $('#routineExChips'),
@@ -3102,6 +3268,7 @@ const S = {
   mode: 'video',
   exercise: 'squat',
   level: 'beginner',
+  tab: 'analyze',
   modelReady: false,
   paused: false,
   pausedAt: 0,
@@ -3145,6 +3312,64 @@ function fmtClock(ms){
   return m + ':' + String(s % 60).padStart(2, '0');
 }
 function setText(node, v){ if (node && node.textContent !== v) node.textContent = v; }
+
+/* ------------------------------ v19: 라인 SVG 아이콘 ------------------------------
+   기기마다 모양이 다른 이모지 대신, 24×24 격자에 1.75px 스트로크만 쓰는
+   한 벌의 선 아이콘을 쓴다(정적 마크업은 HTML에, 동적으로 그리는 곳은 여기서). */
+const ICONS = {
+  activity: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  play: '<path d="m6 3 14 9-14 9Z"/>',
+  pause: '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
+  volume: '<path d="M11 5 6 9H2v6h4l5 4Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>',
+  volumeX: '<path d="M11 5 6 9H2v6h4l5 4Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>',
+  dumbbell: '<path d="M4 9v6"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M20 9v6"/><path d="M7 12h10"/>',
+  footprints: '<path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/>',
+  target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  sprout: '<path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  pencil: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  trash: '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/>'
+};
+function iconSvg(name, cls){
+  const paths = ICONS[name];
+  if (!paths) return '';
+  return '<svg class="ic ' + (cls || 'sm') + '" viewBox="0 0 24 24" stroke-width="1.75" aria-hidden="true">' + paths + '</svg>';
+}
+/* 버튼 하나를 [선 아이콘 + 글자]로 다시 그린다 (이모지 글자를 쓰지 않는다) */
+function btnIcon(el, name, text){
+  if (!el) return;
+  el.innerHTML = iconSvg(name, 'sm') + '<span>' + text + '</span>';
+}
+
+/* ------------------------------ v19: 하단 탭 바 ------------------------------
+   분석 · 루틴 · 기록 · 더보기를 화면 하단 고정 탭으로 나눈다.
+   v16의 우상단 ☰ 드로어는 탭이 대신하므로 사라졌고, 메뉴 관련 함수는
+   기존 호출부(routineStart · 타이머 알약 등)가 깨지지 않도록 탭 이동으로 남겨 둔다. */
+const TABS = ['analyze', 'routine', 'records', 'more'];
+const TAB_LABEL = { analyze: '분석', routine: '루틴', records: '기록', more: '더보기' };
+function tabPanelOf(name){
+  return { analyze: els.tabAnalyze, routine: els.tabRoutine, records: els.tabRecords, more: els.tabMore }[name] || null;
+}
+function switchTab(name, quiet){
+  const tab = TABS.indexOf(name) >= 0 ? name : 'analyze';
+  S.tab = tab;
+  TABS.forEach(function(t){
+    const panel = tabPanelOf(t);
+    if (panel) panel.hidden = (t !== tab);
+  });
+  const btns = document.querySelectorAll('.tabBtn');
+  for (let i = 0; i < btns.length; i++){
+    btns[i].setAttribute('aria-selected', String(btns[i].dataset.tab === tab));
+  }
+  if (tab === 'routine') routineViewRender();
+  if (tab === 'records') renderRecords();
+  if (!quiet){
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+  }
+  return tab;
+}
+function activeTab(){ return S.tab || 'analyze'; }
 function showNotice(level, html, action){
   els.notice.hidden = false;
   els.notice.setAttribute('data-level', level);
@@ -3322,8 +3547,8 @@ function setLevel(level, silent){
   if (!changed) return S.level;
   resetSession(true);
   if (!silent) toast(S.level === 'advanced'
-    ? '🔥 헬창 모드 — 더 깊게, 더 엄격하게 볼게요'
-    : '🐣 헬린이 모드 — 부상 없이 기본기부터 알려 드릴게요');
+    ? '헬창 모드 — 더 깊게, 더 엄격하게 볼게요'
+    : '헬린이 모드 — 부상 없이 기본기부터 알려 드릴게요');
   if (S.modelReady && S.mode === 'video' && S.hasVideo) startScan();
   return S.level;
 }
@@ -3413,7 +3638,7 @@ function setMode(mode){
     els.camFlip.disabled = true;
     els.camReset.disabled = true;
     els.camPause.disabled = true;
-    els.camPause.textContent = '⏸ 일시정지';
+    btnIcon(els.camPause, 'pause', '일시정지');
     S.paused = false; S.pausedAt = 0;
     els.stage.classList.remove('paused');
     els.hudPause.hidden = true;
@@ -3453,11 +3678,13 @@ function resetSession(silent){
   setText($('#hudCount'), S.exercise === 'plank' ? '0:00' : '0');
   setText(els.hudCountUnit, EXERCISES[S.exercise].unit);
   setText(els.hudPhase, '대기');
+  els.hudPhase.className = 'chip';
   setText(els.hudHint, '영상을 올리면 바로 분석해 드려요');
   setText(els.hudQuality, '카메라 확인 중');
   els.hudQuality.setAttribute('data-state', 'fair');
   setText(els.sessTime, '0:00');
   setText(els.sessFrames, '0컷 분석');
+  setText(els.hudFrames, '관절 33곳');
   els.sessBar.style.width = '0%';
   els.report.hidden = true;
   clearOverlay();
@@ -3471,7 +3698,7 @@ function resetAll(){
   } else if (S.hasVideo){
     els.video.pause();
     els.video.currentTime = 0;
-    els.playBtn.textContent = '▶︎ 재생';
+    btnIcon(els.playBtn, 'play', '재생');
     drawIdle();
   }
   resetSession(false);
@@ -3548,15 +3775,15 @@ els.video.addEventListener('play', function(){
   if (S.scanning){ try { els.video.pause(); } catch (e) {} return; }
   /* 분석이 끝난 뒤 다시 보는 경우: 횟수를 두 번 세지 않게 새로 시작한다 */
   if (S.scanDone){ S.scanDone = false; resetSession(true); }
-  els.playBtn.textContent = '❚❚ 일시정지';
+  btnIcon(els.playBtn, 'pause', '일시정지');
   S.sessionActive = true;
   startLoop();
 });
 els.video.addEventListener('pause', function(){
-  els.playBtn.textContent = '▶︎ 재생';
+  btnIcon(els.playBtn, 'play', '재생');
 });
 els.video.addEventListener('ended', function(){
-  els.playBtn.textContent = '▶︎ 다시 재생';
+  btnIcon(els.playBtn, 'play', '다시 재생');
   els.video.currentTime = Math.max(0, els.video.currentTime - 0.001);
   showReport();
 });
@@ -3586,7 +3813,7 @@ els.speedSelect.addEventListener('change', function(){
 });
 els.muteBtn.addEventListener('click', function(){
   els.video.muted = !els.video.muted;
-  els.muteBtn.textContent = els.video.muted ? '🔈' : '🔊';
+  btnIcon(els.muteBtn, els.video.muted ? 'volumeX' : 'volume', els.video.muted ? '음소거' : '소리');
 });
 els.stepBack.addEventListener('click', function(){ stepFrame(-1); });
 els.stepFwd.addEventListener('click', function(){ stepFrame(1); });
@@ -3817,7 +4044,7 @@ function finishScan(lastOut){
   els.video.style.visibility = 'visible';
   els.videoControls.hidden = S.mode !== 'video';
   els.seekRow.hidden = S.mode !== 'video' || !S.hasVideo;
-  els.playBtn.textContent = '▶︎ 다시 보기';
+  btnIcon(els.playBtn, 'play', '다시 보기');
   scanUi(false);
   /* v17: 루틴 중이면 영상 분석이 끝난 그 순간이 ‘세트 끝’ — 결과 화면 대신 휴식으로 넘어간다 */
   const routineWas = !!routine.active;
@@ -3848,7 +4075,7 @@ function cancelScan(silent){
   if (S.hasVideo && S.mode === 'video') v.style.visibility = 'visible';
   els.videoControls.hidden = S.mode !== 'video';
   els.seekRow.hidden = S.mode !== 'video' || !S.hasVideo;
-  els.playBtn.textContent = '▶︎ 재생';
+  btnIcon(els.playBtn, 'play', '재생');
   resetSession(true);
   clearOverlay();
   setText(els.hudHint, S.hasVideo ? '영상을 올리면 바로 분석해 드려요' : '동영상을 올리거나 카메라를 켜 주세요');
@@ -3945,28 +4172,49 @@ function drawSamplePose(lm, out){
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, r.width, r.height);
   const map = function(p){ return { x: p.x * r.width, y: p.y * r.height }; };
-  const bad = {};
-  if (out && out.badJoints) out.badJoints.forEach(function(i){ bad[i] = true; });
+  const bad = redJointSet(out);
   ctx.lineCap = 'round';
   ctx.lineWidth = Math.max(2, r.width * 0.0055);
   for (let i = 0; i < SKELETON.length; i++){
     const a = lm[SKELETON[i][0]], b = lm[SKELETON[i][1]];
     if (!a || !b) continue;
     const pa = map(a), pb = map(b);
-    ctx.strokeStyle = (bad[SKELETON[i][0]] || bad[SKELETON[i][1]]) ? 'rgba(216,87,110,.92)' : 'rgba(242,242,240,.6)';
+    const isBad = bad[SKELETON[i][0]] || bad[SKELETON[i][1]];
+    ctx.strokeStyle = isBad ? JOINT_RED : 'rgba(242,242,240,.6)';
     ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
   }
+  drawRedChains(lm, bad, map, r);
   const jr = Math.max(2.6, r.width * 0.007);
   for (let i = 0; i < lm.length; i++){
     if (i > 0 && i < 11) continue;   // 눈·입·귀는 그리지 않는다(샘플 가시성)
     const p = lm[i];
     if (!p) continue;
     const q = map(p);
-    ctx.beginPath(); ctx.arc(q.x, q.y, bad[i] ? jr * 1.9 : jr, 0, Math.PI * 2);
-    ctx.fillStyle = bad[i] ? '#D8576E' : '#4FBE86';
+    if (bad[i]){
+      ctx.beginPath(); ctx.arc(q.x, q.y, jr * 2.7, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,90,95,.45)'; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(q.x, q.y, bad[i] ? jr * 1.8 : jr, 0, Math.PI * 2);
+    ctx.fillStyle = bad[i] ? JOINT_RED : '#4FBE86';
     ctx.fill();
     ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(8,8,9,.8)'; ctx.stroke();
   }
+}
+
+/* v19: 샘플 시퀀스의 한 시점을 실제 CORE로 판정해 그 프레임만 그려 본다.
+   (스크린샷·검증용 — 지금까지의 프레임을 순서대로 넣어 상태를 만든 뒤 그린다) */
+function paintSampleFrame(ms){
+  const probe = createEngine('squat', S.level);
+  const at = Math.max(0, Math.round((ms || 0) / 1000 * SAMPLE.fps));
+  let out = null;
+  for (let k = 0; k <= at; k++){
+    const t = Math.round(k / SAMPLE.fps * 1000);
+    const lm = samplePoseAt(t);
+    const next = probe.update(lm, SAMPLE.aspect, t, null);
+    if (next) out = next;
+  }
+  drawSamplePose(samplePoseAt(ms || 0), out);
+  return out;
 }
 
 function sampleStageOn(){
@@ -4119,7 +4367,7 @@ async function startCamera(){
     resetSession(true);
     S.sessionActive = true;
     S.paused = false; S.pausedAt = 0;
-    els.camPause.textContent = '⏸ 일시정지';
+    btnIcon(els.camPause, 'pause', '일시정지');
     els.camPause.removeAttribute('data-paused');
     els.camPause.disabled = false;
     els.stage.classList.remove('paused');
@@ -4157,7 +4405,7 @@ function stopCamera(keepUI){
   stopLoop();
   S.sessionActive = false;
   S.paused = false; S.pausedAt = 0;
-  els.camPause.textContent = '⏸ 일시정지';
+  btnIcon(els.camPause, 'pause', '일시정지');
   els.camPause.removeAttribute('data-paused');
   els.camPause.disabled = true;
   els.stage.classList.remove('paused');
@@ -4183,7 +4431,7 @@ function setCameraPaused(on){
   if (S.paused){
     S.pausedAt = performance.now();
     stopLoop();
-    els.camPause.textContent = '▶ 재개';
+    btnIcon(els.camPause, 'play', '재개');
     els.camPause.setAttribute('data-paused', '1');
     els.stage.classList.add('paused');
     els.hudPause.hidden = false;
@@ -4195,7 +4443,7 @@ function setCameraPaused(on){
       S.camStartAt += performance.now() - S.pausedAt;
       S.pausedAt = 0;
     }
-    els.camPause.textContent = '⏸ 일시정지';
+    btnIcon(els.camPause, 'pause', '일시정지');
     els.camPause.removeAttribute('data-paused');
     els.stage.classList.remove('paused');
     els.hudPause.hidden = true;
@@ -4304,6 +4552,39 @@ function roundRect(c, x, y, w, h, r){
   c.arcTo(x, y, x + w, y, r);
   c.closePath();
 }
+/* v19: 자세 교정이 필요한 관절 — 판정이 bad/warn으로 걸린 관절을 한 색(빨강)으로 모은다.
+   엔진이 알려 준 badJoints + 각도 배지의 bad 표시를 모두 포함한다. */
+const JOINT_RED = '#FF5A5F';
+function redJointSet(out){
+  const red = {};
+  if (!out) return red;
+  (out.badJoints || []).forEach(function(i){ if (typeof i === 'number') red[i] = true; });
+  (out.warnJoints || []).forEach(function(i){ if (typeof i === 'number') red[i] = true; });
+  (out.angles || []).forEach(function(a){ if (a && a.bad && typeof a.at === 'number') red[a.at] = true; });
+  return red;
+}
+/* 어깨–엉덩이–무릎처럼 ‘고칠 라인’을 점선으로 잇는다 (상체 쏠림·무릎 굽힘 경고) */
+function drawRedChains(lm, red, map, r){
+  let drew = false;
+  ctx.save();
+  ctx.setLineDash([7, 6]);
+  ctx.lineWidth = 1.6;
+  ctx.strokeStyle = 'rgba(255,90,95,.72)';
+  SIDES.forEach(function(sd){
+    if (!(red[sd.sh] || red[sd.hip] || red[sd.knee])) return;
+    const pts = [lm[sd.sh], lm[sd.hip], lm[sd.knee]]
+      .filter(function(p){ return p && conf(p) >= 0.3; })
+      .map(map);
+    if (pts.length < 2) return;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.stroke();
+    drew = true;
+  });
+  ctx.restore();
+  return drew;
+}
 function drawOverlay(lm, out){
   const r = els.overlay.getBoundingClientRect();
   if (!r.width || !r.height) return;
@@ -4326,10 +4607,9 @@ function drawOverlay(lm, out){
     return { x: ox + nx * dw, y: oy + p.y * dh };
   }
 
-  const bad = {};
-  if (out && out.badJoints) out.badJoints.forEach(function(i){ bad[i] = true; });
+  const bad = redJointSet(out);
 
-  // bones
+  // bones — 정상은 화이트, 교정이 필요한 뼈대는 빨강
   ctx.lineCap = 'round';
   ctx.lineWidth = Math.max(2, r.width * 0.0042);
   for (let i = 0; i < SKELETON.length; i++){
@@ -4338,24 +4618,31 @@ function drawOverlay(lm, out){
     if (conf(a) < 0.3 || conf(b) < 0.3) continue;
     const pa = map(a), pb = map(b);
     const isBad = bad[SKELETON[i][0]] || bad[SKELETON[i][1]];
-    ctx.strokeStyle = isBad ? 'rgba(216,87,110,.92)' : 'rgba(242,242,240,.55)';
+    ctx.strokeStyle = isBad ? JOINT_RED : 'rgba(242,242,240,.55)';
+    ctx.lineWidth = isBad ? Math.max(2.6, r.width * 0.0052) : Math.max(2, r.width * 0.0042);
     ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
   }
-  // joints
+  // 고칠 라인 (어깨–엉덩이–무릎) 점선
+  drawRedChains(lm, bad, map, r);
+  // joints — 정상은 에메랄드, 교정이 필요한 관절은 빨강 + 테두리 링
   const jr = Math.max(2.6, r.width * 0.0055);
   for (let i = 0; i < lm.length; i++){
     const p = lm[i];
     if (!p || conf(p) < 0.3) continue;
     const q = map(p);
-    ctx.beginPath(); ctx.arc(q.x, q.y, bad[i] ? jr * 1.9 : jr, 0, Math.PI * 2);
-    ctx.fillStyle = bad[i] ? '#D8576E' : '#4FBE86';
+    if (bad[i]){
+      ctx.beginPath(); ctx.arc(q.x, q.y, jr * 2.7, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,90,95,.45)'; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(q.x, q.y, bad[i] ? jr * 1.8 : jr, 0, Math.PI * 2);
+    ctx.fillStyle = bad[i] ? JOINT_RED : '#4FBE86';
     ctx.fill();
     ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(8,8,9,.8)'; ctx.stroke();
   }
   // angle chips
   if (out && out.ok && out.angles){
     const fs = Math.max(10.5, r.width * 0.021);
-    ctx.font = '700 ' + fs.toFixed(1) + 'px -apple-system, "Apple SD Gothic Neo", Pretendard, sans-serif';
+    ctx.font = '700 ' + fs.toFixed(1) + 'px -apple-system, "Apple SD Gothic Neo", Pretendard, "Noto Sans KR", sans-serif';
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
     out.angles.forEach(function(a){
       if (!a || a.value === null || a.value === undefined || !isFinite(a.value)) return;
@@ -4370,9 +4657,9 @@ function drawOverlay(lm, out){
       if (y - h / 2 < 4) y = q.y + fs * 2;
       ctx.fillStyle = 'rgba(8,8,9,.8)';
       roundRect(ctx, x, y - h / 2, tw + padX * 2, h, h / 2); ctx.fill();
-      ctx.strokeStyle = a.bad ? 'rgba(216,87,110,.85)' : 'rgba(79,190,134,.5)';
+      ctx.strokeStyle = a.bad ? 'rgba(255,90,95,.9)' : 'rgba(79,190,134,.5)';
       ctx.lineWidth = 1; ctx.stroke();
-      ctx.fillStyle = a.bad ? '#D8576E' : '#F2F2F0';
+      ctx.fillStyle = a.bad ? JOINT_RED : '#F2F2F0';
       ctx.fillText(label, x + padX, y);
     });
   }
@@ -4555,6 +4842,30 @@ function commentFor(score, kind, sum, level){
     ? '처음부터 다시 잡는 게 좋아요. 속도를 줄이고 깊이부터 확보하세요.'
     : '지금은 자세를 먼저 만드는 게 좋아요. 속도를 줄이고 조금 더 깊이 내려가 보세요.';
 }
+/* ------------------------------ v19: 원형 점수 게이지 ------------------------------
+   0~100점을 SVG 도넛 한 줄로 그린다. 반지름 52 → 둘레 326.73.
+   80점 이상 초록 · 60~79 노랑 · 60 미만 빨강으로 구간을 바로 읽게 한다. */
+const GAUGE_CIRC = 2 * Math.PI * 52;
+const SCORE_BANDS = { good: '#34D399', mid: '#FFC24B', low: '#FF5A5F', none: '#3A3A3E' };
+const BAND_LABEL = { good: '아주 좋아요', mid: '조금만 더', low: '자세부터', none: '자세 점수' };
+function scoreBand(score){
+  if (score === null || score === undefined || !isFinite(score)) return 'none';
+  const s = Number(score);
+  if (s >= 80) return 'good';
+  if (s >= 60) return 'mid';
+  return 'low';
+}
+function paintGauge(score){
+  const band = scoreBand(score);
+  const pct = (band === 'none') ? 0 : clamp(Number(score), 0, 100);
+  if (els.scoreRing) els.scoreRing.setAttribute('data-band', band);
+  if (els.repGaugeArc){
+    els.repGaugeArc.style.strokeDasharray = GAUGE_CIRC.toFixed(2);
+    els.repGaugeArc.style.strokeDashoffset = (GAUGE_CIRC * (1 - pct / 100)).toFixed(2);
+  }
+  setText(els.repBand, BAND_LABEL[band]);
+  return band;
+}
 function showReport(){
   const sum = engine.summary();
   const kind = S.exercise;
@@ -4562,6 +4873,7 @@ function showReport(){
   const isRun = kind === 'running';
   const isSample = !!S.sample;
   const sc = isPlank ? sum.score : sum.avgScore;
+  switchTab('analyze', true);
   els.report.hidden = false;
   if (els.repNew) els.repNew.hidden = S.mode !== 'video' || isSample;
   if (els.repAgain) els.repAgain.textContent = isSample
@@ -4569,7 +4881,7 @@ function showReport(){
     : ((S.mode === 'video' && S.hasVideo) ? '다시 분석' : '다시 분석하기');
   const lvNow = LEVELS[sum.level] || LEVELS.beginner;
   const srcName = isSample ? '샘플 영상' : (S.mode === 'camera' ? '실시간 카메라' : (S.fileName || '동영상'));
-  setText(els.repMeta, (isSample ? '🎬 샘플 체험 · ' : '') + lvNow.emoji + ' ' + lvNow.name + ' · ' + EXERCISES[kind].name + ' · ' + srcName
+  setText(els.repMeta, lvNow.name + ' · ' + EXERCISES[kind].name + ' · ' + srcName
     + (isRun && sum.cadence ? ' · 분당 ' + sum.cadence + '걸음' : '') + (sum.world3d ? ' · 3D' : ''));
   if (els.repSampleTag) els.repSampleTag.hidden = !isSample;
   if (els.repSampleNote){
@@ -4593,6 +4905,7 @@ function showReport(){
     setText(els.repCountLabel, '총 반복');
   }
   setText(els.repScore, (sc === null || sc === undefined) ? '–' : String(sc));
+  paintGauge(sc);
   setText(els.repDur, fmtClock(sum.durationMs));
   setText(els.repComment, commentFor(sc, kind, sum, sum.level));
 
@@ -4788,7 +5101,7 @@ function renderRecords(){
       const lvDef = LEVELS[rec.level] || LEVELS.beginner;
       const lvTag = document.createElement('span');
       lvTag.className = 'lv' + (rec.level === 'advanced' ? ' adv' : '');
-      lvTag.textContent = lvDef.emoji + ' ' + (rec.levelName || lvDef.name);
+      lvTag.innerHTML = iconSvg(rec.level === 'advanced' ? 'flame' : 'sprout', 'xs') + '<span>' + (rec.levelName || lvDef.name) + '</span>';
       lvTag.setAttribute('data-level', rec.level);
       n.appendChild(lvTag);
     }
@@ -4797,7 +5110,8 @@ function renderRecords(){
       + fmtClock((rec.durationSec || 0) * 1000) + ' · ' + (rec.topFeedback || '');
     n.appendChild(em);
     const s = document.createElement('span');
-    s.className = 'rs' + ((typeof rec.score === 'number' && rec.score < 60) ? ' low' : '');
+    const sBand = scoreBand(rec.score);
+    s.className = 'rs' + (sBand === 'low' ? ' low' : (sBand === 'mid' ? ' mid' : ''));
     s.textContent = (typeof rec.score === 'number') ? String(rec.score) : '–';
     b.appendChild(d); b.appendChild(n); b.appendChild(s);
     b.addEventListener('click', function(){ openCardModal(rec); });
@@ -4828,7 +5142,7 @@ const CARD_W = 1080, CARD_H = 1350;
 /* v18: 결과 이미지 하단 면책 문구 */
 const CARD_DISCLAIMER = '자세 참고용이며 의학적 진단·처방이 아니에요. 통증이 있으면 바로 멈추세요.';
 function cardFont(weight, size){
-  return weight + ' ' + size + 'px "Apple SD Gothic Neo","Pretendard","Malgun Gothic",system-ui,-apple-system,sans-serif';
+  return weight + ' ' + size + 'px "Apple SD Gothic Neo","Pretendard","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",system-ui,-apple-system,sans-serif';
 }
 function drawTracked(g, text, x, y, spacing){
   let cx = x;
@@ -5249,47 +5563,25 @@ document.addEventListener('visibilitychange', function(){
   else if (!document.hidden && S.mode === 'camera' && S.stream) startLoop();
 });
 
-/* ------------------------------ v16 · 우상단 ☰ 메뉴 ------------------------------
-   헤더의 PRO 배지를 거둬 오른쪽 위 메뉴 버튼 하나로 모았다.
-   메뉴 안에서 기록 이동 · 휴식 타이머 · Pro · 촬영 각도 · 앱 설치를 바로 쓴다. */
-const MENU_VIEWS = { main: 'menuMainView', routine: 'menuRoutineView', guide: 'menuGuideView', install: 'menuInstallView' };
-const MENU_TITLES = { main: '메뉴', routine: '오늘의 루틴', guide: '촬영 각도 가이드', install: '홈 화면에 앱 설치' };
-
+/* ------------------------------ v19 · 하단 탭 이동 (구 ☰ 메뉴 자리) ------------------------------
+   v16의 우상단 ☰ 드로어는 v19에서 하단 탭 바가 대신한다.
+   기존 호출부(routineStart · 타이머 알약 · API 사용처)가 그대로 동작하도록
+   메뉴 함수 이름은 탭 이동으로 남겨 둔다. */
 function menuView(name){
-  const view = MENU_VIEWS[name] ? name : 'main';
-  Object.keys(MENU_VIEWS).forEach(function(k){
-    const el = els[MENU_VIEWS[k]];
-    if (el) el.hidden = (k !== view);
-  });
-  setText(els.menuTitle, MENU_TITLES[view]);
-  if (els.menuBack) els.menuBack.hidden = (view === 'main');
-  if (els.menuMark) els.menuMark.hidden = (view !== 'main');
-  if (els.menuSheet) els.menuSheet.scrollTop = 0;
-  return view;
+  const map = { main: 'more', routine: 'routine', records: 'records', guide: 'more', install: 'more' };
+  return switchTab(map[name] || 'more');
 }
-function menuOpen(){ return !!(els.menuDrawer && !els.menuDrawer.hidden); }
+function menuOpen(){ return false; }
 function openMenu(view){
-  if (!els.menuDrawer) return false;
   menuView(view || 'main');
-  els.menuDrawer.hidden = false;
-  if (els.menuBtn) els.menuBtn.setAttribute('aria-expanded', 'true');
-  lockScroll(true);
-  try { els.menuClose.focus({ preventScroll: true }); } catch (e) {}
   return true;
 }
-function closeMenu(){
-  if (!menuOpen()) return false;
-  els.menuDrawer.hidden = true;
-  if (els.menuBtn) els.menuBtn.setAttribute('aria-expanded', 'false');
-  lockScroll(false);
-  return true;
-}
-/* 내 운동 기록: 메뉴를 닫고 기록 섹션으로 부드럽게 이동 */
+function closeMenu(){ return false; }
+/* 내 운동 기록: 기록 탭으로 이동해 그 판을 잠깐 강조한다 */
 function jumpToRecords(){
-  closeMenu();
+  switchTab('records');
   const sec = document.getElementById('records');
   if (!sec) return false;
-  try { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { sec.scrollIntoView(); }
   sec.classList.add('jump');
   setTimeout(function(){ sec.classList.remove('jump'); }, 1600);
   const h = sec.querySelector('h2');
@@ -5376,7 +5668,7 @@ function timerFinish(){
   timerStop();
   timer.left = 0;
   timerPaint();
-  toast('휴식 끝! 다음 세트 가요 💪');
+  toast('휴식 끝! 다음 세트 가요');
   timerBeep();
   return true;
 }
@@ -5411,11 +5703,11 @@ const ROUTINE_REST_OPTS = [30, 45, 60];
 const ROUTINE_MAX_STEPS = 8;
 const ROUTINE_GOAL_DEF = { squat: 10, pushup: 10, plank: 30, running: 40, lunge: 10, pullup: 6, deadlift: 8, situp: 15 };
 const ROUTINE_PRESETS = [
-  { id: 'full', name: '전신 기본', emoji: '🏋️', steps: [
+  { id: 'full', name: '전신 기본', icon: 'dumbbell', steps: [
     { ex: 'squat', goal: 10, rest: 45 }, { ex: 'pushup', goal: 10, rest: 45 }, { ex: 'plank', goal: 30, rest: 0 } ] },
-  { id: 'lower', name: '하체 집중', emoji: '🦵', steps: [
+  { id: 'lower', name: '하체 집중', icon: 'footprints', steps: [
     { ex: 'squat', goal: 12, rest: 45 }, { ex: 'lunge', goal: 10, rest: 45 }, { ex: 'plank', goal: 30, rest: 0 } ] },
-  { id: 'upper', name: '상체·코어', emoji: '💪', steps: [
+  { id: 'upper', name: '상체·코어', icon: 'target', steps: [
     { ex: 'pushup', goal: 10, rest: 45 }, { ex: 'pullup', goal: 6, rest: 45 }, { ex: 'situp', goal: 15, rest: 0 } ] }
 ];
 
@@ -5553,7 +5845,8 @@ function routineStart(def){
     name: String(def.name || '오늘의 루틴').slice(0, 20),
     steps: steps, index: 0, phase: 'exercise', results: [], startedAt: Date.now()
   };
-  closeMenu();
+  /* v19: 루틴을 시작하면 분석 탭으로 넘어가 진행 바를 보여 준다 */
+  switchTab('analyze', true);
   routineEnterStep(0);
   try { els.routineBar.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
   toast('루틴 시작! ' + routineStepLabel(steps[0]) + '부터');
@@ -5695,7 +5988,7 @@ function routineCard(def, opts){
   const top = document.createElement('span');
   top.className = 'rCardTop';
   const nm = document.createElement('b');
-  nm.textContent = (def.emoji ? def.emoji + ' ' : '') + def.name;
+  nm.innerHTML = (iconSvg(def.icon || 'dumbbell', 'sm') || '') + '<span>' + def.name + '</span>';
   const go = document.createElement('span');
   go.className = 'rGo';
   go.textContent = '시작';
@@ -5710,11 +6003,13 @@ function routineCard(def, opts){
     const acts = document.createElement('div');
     acts.className = 'rCardActs';
     const edit = document.createElement('button');
-    edit.type = 'button'; edit.className = 'btn ghost'; edit.textContent = '편집';
+    edit.type = 'button'; edit.className = 'btn ghost';
+    edit.innerHTML = iconSvg('pencil', 'xs') + '<span>편집</span>';
     edit.setAttribute('data-act', 'edit');
     edit.addEventListener('click', function(){ routineEditSaved(); });
     const del = document.createElement('button');
-    del.type = 'button'; del.className = 'btn ghost'; del.textContent = '지우기';
+    del.type = 'button'; del.className = 'btn ghost';
+    del.innerHTML = iconSvg('trash', 'xs') + '<span>지우기</span>';
     del.setAttribute('data-act', 'delete');
     del.addEventListener('click', function(){
       if (del.getAttribute('data-armed') === '1'){
@@ -5724,7 +6019,7 @@ function routineCard(def, opts){
         return;
       }
       del.setAttribute('data-armed', '1');
-      del.textContent = '정말 지울까요?';
+      del.innerHTML = iconSvg('trash', 'xs') + '<span>정말 지울까요?</span>';
     });
     acts.appendChild(edit); acts.appendChild(del);
     card.appendChild(acts);
@@ -5871,10 +6166,6 @@ function routineDraftSave(){
   return def;
 }
 
-if (els.menuRoutine) els.menuRoutine.addEventListener('click', function(){
-  routineViewRender();
-  menuView('routine');
-});
 if (els.routineBuild) els.routineBuild.addEventListener('click', function(){
   if (els.routineEditor && !els.routineEditor.hidden){ routineEditorOpen(false); return; }
   routineDraftReset();
@@ -5930,22 +6221,17 @@ function renderCamGuide(){
   return keys.length;
 }
 
-if (els.menuBtn) els.menuBtn.addEventListener('click', function(){
-  if (menuOpen()) closeMenu(); else openMenu('main');
+/* v19: 하단 탭 바 */
+document.querySelectorAll('.tabBtn').forEach(function(b){
+  b.addEventListener('click', function(){ switchTab(b.dataset.tab); });
 });
-if (els.menuClose) els.menuClose.addEventListener('click', closeMenu);
-if (els.menuBackdrop) els.menuBackdrop.addEventListener('click', closeMenu);
-if (els.menuBack) els.menuBack.addEventListener('click', function(){ menuView('main'); });
-if (els.menuRecords) els.menuRecords.addEventListener('click', jumpToRecords);
-if (els.menuPro) els.menuPro.addEventListener('click', function(){ closeMenu(); openPro(); });
-if (els.menuGuide) els.menuGuide.addEventListener('click', function(){ menuView('guide'); });
-if (els.menuInstall) els.menuInstall.addEventListener('click', function(){ menuView('install'); });
+if (els.morePro) els.morePro.addEventListener('click', function(){ openPro(); });
 document.querySelectorAll('.chip[data-sec]').forEach(function(b){
   b.addEventListener('click', function(){ timerSetSec(parseInt(b.getAttribute('data-sec'), 10)); });
 });
 if (els.timerStartBtn) els.timerStartBtn.addEventListener('click', timerStart);
 if (els.timerResetBtn) els.timerResetBtn.addEventListener('click', timerReset);
-if (els.timerPill) els.timerPill.addEventListener('click', function(){ openMenu('main'); });
+if (els.timerPill) els.timerPill.addEventListener('click', function(){ switchTab('more'); });
 
 /* ------------------------------ PWA ------------------------------ */
 const standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
@@ -5975,7 +6261,9 @@ function playIntro(){
   const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   const items = [];
-  const add = function(el){ if (el) items.push(el); };
+  /* 숨겨 둔 탭 판 안의 요소는 등장 모션을 붙이지 않는다 — 나중에 탭을 열 때
+     애니메이션 지연(0.8초)이 다시 시작돼 내용이 잠깐 비어 보이기 때문 */
+  const add = function(el){ if (el && !(el.closest && el.closest('.tabPanel[hidden]'))) items.push(el); };
   add(document.querySelector('.top'));
   add(document.querySelector('.intro h1'));
   add(document.querySelector('.intro p'));
@@ -6007,6 +6295,7 @@ function playIntro(){
     removed = true;
     if (splash.parentNode) splash.parentNode.removeChild(splash);
   };
+  setTimeout(function(){ document.body.classList.add('introDone'); }, 2400);
   setTimeout(function(){ splash.classList.add('out'); }, 1900);
   setTimeout(killSplash, 1960);
   setTimeout(killSplash, 2600);
@@ -6018,6 +6307,10 @@ S.level = readLevel();
 applyLevelUI();
 applyExerciseUI('squat');
 setMode('video');
+switchTab('analyze', true);
+btnIcon(els.playBtn, 'play', '재생');
+btnIcon(els.muteBtn, 'volumeX', '음소거');
+btnIcon(els.camPause, 'pause', '일시정지');
 timerSetSec(readTimerSec());
 renderCamGuide();
 timerPaint();
@@ -6030,7 +6323,7 @@ loadEngine();
 
 /* ------------------------------ 테스트/자동화용 공개 API ------------------------------ */
 window.Prehealth = {
-  version: 'v18',
+  version: 'v19',
   recordsKey: REC_KEY,
   proKey: PRO_KEY,
   levelKey: LEVEL_KEY,
@@ -6099,8 +6392,26 @@ window.Prehealth = {
     plan: function(){ return proPlan; }
   },
   disclaimer: CARD_DISCLAIMER,
-  menuOpen: menuOpen,
+  /* v19: 하단 탭 바 · 라인 아이콘 · 원형 게이지 · 빨간 관절 */
+  tabs: { list: TABS, labels: TAB_LABEL, switch: switchTab, active: activeTab },
+  icons: ICONS,
+  icon: iconSvg,
+  gauge: {
+    band: scoreBand,
+    paint: paintGauge,
+    colors: SCORE_BANDS,
+    radius: 52,
+    circumference: GAUGE_CIRC
+  },
+  skeleton: {
+    red: JOINT_RED,
+    redSet: redJointSet,
+    draw: drawOverlay,
+    sample: drawSamplePose,
+    frame: paintSampleFrame
+  },
   openMenu: openMenu,
+  menuOpen: menuOpen,
   closeMenu: closeMenu,
   menuView: menuView,
   jumpToRecords: jumpToRecords,
