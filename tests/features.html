@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prehealth · v13 기능 테스트 (기록·카드·Pro·레벨·일시정지·인트로)</title>
+<title>Prehealth · v14 기능 테스트 (플랫 스타일·기록·카드·Pro·레벨·일시정지·인트로)</title>
 <style>
-  body{background:#141416;color:#F5F2EB;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
+  body{background:#0F0F11;color:#F2F2F0;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
   h1{font-size:15px;letter-spacing:.02em}
   pre{white-space:pre-wrap;word-break:break-word}
-  .ok{color:#3FD37A}.ng{color:#FF3B62}
+  .ok{color:#4FBE86}.ng{color:#D8576E}
   iframe{width:390px;height:780px;border:1px solid #333;border-radius:8px;margin-top:8px}
 </style>
 </head>
 <body>
-<h1>Prehealth v13 · 기능 테스트 (기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로)</h1>
+<h1>Prehealth v14 · 기능 테스트 (플랫·매트 스타일 / 기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로)</h1>
 <pre id="out">index.html을 불러오는 중…</pre>
 <iframe id="app" src="../index.html" title="Prehealth 앱"></iframe>
 <script>
@@ -114,7 +114,7 @@ function decodeImage(src){
   const P = await until(function(){ return app.Prehealth; }, 30000);
   if (!P){ say('FAIL  window.Prehealth 공개 API를 찾지 못함'); return done(); }
   say('앱 로드 완료 · 버전 ' + P.version);
-  ok(P.version === 'v13', '공개 API 버전 v13 (실제 ' + P.version + ')');
+  ok(P.version === 'v14', '공개 API 버전 v14 (실제 ' + P.version + ')');
   say('');
 
   const q = function(sel){ return doc.querySelector(sel); };
@@ -177,13 +177,46 @@ function decodeImage(src){
      (spPH ? cssOf(spPH) : '없음') + ')');
   ok(!!spP && /#FFFFFF|rgb\(255,\s*255,\s*255\)/i.test(cssOf(spP)),
      'P는 화이트 글자 (' + (spP ? spP.style.color : '없음') + ')');
-  ok(!!spH && /#34D399|#10B981|rgb\((52,\s*211,\s*153|16,\s*185,\s*129)\)/i.test(cssOf(spH)),
-     'H는 에메랄드 글자 (' + (spH ? spH.style.color : '없음') + ')');
+  ok(!!spH && /#6DB79B|#34D399|#10B981|rgb\((109,\s*183,\s*155|52,\s*211,\s*153|16,\s*185,\s*129)\)/i.test(cssOf(spH)),
+     'H는 차분한 에메랄드 글자 (' + (spH ? spH.style.color : '없음') + ')');
   const spFont = spPH ? parseFloat(spPH.style.fontSize) : NaN;
   ok(spFont >= 64 && spFont <= 76, 'P·H 글자는 크게 64~76px (' + spFont + 'px)');
   ok(!!spPH && parseInt(spPH.style.fontWeight, 10) >= 800, 'P·H 글자는 굵고 단단한 타이포 (font-weight ' +
      (spPH ? spPH.style.fontWeight : '없음') + ')');
   ok(!!sp && /#0F0F11|rgb\(15,\s*15,\s*17\)/i.test(cssOf(sp)), '스플래시 배경은 플랫 다크(#0F0F11)');
+
+  /* ---------- 1-2) v14: 앱 내부 전체가 플랫·매트 미니멀 (네온·글로우·그라데이션 0) ---------- */
+  say('▸ 1-2. 플랫·매트 스타일 (네온·글로우·그라데이션 제거)');
+  const cssAll = rules.map(function(r){ return r.cssText; }).join('\n');
+  ok(cssAll.indexOf('box-shadow') === -1, '앱 스타일에 box-shadow 0건 — 빛번짐·그림자 글로우 없음');
+  ok(cssAll.indexOf('text-shadow') === -1, '앱 스타일에 text-shadow 0건 — 네온 글자 없음');
+  ok(cssAll.toLowerCase().indexOf('gradient') === -1, '앱 스타일에 그라데이션 0건 (배경·버튼·배지·막대 전부 단색)');
+  /* 형광빛 밝은 에메랄드(#34D399 / #10B981)가 스타일 어디에도 남아 있지 않다 — 단, 카드 캔버스는 별도 검사 */
+  ok(cssAll.indexOf('#34D399') === -1 && cssAll.indexOf('#10B981') === -1 &&
+     cssAll.indexOf('52, 211, 153') === -1 && cssAll.indexOf('16, 185, 129') === -1,
+     '형광 에메랄드(#34D399 / #10B981)가 스타일에서 사라짐');
+  const rootCS = app.getComputedStyle(doc.documentElement);
+  const tok = function(name){ return (rootCS.getPropertyValue(name) || '').trim(); };
+  ok(tok('--bg') === '#0F0F11', '바탕 #0F0F11 (' + tok('--bg') + ')');
+  ok(tok('--card') === '#161618', '카드 #161618 단색 (' + tok('--card') + ')');
+  ok(tok('--line') === '#262629', '얇은 보더 #262629 (' + tok('--line') + ')');
+  ok(tok('--emerald-2') === '#6DB79B', '차분한 에메랄드 포인트 #6DB79B (' + tok('--emerald-2') + ')');
+  ok(tok('--emerald') === '#10664A', '딥 에메랄드 #10664A (' + tok('--emerald') + ')');
+  const markRule = sel('.brand .mark'), proBadgeRule = sel('.proBadge');
+  ok(!!markRule && markRule.style.getPropertyValue('box-shadow') === '' &&
+     markRule.style.getPropertyValue('background-color') === 'var(--emerald)',
+     '헤더 [P] 배지는 플랫 단색 #10664A (그림자 없음)');
+  ok(!!proBadgeRule && proBadgeRule.style.getPropertyValue('background-image') === '' &&
+     proBadgeRule.style.getPropertyValue('box-shadow') === '' &&
+     /1px solid/.test(proBadgeRule.style.getPropertyValue('border')),
+     'PRO 배지는 그라데이션·글로우 없는 테두리 필 (' + (proBadgeRule ? proBadgeRule.style.border : '없음') + ')');
+  const wbRule = sel('.wb .wc.on'), repRule = sel('.report');
+  ok(!!wbRule && wbRule.style.getPropertyValue('background-image') === '' &&
+     wbRule.style.getPropertyValue('background-color') === 'var(--emerald-3)',
+     '7일 그래프 막대는 단색 채움 (그라데이션 없음)');
+  ok(!!repRule && repRule.style.getPropertyValue('background-color') === 'rgb(18, 23, 20)' &&
+     repRule.style.getPropertyValue('background-image') === '',
+     '리포트 판은 단색 매트(#121714) (' + (repRule ? repRule.style.getPropertyValue('background-color') : '없음') + ')');
   /* 더 큰 출발 위치·스케일 */
   ok(!!kf.splashFlyP && /translate\(-36vw,\s*-30vh\)/.test(kf.splashFlyP) && /scale\(1\.8\)/.test(kf.splashFlyP) &&
      /rotate\(-14deg\)/.test(kf.splashFlyP) && /opacity:\s*0/.test(kf.splashFlyP),
@@ -312,6 +345,14 @@ function decodeImage(src){
      '에메랄드 로고 픽셀 그려짐 rgb(' + px[0] + ',' + px[1] + ',' + px[2] + ')');
   const pxBg = g2.getImageData(30, 700, 1, 1).data;
   ok(pxBg[0] < 40 && pxBg[1] < 40, '다크 배경 픽셀 rgb(' + pxBg[0] + ',' + pxBg[1] + ',' + pxBg[2] + ')');
+  /* v14: 카드도 플랫 — 상단 바는 단색, 바탕에는 빛번짐·그라데이션이 없다 */
+  const bar1 = g2.getImageData(300, 4, 1, 1).data, bar2 = g2.getImageData(900, 4, 1, 1).data;
+  ok(bar1[0] === bar2[0] && bar1[1] === bar2[1] && bar1[2] === bar2[2] && bar1[1] > bar1[0] + 40,
+     '카드 상단 바 단색 에메랄드 · 그라데이션 없음 rgb(' + bar1[0] + ',' + bar1[1] + ',' + bar1[2] + ')');
+  const mt1 = g2.getImageData(1020, 200, 1, 1).data, mt2 = g2.getImageData(30, 1300, 1, 1).data;
+  ok(mt1[0] === 15 && mt1[1] === 15 && mt1[2] === 17 && mt2[0] === 15 && mt2[1] === 15 && mt2[2] === 17,
+     '카드 바탕은 매트 다크(#0F0F11) 단색 — 우상단 빛번짐·하단 그라데이션 없음 rgb(' +
+     mt1[0] + ',' + mt1[1] + ',' + mt1[2] + ') / rgb(' + mt2[0] + ',' + mt2[1] + ',' + mt2[2] + ')');
 
   P.openCardModal(rec);
   ok(q('#cardModal').hidden === false, '카드 미리보기 모달 열림');
