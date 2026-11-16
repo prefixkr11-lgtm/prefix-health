@@ -252,7 +252,10 @@ function decodeImage(src){
   ok(lvEls.length === 2, '최근 기록 2건에 레벨 배지 (실제 ' + lvEls.length + ')');
   ok((q('#recList').textContent || '').indexOf('헬창') !== -1 && (q('#recList').textContent || '').indexOf('헬린이') !== -1,
      '기록 리스트에 헬린이·헬창 배지 표시');
-  ok(lvEls[0].getAttribute('data-level') === 'advanced' && lvEls[0].textContent.indexOf('🔥') !== -1, '헬창 배지 스타일·이모지');
+  const lvAdvEl = Array.prototype.slice.call(lvEls).filter(function(el){ return el.getAttribute('data-level') === 'advanced'; })[0];
+  const lvBegEl = Array.prototype.slice.call(lvEls).filter(function(el){ return el.getAttribute('data-level') === 'beginner'; })[0];
+  ok(!!lvAdvEl && lvAdvEl.textContent.indexOf('🔥') !== -1 && lvAdvEl.className.indexOf('adv') !== -1, '헬창 배지 스타일·이모지');
+  ok(!!lvBegEl && lvBegEl.textContent.indexOf('🐣') !== -1, '헬린이 배지 이모지');
   const cardA = P.cardCanvas(recA);
   ok(cardA.width === 1080 && cardA.height === 1350, '레벨 기록도 결과 카드 1080×1350');
   const urlA = P.cardDataUrl(recA);

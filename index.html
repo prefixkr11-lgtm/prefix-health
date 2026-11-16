@@ -719,7 +719,7 @@ window.addEventListener('unhandledrejection', function (e) {
 
   <footer>
     Prehealth · 자세 분석 프로토타입 (프로토타입 0.1) — 관절 인식은 MediaPipe Pose Landmarker, 모든 처리는 이 기기의 브라우저 안에서만 이루어집니다. 업로드한 영상은 서버로 전송되지 않아요.<br>
-    각도 판정은 2D 웹캠/영상 기준이라 촬영 각도에 따라 값이 조금씩 달라질 수 있습니다. 통증이 있는 동작은 무리하지 마세요.
+    각도 판정은 3D 월드 랜드마크(실측 좌표) 기준이라 카메라가 비스듬해도 오차를 줄였습니다. 가려진 관절은 판정에서 자동으로 빠집니다. 통증이 있는 동작은 무리하지 마세요.
   </footer>
 </main>
 
