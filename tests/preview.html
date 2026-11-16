@@ -8,6 +8,7 @@
   html,body{margin:0;padding:0;background:#08080A;display:flex;justify-content:center}
   iframe{width:390px;height:844px;border:0;display:block;background:#0F0F11}
   body{background:#08080A}
+  #cap{position:fixed;left:14px;bottom:12px;color:#4A4A52;font:12px/1.4 ui-monospace,Menlo,monospace;pointer-events:none}
 </style>
 </head>
 <body>
@@ -15,6 +16,7 @@
      ?demo=1 을 붙이면 스크린샷용 예시 기록을 채운다.
      캐시된 옛 index.html이 뜨지 않도록 항상 새 쿼리로 불러온다. -->
 <iframe id="app" title="Prehealth 미리보기"></iframe>
+<div id="cap">Prehealth v14 · 폰 폭 미리보기 (?demo=1&amp;full=1)</div>
 <script>
 (function(){
   const demo = /[?&]demo=1/.test(location.search);
