@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PREFIX HEALTH 앱 아이콘 생성기 — 크림 · 차콜 · 라임.
+"""Prehealth 앱 아이콘 생성기 — 크림 · 차콜 · 라임.
 
 downloads/logo-prefix-friendly-2.png 로고에서 뽑은 팔레트를 그대로 쓴다.
   배경 크림    #FDF8F0
