@@ -828,6 +828,18 @@ window.addEventListener('unhandledrejection', function (e) {
   .modeCard[aria-selected="true"]{background:var(--emerald-soft);border-color:#2C5748}
   .modeCard[aria-selected="true"] b{color:var(--emerald-2)}
   .modeCard[aria-selected="true"] span{color:rgba(109,183,155,.8)}
+  /* 넓은 화면에서는 카드가 늘어나지 않게 폭을 잡아 둔다 */
+  @media (min-width:760px){
+    .heroModes{grid-template-columns:repeat(2,minmax(0,320px));justify-content:start}
+  }
+  /* 넓은 화면의 탭 바는 화면 가운데에 떠 있는 납작한 독으로 */
+  @media (min-width:900px){
+    .tabBar{
+      left:50%;right:auto;transform:translateX(-50%);
+      width:min(600px,calc(100% - 32px));
+      border:1px solid var(--line);border-bottom:0;border-radius:16px 16px 0 0;
+    }
+  }
   @media (max-width:360px){ .modeCard{padding:12px 11px;min-height:88px} .modeCard b{font-size:13.5px} }
 
   /* ---- 운동 8종: 한 줄 가로 스크롤 칩 ---- */
