@@ -540,6 +540,81 @@ window.addEventListener('unhandledrejection', function (e) {
   .cardHint{font-size:11px;color:var(--dim);line-height:1.6;margin:0 0 12px;text-align:center}
   .cardHint b{color:var(--emerald-2)}
 
+  /* ================= v17: 오늘의 루틴 =================
+     추천 루틴·나만의 루틴을 시작하면 무대 위 진행 바가 뜨고, 세트가 끝나면
+     휴식 카운트다운 → 다음 운동으로 자동 전환. 전부 단색 판·괘선만 쓴다. */
+  .rBar{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 11px 10px;margin-bottom:10px;scroll-margin-top:84px}
+  .rBar[hidden]{display:none}
+  .rBarTop{display:flex;align-items:center;gap:8px}
+  .rBarText{flex:1;min-width:0;font-size:11.5px;font-weight:800;letter-spacing:-.01em;color:var(--ink);line-height:1.4}
+  .rBarX{flex:0 0 auto;background:none;border:0;color:var(--dim);font-size:13px;line-height:1;padding:4px 5px;border-radius:7px;cursor:pointer}
+  .rBarX:hover{color:var(--ink);background:#1E1E21}
+  .rBarTrack{height:4px;border-radius:99px;background:#262629;overflow:hidden;margin:7px 0 8px}
+  .rBarTrack i{display:block;height:100%;width:0;background:var(--emerald-2);transition:width .3s}
+  .rSetDone{width:100%;justify-content:center;padding:9px 10px;font-size:12.5px}
+  .rRest{
+    position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:8px;padding:18px;text-align:center;background:var(--bg2);
+  }
+  .rRest[hidden]{display:none}
+  .rRest .rk{font-size:9.5px;letter-spacing:.2em;font-weight:800;color:var(--emerald-2);margin:0}
+  .rRest .rclock{font-size:46px;font-weight:800;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .rRest .rnext{font-size:12.5px;font-weight:700;color:var(--dim);line-height:1.5;max-width:26ch;margin:0}
+  .rRest .rnext b{color:var(--ink);font-weight:800}
+  .rRestBtns{display:flex;gap:7px;margin-top:4px}
+  .rRestBtns .btn{padding:8px 12px;font-size:12px;min-height:38px}
+  .rCard{background:var(--card2);border:1px solid var(--line);border-radius:11px;margin-bottom:8px}
+  .rCardMain{display:block;width:100%;text-align:left;background:none;border:0;padding:10px 12px;cursor:pointer;border-radius:11px}
+  .rCardMain:hover{background:#161B19}
+  .rCardTop{display:flex;align-items:center;gap:7px}
+  .rCardTop b{font-size:13px;font-weight:800;letter-spacing:-.015em}
+  .rCardTop .rGo{margin-left:auto;flex:0 0 auto;font-size:9.5px;font-weight:900;letter-spacing:.02em;color:var(--emerald-2);border:1px solid #2C5748;border-radius:999px;padding:3px 8px}
+  .rCardSteps{display:block;margin-top:5px;font-size:10.5px;font-weight:700;color:var(--dim);line-height:1.55}
+  .rCardActs{display:flex;gap:6px;padding:0 12px 9px}
+  .rCardActs .btn{flex:1 1 auto;justify-content:center;min-height:32px;padding:6px 8px;font-size:11.5px}
+  .rSub{margin:15px 0 7px;font-size:10px;letter-spacing:.12em;color:var(--dim);font-weight:800}
+  .rEmptyNote{margin:0 0 8px;font-size:11px;font-weight:700;color:var(--dim2);line-height:1.6}
+  .rLive{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:9px 11px;border:1px solid #2C5748;border-radius:10px;background:var(--emerald-soft)}
+  .rLive[hidden]{display:none}
+  .rLive span{flex:1;min-width:0;font-size:11.5px;font-weight:800;color:var(--emerald-2)}
+  .rLive .btn{flex:0 0 auto;min-height:30px;padding:5px 9px;font-size:11px;border-color:#2C5748}
+  .rEditor{margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--card2)}
+  .rEditor[hidden]{display:none}
+  .rField{margin-bottom:9px}
+  .rField > span{display:block;font-size:10px;font-weight:800;letter-spacing:.03em;color:var(--dim);margin-bottom:5px}
+  .rExChips{display:flex;flex-wrap:wrap;gap:4px}
+  .rExChip{flex:0 0 auto;cursor:pointer;background:none;border:1px solid var(--line);border-radius:7px;padding:5px 7px;font-size:10.5px;font-weight:800;color:var(--dim)}
+  .rExChip:hover{color:var(--ink);border-color:#3A3A3E}
+  .rExChip[aria-pressed="true"]{background:var(--emerald-soft);border-color:#2C5748;color:var(--emerald-2)}
+  .rGoalRow{display:flex;align-items:center;gap:7px}
+  .rGoalRow input{width:70px;background:#101012;border:1px solid var(--line);border-radius:8px;padding:7px 8px;color:var(--ink);font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+  .rGoalUnit{font-size:11.5px;font-weight:800;color:var(--dim)}
+  .rRestChips{display:flex;gap:5px}
+  .rRestChips .chip{flex:0 0 auto;padding:5px 9px;font-size:10.5px}
+  .rAddBtn{width:100%;justify-content:center;margin-top:2px;min-height:36px;padding:8px 9px;font-size:11.5px}
+  .rDraft{list-style:none;margin:9px 0 0;padding:0;display:flex;flex-direction:column;gap:5px}
+  .rDraft li{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:11px;font-weight:700}
+  .rDraft li.dEmpty{color:var(--dim2);font-weight:700;background:none;border:0;padding:2px}
+  .rDraft .dN{color:var(--emerald-2);font-weight:900;font-variant-numeric:tabular-nums;min-width:12px}
+  .rDraft .dT{flex:1;min-width:0;letter-spacing:-.01em}
+  .rDraft .dR{color:var(--dim2);font-size:10px;font-weight:700;white-space:nowrap}
+  .rDraft .dX{background:none;border:0;color:var(--dim);cursor:pointer;font-size:12px;line-height:1;padding:3px 4px;border-radius:6px}
+  .rDraft .dX:hover{color:var(--bad);background:#1E1E21}
+  .rNameRow{margin-top:9px}
+  .rNameRow input{width:100%;background:#101012;border:1px solid var(--line);border-radius:8px;padding:8px 9px;color:var(--ink);font-size:12px;font-weight:700}
+  .rEditorBtns{display:flex;gap:6px;margin-top:10px}
+  .rEditorBtns .btn{flex:1 1 auto;justify-content:center;min-height:36px;padding:8px 9px;font-size:11.5px}
+  .rDoneStats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 10px}
+  .rStat{background:var(--card2);border:1px solid var(--line);border-radius:11px;padding:11px 12px}
+  .rStat span{display:block;font-size:10px;font-weight:700;color:var(--dim);margin-bottom:2px}
+  .rStat strong{font-size:25px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .rStat em{font-style:normal;font-size:11px;font-weight:700;color:var(--dim);margin-left:2px}
+  .rDoneList{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:5px}
+  .rDoneList li{display:flex;align-items:center;gap:9px;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:12px;font-weight:800}
+  .rDoneList .dlN{flex:1;min-width:0;letter-spacing:-.01em}
+  .rDoneList .dlM{font-size:11px;font-weight:700;color:var(--dim);font-variant-numeric:tabular-nums}
+  .rDoneList .dlS{font-size:12.5px;font-weight:800;color:var(--emerald-2);font-variant-numeric:tabular-nums;min-width:30px;text-align:right}
+
   /* --- 토스트 --- */
   .toast{
     position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:120;
@@ -703,6 +778,16 @@ window.addEventListener('unhandledrejection', function (e) {
         <button role="tab" data-mode="camera" aria-selected="false">실시간 카메라</button>
       </div>
 
+      <!-- v17: 루틴 진행 바 — 무대 위에 지금 몇 번째 운동인지, 목표가 얼마인지 -->
+      <div class="rBar" id="routineBar" hidden>
+        <div class="rBarTop">
+          <span class="rBarText" id="routineBarText">루틴 1/1 · 스쿼트 · 목표 10회</span>
+          <button class="rBarX" id="routineQuit" type="button" aria-label="루틴 그만하기">✕</button>
+        </div>
+        <div class="rBarTrack" aria-hidden="true"><i id="routineBarFill"></i></div>
+        <button class="btn primary rSetDone" id="routineSetDone" type="button">이번 세트 끝 → 휴식</button>
+      </div>
+
       <div class="stage is-empty" id="stage">
         <video id="video" playsinline webkit-playsinline muted preload="metadata"></video>
         <canvas id="overlay"></canvas>
@@ -731,6 +816,17 @@ window.addEventListener('unhandledrejection', function (e) {
           <div class="bigCount">
             <span class="k" id="hudCountKey">횟수</span>
             <span class="v" id="hudCount">0</span><span class="u" id="hudCountUnit">회</span>
+          </div>
+        </div>
+
+        <!-- v17: 세트 사이 휴식 — 0초가 되면 다음 운동으로 자동 전환 -->
+        <div class="rRest" id="routineRest" hidden>
+          <p class="rk">휴식</p>
+          <div class="rclock mono" id="routineRestClock" role="timer" aria-live="off">0:45</div>
+          <p class="rnext" id="routineRestNext">다음 · 푸시업 10회</p>
+          <div class="rRestBtns">
+            <button class="btn primary" id="routineSkip" type="button">건너뛰기</button>
+            <button class="btn ghost" id="routineRestQuit" type="button">그만하기</button>
           </div>
         </div>
 
@@ -877,6 +973,12 @@ window.addEventListener('unhandledrejection', function (e) {
 
     <!-- 메뉴 첫 화면 -->
     <div class="menuView" id="menuMainView">
+      <button class="menuRow" id="menuRoutine" type="button">
+        <span class="mi" aria-hidden="true">🏋️</span>
+        <span class="mb"><b>오늘의 루틴</b><span>스쿼트 → 휴식 → 푸시업, 알아서 이어져요</span></span>
+        <span class="ma" aria-hidden="true">›</span>
+      </button>
+
       <button class="menuRow" id="menuRecords" type="button">
         <span class="mi" aria-hidden="true">📊</span>
         <span class="mb"><b>내 운동 기록</b><span>요즘 점수와 최근 기록 보기</span></span>
@@ -918,6 +1020,52 @@ window.addEventListener('unhandledrejection', function (e) {
         <span class="ma" aria-hidden="true">›</span>
       </button>
       <p class="menuNote">영상은 이 기기 밖으로 나가지 않아요. 분석·기록·결과 카드 저장은 지금처럼 무료예요.</p>
+    </div>
+
+    <!-- v17: 오늘의 루틴 (추천 3종 · 나만의 루틴) -->
+    <div class="menuView" id="menuRoutineView" hidden>
+      <div class="rLive" id="routineLive" hidden>
+        <span id="routineLiveText">루틴 진행 중</span>
+        <button class="btn ghost" id="routineLiveQuit" type="button">그만하기</button>
+      </div>
+      <p class="sheetLead">오늘 할 운동을 고르면 <b>세트 사이 휴식까지 알아서</b> 이어져요. 카메라를 켜면 목표를 채운 순간 다음 운동으로 넘어가요.</p>
+      <div id="routinePresetList"></div>
+      <h4 class="rSub">나만의 루틴</h4>
+      <div id="routineCustomBox"></div>
+      <button class="menuRow" id="routineBuild" type="button">
+        <span class="mi" aria-hidden="true">➕</span>
+        <span class="mb"><b>나만의 루틴 만들기</b><span>8종 운동에서 골라 목표·휴식 시간을 정해요</span></span>
+        <span class="ma" aria-hidden="true">›</span>
+      </button>
+
+      <div class="rEditor" id="routineEditor" hidden>
+        <div class="rField">
+          <span>운동</span>
+          <div class="rExChips" id="routineExChips"></div>
+        </div>
+        <div class="rField">
+          <span>목표</span>
+          <div class="rGoalRow">
+            <input id="routineGoal" type="number" inputmode="numeric" min="1" step="1" value="10" aria-label="목표">
+            <span class="rGoalUnit" id="routineGoalUnit">회</span>
+          </div>
+        </div>
+        <div class="rField">
+          <span>운동 사이 휴식</span>
+          <div class="rRestChips" id="routineRestChips"></div>
+        </div>
+        <button class="btn rAddBtn" id="routineAdd" type="button">이 운동 추가</button>
+        <ul class="rDraft" id="routineDraft"></ul>
+        <div class="rNameRow">
+          <input id="routineName" type="text" maxlength="20" placeholder="나만의 루틴" aria-label="루틴 이름">
+        </div>
+        <div class="rEditorBtns">
+          <button class="btn primary" id="routineSave" type="button">저장</button>
+          <button class="btn ghost" id="routineEditorClose" type="button">취소</button>
+        </div>
+      </div>
+
+      <p class="menuNote">루틴은 이 기기에만 저장돼요. 통증이 있으면 바로 그만두세요.</p>
     </div>
 
     <!-- 촬영 각도 가이드 -->
@@ -1017,6 +1165,28 @@ window.addEventListener('unhandledrejection', function (e) {
     </div>
     <div class="proCount">이 기기에서 관심 표시 <b id="proCount">0</b>번 · 결제는 아직 안 돼요</div>
     <p class="proNote">분석·기록·결과 카드 저장은 지금처럼 모두 무료예요. Pro는 더 자세한 리포트만 맡아요.</p>
+  </div>
+</div>
+
+<!-- ================= v17: 루틴 완료 요약 ================= -->
+<div class="modal" id="routineDone" hidden role="dialog" aria-modal="true" aria-labelledby="routineDoneTitle">
+  <button class="modalBackdrop" id="routineDoneBackdrop" type="button" aria-label="닫기"></button>
+  <div class="sheet">
+    <div class="sheetHead">
+      <span class="proMark" aria-hidden="true">🏋️</span>
+      <h3 id="routineDoneTitle">루틴 완료</h3>
+      <button class="sheetClose" id="routineDoneClose" type="button" aria-label="닫기">✕</button>
+    </div>
+    <p class="sheetLead" id="routineDoneLead">전신 기본 · 3개 운동을 다 했어요.</p>
+    <div class="rDoneStats">
+      <div class="rStat"><span>완료한 운동 수</span><strong id="routineDoneCount">0</strong><em>개</em></div>
+      <div class="rStat"><span>평균 자세 점수</span><strong id="routineDoneScore">–</strong><em>점</em></div>
+    </div>
+    <ul class="rDoneList" id="routineDoneList"></ul>
+    <div class="sheetActions">
+      <button class="btn primary" id="routineAgain" type="button">한 번 더</button>
+      <button class="btn ghost" id="routineDoneDismiss" type="button">닫기</button>
+    </div>
   </div>
 </div>
 
@@ -2760,7 +2930,22 @@ const els = {
   cardModal: $('#cardModal'), cardPreview: $('#cardPreview'), cardDownload: $('#cardDownload'),
   cardShare: $('#cardShare'), cardClose: $('#cardClose'), cardDismiss: $('#cardDismiss'), cardModalBackdrop: $('#cardModalBackdrop'),
   proModal: $('#proModal'), proClose: $('#proClose'), proModalBackdrop: $('#proModalBackdrop'),
-  proCta: $('#proCta'), proCount: $('#proCount'), toast: $('#toast')
+  proCta: $('#proCta'), proCount: $('#proCount'), toast: $('#toast'),
+  /* v17: 오늘의 루틴 */
+  routineBar: $('#routineBar'), routineBarText: $('#routineBarText'), routineBarFill: $('#routineBarFill'),
+  routineQuit: $('#routineQuit'), routineSetDone: $('#routineSetDone'),
+  routineRest: $('#routineRest'), routineRestClock: $('#routineRestClock'), routineRestNext: $('#routineRestNext'),
+  routineSkip: $('#routineSkip'), routineRestQuit: $('#routineRestQuit'),
+  menuRoutine: $('#menuRoutine'), menuRoutineView: $('#menuRoutineView'),
+  routineLive: $('#routineLive'), routineLiveText: $('#routineLiveText'), routineLiveQuit: $('#routineLiveQuit'),
+  routinePresetList: $('#routinePresetList'), routineCustomBox: $('#routineCustomBox'),
+  routineBuild: $('#routineBuild'), routineEditor: $('#routineEditor'), routineExChips: $('#routineExChips'),
+  routineGoal: $('#routineGoal'), routineGoalUnit: $('#routineGoalUnit'), routineRestChips: $('#routineRestChips'),
+  routineAdd: $('#routineAdd'), routineDraft: $('#routineDraft'), routineName: $('#routineName'),
+  routineSave: $('#routineSave'), routineEditorClose: $('#routineEditorClose'),
+  routineDone: $('#routineDone'), routineDoneBackdrop: $('#routineDoneBackdrop'), routineDoneClose: $('#routineDoneClose'),
+  routineDoneLead: $('#routineDoneLead'), routineDoneCount: $('#routineDoneCount'), routineDoneScore: $('#routineDoneScore'),
+  routineDoneList: $('#routineDoneList'), routineAgain: $('#routineAgain'), routineDoneDismiss: $('#routineDoneDismiss')
 };
 const ctx = els.overlay.getContext('2d');
 
@@ -3308,6 +3493,7 @@ function detectFrame(v, ts){
 }
 function maybeScan(){
   if (S.mode !== 'video' || !S.hasVideo) return false;
+  if (S.routineHold) return false;   // v17: 루틴이 운동을 바꿀 때 같은 영상을 저절로 다시 분석하지 않는다
   if (!S.modelReady){ S.pendingScan = true; setText(els.hudHint, '분석 준비 중이에요…'); return false; }
   return startScan();
 }
@@ -3396,7 +3582,18 @@ function finishScan(lastOut){
   els.seekRow.hidden = S.mode !== 'video' || !S.hasVideo;
   els.playBtn.textContent = '▶︎ 다시 보기';
   scanUi(false);
+  /* v17: 루틴 중이면 영상 분석이 끝난 그 순간이 ‘세트 끝’ — 결과 화면 대신 휴식으로 넘어간다 */
+  const routineWas = !!routine.active;
+  const routineSet = !!(routine.active && routine.active.phase === 'exercise');
   if (lastOut) applyResult(lastOut);
+  if (routineWas){
+    if (routineSet && routine.active && routine.active.phase === 'exercise') routineEndSet('video');
+    if (routineSet){
+      setText(els.hudPhase, '휴식');
+      setText(els.hudHint, '휴식이 끝나면 다음 운동으로 넘어가요');
+    }
+    return;
+  }
   setText(els.hudPhase, '분석 완료');
   setText(els.hudHint, '결과를 아래에 정리했어요');
   showReport();
@@ -3761,6 +3958,8 @@ function applyResult(out){
     else els.hudPhase.className = 'chip';
     setText(els.hudFrames, (out.world3d ? '3D' : '2D') + ' 33J · ' + engine.state.frames);
     setText(els.sessModel, S.modelName + (out.world3d ? ' · 3D' : ' · 2D'));
+    /* v17: 루틴 — 목표 횟수/시간을 채우면 자동으로 휴식으로 */
+    routineOnResult(out);
   } else {
     setText(els.hudPhase, out.phase || '사람 없음');
     els.hudPhase.className = 'chip warn';
@@ -4400,6 +4599,7 @@ document.querySelectorAll('.plan').forEach(function(b){
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
   if (!els.cardModal.hidden) { closeCardModal(); return; }
+  if (els.routineDone && !els.routineDone.hidden) { closeRoutineDone(); return; }
   if (!els.proModal.hidden) { closePro(); return; }
   if (menuOpen()) { closeMenu(); return; }
 });
@@ -4428,6 +4628,8 @@ document.querySelectorAll('.ex-btn').forEach(function(b){
   b.addEventListener('click', function(){
     const kind = b.dataset.ex;
     if (kind === S.exercise) return;
+    /* v17: 루틴 중에 다른 운동을 직접 고르면 루틴은 접는다 */
+    if (routine.active) routineQuit(false);
     engine = createEngine(kind);
     applyExerciseUI(kind);
     if (S.mode === 'video' && S.hasVideo && !els.video.paused){
@@ -4456,8 +4658,8 @@ document.addEventListener('visibilitychange', function(){
 /* ------------------------------ v16 · 우상단 ☰ 메뉴 ------------------------------
    헤더의 PRO 배지를 거둬 오른쪽 위 메뉴 버튼 하나로 모았다.
    메뉴 안에서 기록 이동 · 휴식 타이머 · Pro · 촬영 각도 · 앱 설치를 바로 쓴다. */
-const MENU_VIEWS = { main: 'menuMainView', guide: 'menuGuideView', install: 'menuInstallView' };
-const MENU_TITLES = { main: '메뉴', guide: '촬영 각도 가이드', install: '홈 화면에 앱 설치' };
+const MENU_VIEWS = { main: 'menuMainView', routine: 'menuRoutineView', guide: 'menuGuideView', install: 'menuInstallView' };
+const MENU_TITLES = { main: '메뉴', routine: '오늘의 루틴', guide: '촬영 각도 가이드', install: '홈 화면에 앱 설치' };
 
 function menuView(name){
   const view = MENU_VIEWS[name] ? name : 'main';
@@ -4605,6 +4807,510 @@ function timerBeep(){
   try { if (navigator.vibrate) navigator.vibrate(200); } catch (e) {}
 }
 
+/* ------------------------------ v17 · 오늘의 루틴 ------------------------------
+   추천 루틴 3종을 원탭으로 시작하거나 8종 운동으로 나만의 루틴을 만든다.
+   세트가 끝나면(목표 달성 · ‘이번 세트 끝’ · 영상 분석 종료) 휴식 카운트다운으로 넘어가고,
+   0초가 되면 비프·진동·토스트와 함께 다음 운동으로 자동 전환한다.
+   마지막 운동이 끝나면 완료 요약(완료한 운동 수 · 평균 자세 점수)을 보여준다. */
+const ROUTINE_KEY = 'prehealth:routine:v1';
+const ROUTINE_REST_OPTS = [30, 45, 60];
+const ROUTINE_MAX_STEPS = 8;
+const ROUTINE_GOAL_DEF = { squat: 10, pushup: 10, plank: 30, running: 40, lunge: 10, pullup: 6, deadlift: 8, situp: 15 };
+const ROUTINE_PRESETS = [
+  { id: 'full', name: '전신 기본', emoji: '🏋️', steps: [
+    { ex: 'squat', goal: 10, rest: 45 }, { ex: 'pushup', goal: 10, rest: 45 }, { ex: 'plank', goal: 30, rest: 0 } ] },
+  { id: 'lower', name: '하체 집중', emoji: '🦵', steps: [
+    { ex: 'squat', goal: 12, rest: 45 }, { ex: 'lunge', goal: 10, rest: 45 }, { ex: 'plank', goal: 30, rest: 0 } ] },
+  { id: 'upper', name: '상체·코어', emoji: '💪', steps: [
+    { ex: 'pushup', goal: 10, rest: 45 }, { ex: 'pullup', goal: 6, rest: 45 }, { ex: 'situp', goal: 15, rest: 0 } ] }
+];
+
+function routineUnit(kind){ return kind === 'plank' ? '초' : (kind === 'running' ? '스텝' : '회'); }
+function routineStepLabel(step){
+  const ex = EXERCISES[step.ex];
+  return (ex ? ex.name : step.ex) + ' ' + step.goal + routineUnit(step.ex);
+}
+function routineSummary(steps){
+  const list = steps || [];
+  return list.map(function(s, i){
+    const tail = (i < list.length - 1 && s.rest > 0) ? ' → 휴식 ' + s.rest + '초' : '';
+    return routineStepLabel(s) + tail;
+  }).join(' → ');
+}
+function routineCleanSteps(list){
+  const out = [];
+  (list || []).forEach(function(s){
+    if (!s || !EXERCISES[s.ex]) return;
+    const goal = Math.round(Number(s.goal));
+    if (!isFinite(goal) || goal <= 0) return;
+    const r = Number(s.rest);
+    const rest = (r === 0 || ROUTINE_REST_OPTS.indexOf(r) >= 0) ? r : 45;
+    out.push({ ex: s.ex, goal: clamp(goal, 1, 600), rest: rest });
+  });
+  return out.slice(0, ROUTINE_MAX_STEPS);
+}
+
+/* 나만의 루틴 — 이 기기에만 저장 */
+function readRoutineStore(){
+  const raw = readStore(ROUTINE_KEY);
+  if (!raw) return null;
+  try {
+    const o = JSON.parse(raw);
+    if (!o || typeof o !== 'object') return null;
+    const steps = routineCleanSteps(o.steps);
+    if (!steps.length) return null;
+    const name = String(o.name || '').trim().slice(0, 20) || '나만의 루틴';
+    return { name: name, steps: steps, savedAt: o.savedAt || null };
+  } catch (e){ return null; }
+}
+function saveRoutineStore(name, steps){
+  const clean = routineCleanSteps(steps);
+  if (!clean.length) return null;
+  const def = {
+    name: String(name || '').trim().slice(0, 20) || '나만의 루틴',
+    steps: clean,
+    savedAt: new Date().toISOString()
+  };
+  if (!writeStore(ROUTINE_KEY, JSON.stringify(def))) return null;
+  return def;
+}
+function clearRoutineStore(){
+  try { localStorage.removeItem(ROUTINE_KEY); } catch (e) {}
+  return true;
+}
+
+/* 진행 중인 루틴 상태 */
+const routine = {
+  active: null,     // { name, steps, index, phase:'exercise'|'rest'|'done', results, startedAt }
+  last: null,       // 마지막으로 끝낸 루틴 — ‘한 번 더’
+  restSec: 0, restLeftMs: 0, restEndAt: 0, restId: 0,
+  draft: [], draftEx: 'squat', draftRest: 45, editing: false
+};
+
+function routineStopRest(){
+  if (routine.restId){ clearInterval(routine.restId); routine.restId = 0; }
+  routine.restLeftMs = 0;
+}
+function routineCurrentStep(){
+  const a = routine.active;
+  return a ? a.steps[Math.min(a.index, a.steps.length - 1)] : null;
+}
+function routinePaintLive(){
+  if (!els.routineLive) return;
+  const a = routine.active;
+  els.routineLive.hidden = !a;
+  if (!a) return;
+  const step = routineCurrentStep();
+  setText(els.routineLiveText, '루틴 진행 중 · ' + (a.index + 1) + '/' + a.steps.length + ' ' + EXERCISES[step.ex].name
+    + (a.phase === 'rest' ? ' · 휴식' : ''));
+}
+function routinePaint(){
+  routinePaintLive();
+  if (!els.routineBar) return;
+  const a = routine.active;
+  els.routineBar.hidden = !a;
+  if (!a){
+    if (els.routineRest) els.routineRest.hidden = true;
+    return;
+  }
+  const n = a.steps.length;
+  const step = routineCurrentStep();
+  const next = a.steps[a.index + 1] || null;
+  const text = (a.phase === 'rest')
+    ? ('루틴 ' + (a.index + 1) + '/' + n + ' · ' + EXERCISES[step.ex].name + ' 끝 · 휴식')
+    : ('루틴 ' + (a.index + 1) + '/' + n + ' · ' + EXERCISES[step.ex].name + ' · 목표 ' + step.goal + routineUnit(step.ex));
+  setText(els.routineBarText, text);
+  const pct = (a.results.length / n) * 100;
+  if (els.routineBarFill) els.routineBarFill.style.width = clamp(pct, 0, 100).toFixed(1) + '%';
+  if (els.routineSetDone) els.routineSetDone.hidden = a.phase !== 'exercise';
+  if (els.routineRest){
+    els.routineRest.hidden = a.phase !== 'rest';
+    els.routineRest.setAttribute('data-running', a.phase === 'rest' ? '1' : '0');
+  }
+  if (els.routineRestNext){
+    els.routineRestNext.textContent = next ? ('다음 · ' + routineStepLabel(next)) : '마지막 운동이에요';
+  }
+  if (a.phase === 'rest') setText(els.routineRestClock, fmtClock(routine.restLeftMs));
+}
+
+function routineEnterStep(i){
+  const a = routine.active;
+  if (!a) return false;
+  const step = a.steps[i];
+  if (!step) return false;
+  a.index = i;
+  a.phase = 'exercise';
+  S.routineHold = true;
+  try { applyExerciseUI(step.ex); }
+  finally { S.routineHold = false; }
+  if (S.mode === 'camera' && S.stream) S.camStartAt = performance.now();
+  setText(els.hudHint, step.ex === 'plank'
+    ? ('루틴 ' + (i + 1) + '/' + a.steps.length + ' — ' + step.goal + '초 버텨 볼까요?')
+    : ('루틴 ' + (i + 1) + '/' + a.steps.length + ' — ' + step.goal + routineUnit(step.ex) + ' 해 볼까요?'));
+  routinePaint();
+  return true;
+}
+function routineStart(def){
+  if (!def) return false;
+  const steps = routineCleanSteps(def.steps);
+  if (!steps.length) return false;
+  routineQuit(true);
+  routine.active = {
+    name: String(def.name || '오늘의 루틴').slice(0, 20),
+    steps: steps, index: 0, phase: 'exercise', results: [], startedAt: Date.now()
+  };
+  closeMenu();
+  routineEnterStep(0);
+  try { els.routineBar.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+  toast('루틴 시작! ' + routineStepLabel(steps[0]) + '부터');
+  return true;
+}
+function routineGoalReached(step, kind, out){
+  if (!step || !out || !out.ok) return false;
+  const count = Number(out.count) || 0;
+  if (kind === 'plank') return count >= step.goal * 1000;
+  return count >= step.goal;
+}
+function routineCollect(){
+  const a = routine.active;
+  if (!a) return null;
+  const kind = S.exercise;
+  const sum = engine.summary();
+  const raw = (kind === 'plank') ? sum.score : sum.avgScore;
+  const score = (raw === null || raw === undefined || !isFinite(raw)) ? null : Math.round(raw);
+  const metric = (kind === 'plank')
+    ? fmtClock(sum.holdMs || 0)
+    : (String(sum.reps || 0) + routineUnit(kind));
+  const r = { ex: kind, name: EXERCISES[kind].name, goal: a.steps[a.index].goal, metric: metric, score: score };
+  a.results.push(r);
+  return r;
+}
+function routineEndSet(reason){
+  const a = routine.active;
+  if (!a || a.phase !== 'exercise') return false;
+  if (S.scanning) cancelScan(true);
+  routineCollect();
+  const step = a.steps[a.index];
+  const last = a.index >= a.steps.length - 1;
+  if (last) return routineComplete();
+  const rest = Math.max(0, Math.round(step.rest || 0));
+  if (rest <= 0) return routineNextStep();
+  routineStopRest();
+  a.phase = 'rest';
+  routine.restSec = rest;
+  routine.restLeftMs = rest * 1000;
+  routine.restEndAt = Date.now() + routine.restLeftMs;
+  routinePaint();
+  if (reason === 'goal') toast('목표를 채웠어요! 휴식 ' + rest + '초');
+  routine.restId = setInterval(routineRestTick, 200);
+  return true;
+}
+function routineRestTick(){
+  const a = routine.active;
+  if (!a || a.phase !== 'rest'){ routineStopRest(); return false; }
+  routine.restLeftMs = Math.max(0, routine.restEndAt - Date.now());
+  setText(els.routineRestClock, fmtClock(routine.restLeftMs));
+  if (routine.restLeftMs <= 0) return routineRestFinish(false);
+  return true;
+}
+function routineNextStep(){
+  const a = routine.active;
+  if (!a) return false;
+  routineStopRest();
+  if (a.index >= a.steps.length - 1) return routineComplete();
+  return routineEnterStep(a.index + 1);
+}
+function routineRestFinish(silent){
+  const a = routine.active;
+  if (!a || a.phase !== 'rest') return false;
+  routineStopRest();
+  const next = a.steps[a.index + 1] || null;
+  if (!silent){
+    timerBeep();
+    toast(next ? ('휴식 끝! 다음은 ' + routineStepLabel(next)) : '휴식 끝! 마지막 운동이에요');
+  }
+  return routineNextStep();
+}
+function routineOnResult(out){
+  const a = routine.active;
+  if (!a || a.phase !== 'exercise' || S.scanning) return false;
+  const step = routineCurrentStep();
+  if (!routineGoalReached(step, S.exercise, out)) return false;
+  return routineEndSet('goal');
+}
+function routineQuit(silent){
+  const had = !!routine.active;
+  routineStopRest();
+  routine.active = null;
+  routinePaint();
+  if (els.routineRest) els.routineRest.hidden = true;
+  if (had && !silent) toast('루틴을 그만뒀어요');
+  return had;
+}
+
+/* 완료 요약 */
+function routineComplete(){
+  const a = routine.active;
+  if (!a) return false;
+  a.phase = 'done';
+  routineStopRest();
+  const scores = a.results.map(function(r){ return r.score; }).filter(function(v){ return typeof v === 'number' && isFinite(v); });
+  const avg = scores.length ? Math.round(scores.reduce(function(x, y){ return x + y; }, 0) / scores.length) : null;
+  routine.last = { name: a.name, steps: a.steps.map(function(s){ return { ex: s.ex, goal: s.goal, rest: s.rest }; }) };
+  setText(els.routineDoneLead, a.name + ' · ' + a.steps.length + '개 운동을 다 했어요.');
+  setText(els.routineDoneCount, String(a.results.length));
+  setText(els.routineDoneScore, avg === null ? '–' : String(avg));
+  if (els.routineDoneList){
+    els.routineDoneList.innerHTML = '';
+    a.results.forEach(function(r){
+      const li = document.createElement('li');
+      const n = document.createElement('span'); n.className = 'dlN'; n.textContent = r.name;
+      const m = document.createElement('span'); m.className = 'dlM'; m.textContent = r.metric;
+      const s = document.createElement('span'); s.className = 'dlS'; s.textContent = (r.score === null ? '–' : String(r.score));
+      li.appendChild(n); li.appendChild(m); li.appendChild(s);
+      els.routineDoneList.appendChild(li);
+    });
+  }
+  routine.active = null;
+  routinePaint();
+  if (els.routineDone){
+    els.routineDone.hidden = false;
+    lockScroll(true);
+    try { els.routineDoneClose.focus({ preventScroll: true }); } catch (e) {}
+  }
+  timerBeep();
+  return true;
+}
+function closeRoutineDone(){
+  if (!els.routineDone || els.routineDone.hidden) return false;
+  els.routineDone.hidden = true;
+  lockScroll(false);
+  return true;
+}
+
+/* 메뉴 안 ‘오늘의 루틴’ 그리기 */
+function routineCard(def, opts){
+  const o = opts || {};
+  const card = document.createElement('div');
+  card.className = 'rCard';
+  const main = document.createElement('button');
+  main.type = 'button';
+  main.className = 'rCardMain';
+  if (o.preset) main.setAttribute('data-preset', o.preset);
+  if (o.custom) main.setAttribute('data-custom', '1');
+  const top = document.createElement('span');
+  top.className = 'rCardTop';
+  const nm = document.createElement('b');
+  nm.textContent = (def.emoji ? def.emoji + ' ' : '') + def.name;
+  const go = document.createElement('span');
+  go.className = 'rGo';
+  go.textContent = '시작';
+  top.appendChild(nm); top.appendChild(go);
+  const sum = document.createElement('span');
+  sum.className = 'rCardSteps';
+  sum.textContent = routineSummary(def.steps);
+  main.appendChild(top); main.appendChild(sum);
+  main.addEventListener('click', function(){ routineStart(def); routineViewRender(); });
+  card.appendChild(main);
+  if (o.acts){
+    const acts = document.createElement('div');
+    acts.className = 'rCardActs';
+    const edit = document.createElement('button');
+    edit.type = 'button'; edit.className = 'btn ghost'; edit.textContent = '편집';
+    edit.setAttribute('data-act', 'edit');
+    edit.addEventListener('click', function(){ routineEditSaved(); });
+    const del = document.createElement('button');
+    del.type = 'button'; del.className = 'btn ghost'; del.textContent = '지우기';
+    del.setAttribute('data-act', 'delete');
+    del.addEventListener('click', function(){
+      if (del.getAttribute('data-armed') === '1'){
+        clearRoutineStore();
+        routineRenderCustom();
+        toast('나만의 루틴을 지웠어요');
+        return;
+      }
+      del.setAttribute('data-armed', '1');
+      del.textContent = '정말 지울까요?';
+    });
+    acts.appendChild(edit); acts.appendChild(del);
+    card.appendChild(acts);
+  }
+  return card;
+}
+function routineViewRender(){
+  if (els.routinePresetList){
+    els.routinePresetList.innerHTML = '';
+    ROUTINE_PRESETS.forEach(function(p){
+      els.routinePresetList.appendChild(routineCard(p, { preset: p.id }));
+    });
+  }
+  routineRenderCustom();
+  routinePaintLive();
+}
+function routineRenderCustom(){
+  const box = els.routineCustomBox;
+  if (!box) return;
+  box.innerHTML = '';
+  const saved = readRoutineStore();
+  if (!saved){
+    const p = document.createElement('p');
+    p.className = 'rEmptyNote';
+    p.textContent = '아직 없어요. 8종 운동에서 골라 3분이면 만들 수 있어요.';
+    box.appendChild(p);
+    return;
+  }
+  box.appendChild(routineCard(saved, { custom: true, acts: true }));
+}
+function routineEditorOpen(on){
+  if (!els.routineEditor) return false;
+  const open = (on === undefined) ? !!els.routineEditor.hidden : !!on;
+  els.routineEditor.hidden = !open;
+  if (open){
+    routineRenderEditor();
+    try { els.routineEditor.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+  }
+  return open;
+}
+function routineDraftReset(){
+  routine.draft = [];
+  routine.draftEx = 'squat';
+  routine.draftRest = 45;
+  routine.editing = false;
+  if (els.routineGoal) els.routineGoal.value = String(ROUTINE_GOAL_DEF.squat);
+  if (els.routineName) els.routineName.value = '';
+}
+function routineEditSaved(){
+  const saved = readRoutineStore();
+  if (!saved) return false;
+  routine.draft = saved.steps.map(function(s){ return { ex: s.ex, goal: s.goal, rest: s.rest }; });
+  routine.draftEx = saved.steps[0].ex;
+  routine.draftRest = saved.steps[0].rest;
+  routine.editing = true;
+  if (els.routineGoal) els.routineGoal.value = String(saved.steps[0].goal);
+  if (els.routineName) els.routineName.value = saved.name;
+  routineEditorOpen(true);
+  return true;
+}
+function routineRenderEditor(){
+  if (!els.routineEditor) return;
+  if (els.routineExChips){
+    els.routineExChips.innerHTML = '';
+    Object.keys(EXERCISES).forEach(function(k){
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'rExChip';
+      b.setAttribute('data-ex', k);
+      b.setAttribute('aria-pressed', String(k === routine.draftEx));
+      b.textContent = EXERCISES[k].name;
+      b.addEventListener('click', function(){
+        if (k === routine.draftEx) return;
+        if (els.routineGoal && Number(els.routineGoal.value) === ROUTINE_GOAL_DEF[routine.draftEx]){
+          els.routineGoal.value = String(ROUTINE_GOAL_DEF[k]);
+        }
+        routine.draftEx = k;
+        routineRenderEditor();
+      });
+      els.routineExChips.appendChild(b);
+    });
+  }
+  if (els.routineGoalUnit) setText(els.routineGoalUnit, routineUnit(routine.draftEx));
+  if (els.routineGoal){
+    els.routineGoal.min = '1';
+    els.routineGoal.step = routine.draftEx === 'plank' ? '5' : '1';
+  }
+  if (els.routineRestChips){
+    els.routineRestChips.innerHTML = '';
+    ROUTINE_REST_OPTS.forEach(function(sec){
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.setAttribute('data-rest', String(sec));
+      b.setAttribute('aria-pressed', String(sec === routine.draftRest));
+      b.textContent = sec + '초';
+      b.addEventListener('click', function(){ routine.draftRest = sec; routineRenderEditor(); });
+      els.routineRestChips.appendChild(b);
+    });
+  }
+  if (els.routineDraft){
+    els.routineDraft.innerHTML = '';
+    if (!routine.draft.length){
+      const li = document.createElement('li');
+      li.className = 'dEmpty';
+      li.textContent = '아직 넣은 운동이 없어요.';
+      els.routineDraft.appendChild(li);
+    } else {
+      routine.draft.forEach(function(step, i){
+        const li = document.createElement('li');
+        const n = document.createElement('span'); n.className = 'dN'; n.textContent = String(i + 1);
+        const t = document.createElement('span'); t.className = 'dT'; t.textContent = routineStepLabel(step);
+        const r = document.createElement('span'); r.className = 'dR';
+        r.textContent = (i < routine.draft.length - 1 && step.rest > 0) ? ('휴식 ' + step.rest + '초') : '';
+        const x = document.createElement('button');
+        x.type = 'button'; x.className = 'dX'; x.textContent = '✕';
+        x.setAttribute('aria-label', routineStepLabel(step) + ' 빼기');
+        x.addEventListener('click', function(){ routine.draft.splice(i, 1); routineRenderEditor(); });
+        li.appendChild(n); li.appendChild(t); li.appendChild(r); li.appendChild(x);
+        els.routineDraft.appendChild(li);
+      });
+    }
+  }
+}
+function routineDraftAdd(){
+  const raw = els.routineGoal ? Number(els.routineGoal.value) : NaN;
+  if (!isFinite(raw) || raw <= 0){ toast('목표를 숫자로 넣어 주세요'); return false; }
+  if (routine.draft.length >= ROUTINE_MAX_STEPS){ toast('운동은 ' + ROUTINE_MAX_STEPS + '개까지 넣을 수 있어요'); return false; }
+  routine.draft.push({ ex: routine.draftEx, goal: clamp(Math.round(raw), 1, 600), rest: routine.draftRest });
+  routineRenderEditor();
+  return true;
+}
+function routineDraftSave(){
+  if (!routine.draft.length){ toast('운동을 하나 이상 넣어 주세요'); return null; }
+  const def = saveRoutineStore(els.routineName ? els.routineName.value : '', routine.draft);
+  if (!def){ toast('저장하지 못했어요'); return null; }
+  routine.draft = [];
+  routine.editing = false;
+  if (els.routineName) els.routineName.value = '';
+  routineRenderEditor();
+  routineRenderCustom();
+  routineEditorOpen(false);
+  toast('나만의 루틴을 저장했어요');
+  return def;
+}
+
+if (els.menuRoutine) els.menuRoutine.addEventListener('click', function(){
+  routineViewRender();
+  menuView('routine');
+});
+if (els.routineBuild) els.routineBuild.addEventListener('click', function(){
+  if (els.routineEditor && !els.routineEditor.hidden){ routineEditorOpen(false); return; }
+  routineDraftReset();
+  routineRenderEditor();
+  routineEditorOpen(true);
+});
+if (els.routineAdd) els.routineAdd.addEventListener('click', routineDraftAdd);
+if (els.routineSave) els.routineSave.addEventListener('click', routineDraftSave);
+if (els.routineEditorClose) els.routineEditorClose.addEventListener('click', function(){
+  routineDraftReset();
+  routineRenderEditor();
+  routineEditorOpen(false);
+});
+if (els.routineSetDone) els.routineSetDone.addEventListener('click', function(){ routineEndSet('button'); });
+if (els.routineSkip) els.routineSkip.addEventListener('click', function(){ routineRestFinish(true); });
+if (els.routineRestQuit) els.routineRestQuit.addEventListener('click', function(){ routineQuit(false); });
+if (els.routineQuit) els.routineQuit.addEventListener('click', function(){ routineQuit(false); });
+if (els.routineLiveQuit) els.routineLiveQuit.addEventListener('click', function(){
+  routineQuit(false);
+  routineViewRender();
+});
+if (els.routineAgain) els.routineAgain.addEventListener('click', function(){
+  const last = routine.last;
+  closeRoutineDone();
+  if (last) routineStart(last);
+});
+if (els.routineDoneClose) els.routineDoneClose.addEventListener('click', closeRoutineDone);
+if (els.routineDoneDismiss) els.routineDoneDismiss.addEventListener('click', closeRoutineDone);
+if (els.routineDoneBackdrop) els.routineDoneBackdrop.addEventListener('click', closeRoutineDone);
+
 /* 촬영 각도 가이드: 운동 8종의 카메라 위치를 한 줄로 */
 function renderCamGuide(){
   if (!els.camGuideList) return 0;
@@ -4721,13 +5427,16 @@ setMode('video');
 timerSetSec(readTimerSec());
 renderCamGuide();
 timerPaint();
+routineViewRender();
+routineRenderEditor();
+routinePaint();
 setText(els.hudHint, '동영상을 올리거나 카메라를 켜 주세요');
 renderRecords();
 loadEngine();
 
 /* ------------------------------ 테스트/자동화용 공개 API ------------------------------ */
 window.Prehealth = {
-  version: 'v16',
+  version: 'v17',
   recordsKey: REC_KEY,
   proKey: PRO_KEY,
   levelKey: LEVEL_KEY,
@@ -4775,6 +5484,57 @@ window.Prehealth = {
     pause: timerPause,
     reset: timerReset,
     finish: timerFinish
+  },
+  routine: {
+    key: ROUTINE_KEY,
+    presets: ROUTINE_PRESETS,
+    restOpts: ROUTINE_REST_OPTS,
+    maxSteps: ROUTINE_MAX_STEPS,
+    unit: routineUnit,
+    label: routineStepLabel,
+    summary: routineSummary,
+    cleanSteps: routineCleanSteps,
+    goalReached: routineGoalReached,
+    /* 실시간 판정 결과를 그대로 넣어 보는 테스트용 입구 (카메라 없이 자동 전환 검증) */
+    feed: function(out){ return routineOnResult(out || { ok: true, count: 0 }); },
+    start: routineStart,
+    startPreset: function(id){
+      for (let i = 0; i < ROUTINE_PRESETS.length; i++){
+        if (ROUTINE_PRESETS[i].id === id) return routineStart(ROUTINE_PRESETS[i]);
+      }
+      return false;
+    },
+    endSet: routineEndSet,
+    finishRest: routineRestFinish,
+    skip: function(){ return routineRestFinish(true); },
+    quit: routineQuit,
+    state: function(){
+      const a = routine.active;
+      return {
+        active: !!a,
+        name: a ? a.name : null,
+        index: a ? a.index : 0,
+        total: a ? a.steps.length : 0,
+        phase: a ? a.phase : null,
+        steps: a ? a.steps.slice() : [],
+        results: a ? a.results.slice() : [],
+        restSec: routine.restSec,
+        restLeftMs: routine.restLeftMs,
+        playing: routine.restId ? true : false,
+        last: routine.last
+      };
+    },
+    readCustom: readRoutineStore,
+    saveCustom: saveRoutineStore,
+    clearCustom: clearRoutineStore,
+    draftAdd: routineDraftAdd,
+    draftSave: routineDraftSave,
+    draftReset: routineDraftReset,
+    editSaved: routineEditSaved,
+    render: routineViewRender,
+    renderEditor: routineRenderEditor,
+    openEditor: routineEditorOpen,
+    viewRender: routineViewRender
   },
   state: S
 };
