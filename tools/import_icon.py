@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Prehealth 앱 아이콘 가져오기 — 코랄 오렌지 + 화이트 러닝 P.
+"""Prehealth 앱 아이콘 가져오기 — 딥 에메랄드 그린 + 화이트 러닝 P.
 
-원본: downloads/icon-ph-10-01.png (1254x1254, RGB)
+원본: downloads/icon-ph-recolor-3.png (1254x1254, RGB, 배경 #10664A)
   · 원본을 RGB(불투명)로 유지한 채 LANCZOS로 2048 마스터까지 키우고,
     살짝 언샤프를 걸어 가장자리를 살린다.
   · 나머지 크기는 2048 마스터에서 LANCZOS로 줄여 만든다(한 번만 줄여
     단계별 리샘플링으로 생기는 흐림을 피한다).
+  · 아이콘 배경은 #10664A 딥 에메랄드 — 앱 테마의 --emerald 와 같은 값.
 
   python3 tools/import_icon.py                # icons/ 에 5종 저장
   python3 tools/import_icon.py SRC            # 다른 원본으로
@@ -17,7 +18,7 @@ from PIL import Image, ImageFilter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'icons')
-DEFAULT_SRC = os.path.join(os.path.dirname(ROOT), '..', 'downloads', 'icon-ph-10-01.png')
+DEFAULT_SRC = os.path.join(os.path.dirname(ROOT), '..', 'downloads', 'icon-ph-recolor-3.png')
 
 MASTER = 2048
 

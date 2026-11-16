@@ -168,10 +168,11 @@ function decodeImage(src){
   const img = await decodeImage(url).catch(function(){ return null; });
   ok(img && img.naturalWidth === 1080 && img.naturalHeight === 1350,
      'PNG 디코드 · 1080×1350 (실제 ' + (img ? img.naturalWidth + '×' + img.naturalHeight : 'fail') + ')');
-  /* 캔버스 픽셀 확인: 코랄 로고 영역이 칠해져 있는지 */
+  /* 캔버스 픽셀 확인: 에메랄드 로고 영역이 칠해져 있는지 (초록 우세) */
   const g2 = canvas.getContext('2d');
   const px = g2.getImageData(132, 108, 1, 1).data;
-  ok(px[0] > 180 && px[1] < 140, '코랄 로고 픽셀 그려짐 rgb(' + px[0] + ',' + px[1] + ',' + px[2] + ')');
+  ok(px[1] > 90 && px[1] > px[0] + 60 && px[2] > 40,
+     '에메랄드 로고 픽셀 그려짐 rgb(' + px[0] + ',' + px[1] + ',' + px[2] + ')');
   const pxBg = g2.getImageData(30, 700, 1, 1).data;
   ok(pxBg[0] < 40 && pxBg[1] < 40, '다크 배경 픽셀 rgb(' + pxBg[0] + ',' + pxBg[1] + ',' + pxBg[2] + ')');
 
