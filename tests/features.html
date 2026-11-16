@@ -108,6 +108,11 @@ function decodeImage(src){
   ok(q('#cardModal').hidden === true && q('#proModal').hidden === true, '모달은 처음에 닫혀 있음');
   ok(q('#proModal').textContent.indexOf('4,900') !== -1 && q('#proModal').textContent.indexOf('39,000') !== -1,
      'Pro 요금제 월 4,900 / 연 39,000 노출');
+  const splash = doc.getElementById('splash');
+  ok(!splash || splash.classList.contains('out'), '진입 스플래시가 1초 안에 걷힘');
+  ok(q('.top').classList.contains('rise') && doc.querySelectorAll('.rise').length >= 8,
+     '메인 요소 순차 등장(stagger) 적용 (' + doc.querySelectorAll('.rise').length + '개)');
+  ok(app.getComputedStyle(q('.top')).opacity === '1', '등장 모션 후 요소가 보임');
   say('');
 
   /* ---------- 2) 기록 저장 · 통계 ---------- */

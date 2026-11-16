@@ -424,9 +424,45 @@
     box-shadow:0 12px 36px rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
   }
   .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ================= v6: 앱 진입 인트로 ================= */
+  .splash{
+    position:fixed;inset:0;z-index:200;display:grid;place-items:center;
+    background:radial-gradient(circle at 50% 40%, #1c1c21 0%, #111113 58%, #0b0b0c 100%);
+    transition:opacity .34s ease, transform .34s ease;will-change:opacity,transform;
+  }
+  .splash.out{opacity:0;transform:scale(1.03)}
+  .splashInner{display:flex;flex-direction:column;align-items:center;gap:15px;animation:splashIn .46s cubic-bezier(.2,.8,.3,1) both}
+  .splashMark{
+    width:76px;height:76px;border-radius:23px;display:grid;place-items:center;
+    background:linear-gradient(135deg,#FF6B4A,#FA4424);color:#fff;
+    font-size:39px;font-weight:900;letter-spacing:-.04em;
+    box-shadow:0 16px 44px rgba(250,68,36,.42), inset 0 1px 0 rgba(255,255,255,.26);
+  }
+  .splashWord{font-size:19px;font-weight:800;letter-spacing:-.025em;color:var(--ink);opacity:.94}
+  .splashLine{width:46px;height:2px;border-radius:2px;background:rgba(250,68,36,.6);transform-origin:50% 50%;animation:splashLine .7s cubic-bezier(.2,.8,.3,1) .12s both}
+  @keyframes splashIn{from{opacity:0;transform:translateY(10px) scale(.9)}to{opacity:1;transform:none}}
+  @keyframes splashLine{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+
+  @keyframes riseIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .rise{animation:riseIn .5s cubic-bezier(.22,.72,.28,1) both}
+
+  @media (prefers-reduced-motion: reduce){
+    .splash{transition:none}
+    .splashInner,.splashLine{animation:none}
+    .rise{animation:none}
+  }
 </style>
 </head>
 <body>
+
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splashInner">
+    <span class="splashMark">P</span>
+    <span class="splashWord">Prehealth</span>
+    <span class="splashLine"></span>
+  </div>
+</div>
 
 <header class="top">
   <div class="brand">
@@ -685,6 +721,16 @@
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* 스크립트가 어떤 이유로 실행되지 못해도 스플래시가 화면을 붙잡지 않도록 하는 안전장치 */
+setTimeout(function(){
+  var s = document.getElementById('splash');
+  if (!s) return;
+  s.classList.add('out');
+  setTimeout(function(){ if (s.parentNode) s.parentNode.removeChild(s); }, 360);
+}, 1500);
+</script>
 
 <script type="module">
 /* =====================================================================
@@ -2682,7 +2728,42 @@ if ('serviceWorker' in navigator){
   });
 }
 
+/* ------------------------------ 진입 인트로 ------------------------------ */
+function playIntro(){
+  const splash = document.getElementById('splash');
+  const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  const items = [];
+  const add = function(el){ if (el) items.push(el); };
+  add(document.querySelector('.top'));
+  add(document.querySelector('.intro h1'));
+  add(document.querySelector('.intro p'));
+  const cards = document.querySelectorAll('.ex-btn');
+  for (let i = 0; i < cards.length; i++) add(cards[i]);
+  add(document.querySelector('.modes'));
+  add(document.querySelector('.stage'));
+  add(document.querySelector('.metrics'));
+  add(document.querySelector('.side .card'));
+  add(document.querySelector('.records'));
+
+  items.forEach(function(el, i){
+    el.classList.add('rise');
+    if (reduce) el.style.animationDelay = '0ms';
+    else el.style.animationDelay = (300 + i * 52) + 'ms';
+  });
+
+  if (!splash) return;
+  if (reduce){
+    splash.remove();
+    return;
+  }
+  // 약 0.8초 안에 끝난다: 0.42초에 걷히기 시작 → 0.78초에 제거
+  setTimeout(function(){ splash.classList.add('out'); }, 420);
+  setTimeout(function(){ if (splash.parentNode) splash.parentNode.removeChild(splash); }, 790);
+}
+
 /* ------------------------------ boot ------------------------------ */
+playIntro();
 applyExerciseUI('squat');
 setMode('video');
 setText(els.hudHint, '동영상을 올리거나 카메라를 켜 주세요');
