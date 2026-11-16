@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prehealth · v12 기능 테스트 (기록·카드·Pro·레벨·일시정지·인트로)</title>
+<title>Prehealth · v13 기능 테스트 (기록·카드·Pro·레벨·일시정지·인트로)</title>
 <style>
   body{background:#141416;color:#F5F2EB;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
   h1{font-size:15px;letter-spacing:.02em}
@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h1>Prehealth v12 · 기능 테스트 (기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로)</h1>
+<h1>Prehealth v13 · 기능 테스트 (기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로)</h1>
 <pre id="out">index.html을 불러오는 중…</pre>
 <iframe id="app" src="../index.html" title="Prehealth 앱"></iframe>
 <script>
@@ -114,7 +114,7 @@ function decodeImage(src){
   const P = await until(function(){ return app.Prehealth; }, 30000);
   if (!P){ say('FAIL  window.Prehealth 공개 API를 찾지 못함'); return done(); }
   say('앱 로드 완료 · 버전 ' + P.version);
-  ok(P.version === 'v12', '공개 API 버전 v12 (실제 ' + P.version + ')');
+  ok(P.version === 'v13', '공개 API 버전 v13 (실제 ' + P.version + ')');
   say('');
 
   const q = function(sel){ return doc.querySelector(sel); };
@@ -131,7 +131,7 @@ function decodeImage(src){
      'Pro 요금제 월 4,900 / 연 39,000 노출');
   ok(q('.top').classList.contains('rise') && doc.querySelectorAll('.rise').length >= 8,
      '메인 요소 순차 등장(stagger) 적용 (' + doc.querySelectorAll('.rise').length + '개)');
-  /* v12 인트로: P(왼쪽 위)·H(오른쪽 아래)가 화면 밖에서 크게 날아와 'PH'로 합쳐지고 커튼처럼 위로 걷힌다 (~1.9초·플랫) */
+  /* v13 인트로: P(왼쪽 위)·H(오른쪽 아래)가 화면 밖에서 크게 날아와 'PH'로 합쳐지고 커튼처럼 위로 걷힌다 (~1.9초·글자만) */
   const sheet = doc.styleSheets[0];
   const rules = Array.prototype.slice.call(sheet.cssRules);
   const sel = function(selector){
@@ -144,7 +144,7 @@ function decodeImage(src){
   const cssOf = function(el){ return el ? el.style.cssText : ''; };
   const sp = sel('.splash');
   const spPH = sel('.splashPH'), spP = sel('.splashP'), spH = sel('.splashH');
-  const spPlate = sel('.splashPlate'), spWord = sel('.splashWord');
+  const spWord = sel('.splashWord');
   ok(!!sp && sp.style.pointerEvents === 'none', '스플래시 레이어는 입력을 막지 않음 (pointer-events: none)');
   ok(txt('.splashP') === 'P' && txt('.splashH') === 'H', '합체 로고에 P·H 두 글자 존재');
   /* 네온/글로우 제거 확인: 섬광·퍼지는 링·글로우 레이어가 CSS에도 DOM에도 없다 */
@@ -154,8 +154,35 @@ function decodeImage(src){
      '스플래시 DOM에도 섬광·링·글로우 요소 없음');
   ok(!!spP && cssOf(spP).indexOf('text-shadow') === -1 && !!spH && cssOf(spH).indexOf('text-shadow') === -1,
      '글자에 네온 text-shadow 없음');
-  ok(!!spPlate && cssOf(spPlate).indexOf('box-shadow') === -1 && /#10664A|rgb\(16,\s*102,\s*74\)/i.test(cssOf(spPlate)),
-     '배지 판은 그림자 없이 플랫 #10664A');
+  /* v13: 배지 판(둥근 사각·원형 배경)을 걷어내고 순수 글자만 남겼는지 */
+  ok(!sel('.splashPlate') && !sel('.splashBadge') && !kf.splashPlateIn && !kf.splashPlate,
+     '배지 판(.splashPlate / .splashBadge) 규칙과 키프레임이 CSS에서 제거됨');
+  ok(!q('.splashPlate') && !q('.splashBadge') && !!q('.splashPH') &&
+     q('.splashPH').children.length === 2 && !q('.splashPH').children[0].children.length,
+     '스플래시 DOM은 배지 박스 없이 P·H 글자만 (무대 자식 2개)');
+  const propOf = function(rule, name, fallback){
+    if (!rule) return '없음';
+    const v = rule.style.getPropertyValue(name);
+    return v ? v : (fallback || '');
+  };
+  const phBg = propOf(spPH, 'background-color');
+  const phBgImg = propOf(spPH, 'background-image');
+  ok(!!spPH && (phBgImg === '' || phBgImg === 'none') &&
+     (phBg === '' || phBg === 'transparent' || phBg === 'rgba(0, 0, 0, 0)') &&
+     propOf(spPH, 'border-top-width', '0px') === '0px' &&
+     propOf(spPH, 'border-radius', '0px') === '0px' &&
+     propOf(spPH, 'padding-top', '0px') === '0px' &&
+     propOf(spPH, 'box-shadow', 'none') === 'none',
+     '합체 무대에 배경색·배경판·테두리·둥근 모서리·패딩·그림자 없음 — 순수 글자 (' +
+     (spPH ? cssOf(spPH) : '없음') + ')');
+  ok(!!spP && /#FFFFFF|rgb\(255,\s*255,\s*255\)/i.test(cssOf(spP)),
+     'P는 화이트 글자 (' + (spP ? spP.style.color : '없음') + ')');
+  ok(!!spH && /#34D399|#10B981|rgb\((52,\s*211,\s*153|16,\s*185,\s*129)\)/i.test(cssOf(spH)),
+     'H는 에메랄드 글자 (' + (spH ? spH.style.color : '없음') + ')');
+  const spFont = spPH ? parseFloat(spPH.style.fontSize) : NaN;
+  ok(spFont >= 64 && spFont <= 76, 'P·H 글자는 크게 64~76px (' + spFont + 'px)');
+  ok(!!spPH && parseInt(spPH.style.fontWeight, 10) >= 800, 'P·H 글자는 굵고 단단한 타이포 (font-weight ' +
+     (spPH ? spPH.style.fontWeight : '없음') + ')');
   ok(!!sp && /#0F0F11|rgb\(15,\s*15,\s*17\)/i.test(cssOf(sp)), '스플래시 배경은 플랫 다크(#0F0F11)');
   /* 더 큰 출발 위치·스케일 */
   ok(!!kf.splashFlyP && /translate\(-36vw,\s*-30vh\)/.test(kf.splashFlyP) && /scale\(1\.8\)/.test(kf.splashFlyP) &&
@@ -180,8 +207,10 @@ function decodeImage(src){
      !!spPH && spPH.style.animationName === 'splashMerge' && delayOf(spPH) === 0.82 && durOf(spPH) === 0.36,
      '합체 순간 0.82초~1.18초 탄성 키프레임 (scale .86 → 1.12 → 1) (' +
      (spPH ? spPH.style.animationDelay + ' + ' + spPH.style.animationDuration : '없음') + ')');
-  ok(!!spPlate && spPlate.style.animationName === 'splashPlateIn' && delayOf(spPlate) === 0.82 && spPlate.style.opacity === '0',
-     '배지 판은 합체와 함께 0.82초에 떠오름 (그 전에는 투명)');
+  const atMerge = rules.filter(function(r){ return r.selectorText && r.style && r.style.animationDelay === '0.82s'; })
+    .map(function(r){ return r.selectorText; });
+  ok(atMerge.length === 1 && atMerge[0] === '.splashPH',
+     '합체(0.82초)에 움직이는 것은 글자 무대(.splashPH) 하나뿐 — 배지 판 없음 (' + atMerge.join(', ') + ')');
   ok(!!spWord && spWord.style.animationName === 'splashWordIn' && delayOf(spWord) === 0.95 && spWord.style.opacity === '0',
      'Prehealth 워드마크는 합체 뒤 0.95초에 등장');
   /* 완성 로고 유지 구간: 워드마크 등장 끝(1.19초) ~ 커튼 시작(1.45초) */

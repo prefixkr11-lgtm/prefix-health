@@ -469,10 +469,10 @@ window.addEventListener('unhandledrejection', function (e) {
   }
   .toast.show{opacity:1;transform:translate(-50%,0)}
 
-  /* ================= v12: 앱 진입 인트로 — P·H 합체 스플래시 (~1.9초·플랫) =================
+  /* ================= v13: 앱 진입 인트로 — P·H 합체 스플래시 (~1.9초·글자만) =================
      P는 왼쪽 위 대각선 바깥에서, H는 오른쪽 아래 대각선 바깥에서 화면을 가로질러 날아와 중앙에서 'PH'로 합쳐진다.
-     네온·글로우·섬광·퍼지는 링 없이, 배지 판과 워드마크만 담백하게 자리 잡는다.
-     0~0.85초 비행 → 0.82~1.18초 합체(배지 등장·scale 1.12→1 탄성) → 0.95초 워드마크
+     v13: 배지 판(둥근 사각·원형 배경)을 없애고 순수 글자만 — P는 화이트, H는 에메랄드. 판·테두리·그림자·글로우 없음.
+     0~0.85초 비행 → 0.82~1.18초 합체(scale 1.12→1 탄성) → 0.95초 워드마크
      → 1.18~1.45초 완성 로고 유지 → 1.45~1.90초 커튼처럼 위로 걷힘 */
   .splash{
     position:fixed;inset:0;z-index:200;display:grid;place-items:center;overflow:hidden;
@@ -485,27 +485,21 @@ window.addEventListener('unhandledrejection', function (e) {
   .splashInner{
     position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:18px;
   }
-  /* 합체 무대: 두 글자가 각자의 자리(P=왼쪽, H=오른쪽)로 날아와 앉는 flex 슬롯 */
+  /* 합체 무대: 두 글자가 각자의 자리(P=왼쪽, H=오른쪽)로 날아와 앉는 flex 슬롯.
+     v13: 배경 판 없이 글자만 — 여백·모서리·바탕색을 두지 않는다 */
   .splashPH{
     position:relative;display:flex;align-items:center;justify-content:center;
-    padding:16px 24px 18px;border-radius:30px;
-    font-size:58px;font-weight:900;line-height:1;letter-spacing:-.07em;color:#fff;
+    padding:0;border:0;border-radius:0;background:none;
+    font-size:72px;font-weight:900;line-height:1;letter-spacing:-.015em;
     /* 합체 순간의 탄성: scale .86 → 1.12 → 1 */
     animation:splashMerge .36s cubic-bezier(.22,1,.36,1) .82s both;
     will-change:transform;
   }
   .splashP,.splashH{position:relative;z-index:2;display:block;will-change:transform,opacity}
-  /* P: 화면 왼쪽 위 대각선 바깥(-36vw, -30vh)에서 크게(scale 1.8) 중앙 왼쪽 자리로 */
-  .splashP{animation:splashFlyP .85s cubic-bezier(.22,1,.36,1) both}
-  /* H: 화면 오른쪽 아래 대각선 바깥(36vw, 30vh)에서 크게(scale 1.8) 중앙 오른쪽 자리로 */
-  .splashH{animation:splashFlyH .85s cubic-bezier(.22,1,.36,1) both}
-  /* 합체 순간에만 떠오르는 배지 판 — 두 글자를 한 덩어리 로고로 묶는다 */
-  .splashPlate{
-    position:absolute;inset:0;z-index:1;border-radius:inherit;
-    background:#10664A;
-    opacity:0;
-    animation:splashPlateIn .26s cubic-bezier(.22,1,.36,1) .82s both;
-  }
+  /* P: 화이트 — 화면 왼쪽 위 대각선 바깥(-36vw, -30vh)에서 크게(scale 1.8) 중앙 왼쪽 자리로 */
+  .splashP{color:#FFFFFF;animation:splashFlyP .85s cubic-bezier(.22,1,.36,1) both}
+  /* H: 에메랄드 — 화면 오른쪽 아래 대각선 바깥(36vw, 30vh)에서 크게(scale 1.8) 중앙 오른쪽 자리로 */
+  .splashH{color:#34D399;margin-left:-.03em;animation:splashFlyH .85s cubic-bezier(.22,1,.36,1) both}
   /* 합체 뒤 아래에서 부드럽게 올라오는 워드마크 */
   .splashWord{
     font-size:20px;font-weight:800;letter-spacing:-.025em;color:var(--ink);opacity:0;
@@ -526,10 +520,6 @@ window.addEventListener('unhandledrejection', function (e) {
     55%{transform:scale(1.12)}
     100%{transform:scale(1)}
   }
-  @keyframes splashPlateIn{
-    0%{opacity:0;transform:scale(.94)}
-    100%{opacity:1;transform:scale(1)}
-  }
   @keyframes splashWordIn{
     0%{opacity:0;transform:translateY(8px)}
     100%{opacity:1;transform:none}
@@ -544,8 +534,7 @@ window.addEventListener('unhandledrejection', function (e) {
 
   @media (prefers-reduced-motion: reduce){
     .splash,.splash.out{animation:none;transition:none;transform:none}
-    .splashInner,.splashPH,.splashP,.splashH,.splashPlate,.splashWord{animation:none}
-    .splashPlate{opacity:1}
+    .splashInner,.splashPH,.splashP,.splashH,.splashWord{animation:none}
     .splashWord{opacity:1}
     .rise{animation:none}
   }
@@ -556,7 +545,6 @@ window.addEventListener('unhandledrejection', function (e) {
 <div class="splash" id="splash" aria-hidden="true">
   <div class="splashInner">
     <div class="splashPH">
-      <span class="splashPlate" aria-hidden="true"></span>
       <span class="splashP">P</span><span class="splashH">H</span>
     </div>
     <span class="splashWord">Prehealth</span>
@@ -3588,7 +3576,7 @@ function playIntro(){
     splash.remove();
     return;
   }
-  // 약 1.90초 모션: 0~0.85초 P·H 비행 → 0.82~1.18초 합체·배지 탄성(0.95초 워드마크)
+  // 약 1.90초 모션: 0~0.85초 P·H 비행 → 0.82~1.18초 합체 탄성(0.95초 워드마크) — v13은 배지 판 없이 글자만
   // → 1.18~1.45초 완성 로고 유지 → 1.45~1.90초 커튼처럼 위로 걷힌다 → 1.96초에 DOM 제거
   // 안전장치: 어떤 이유로든 2.6초까지 남아 있으면 강제로 걷어낸다
   var removed = false;
@@ -3614,7 +3602,7 @@ loadEngine();
 
 /* ------------------------------ 테스트/자동화용 공개 API ------------------------------ */
 window.Prehealth = {
-  version: 'v12',
+  version: 'v13',
   recordsKey: REC_KEY,
   proKey: PRO_KEY,
   levelKey: LEVEL_KEY,
