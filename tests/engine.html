@@ -42,9 +42,10 @@ const html = await (await fetch('../index.html', { cache: 'no-store' })).text();
 const a = html.lastIndexOf('/*', html.indexOf('CORE START'));
 const b = html.lastIndexOf('/*', html.indexOf('CORE END'));
 if (a < 0 || b < 0) { say('index.html에서 CORE 블록을 찾지 못했습니다'); throw new Error('no core'); }
-const src = html.slice(a, b) + 'export { createEngine, RUN, EXERCISES, angleAt, torsoLean };';
+const src = html.slice(a, b) + 'export { createEngine, RUN, EXERCISES, angleAt, torsoLean, buildRecord, recordStats, recordStreak, dateKeyOf, clockText };';
 const mod = await import(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
 const createEngine = mod.createEngine, RUN = mod.RUN, EXERCISES = mod.EXERCISES;
+const buildRecord = mod.buildRecord, recordStats = mod.recordStats, recordStreak = mod.recordStreak, clockText = mod.clockText;
 say('코어 로드 완료 · 운동 ' + Object.keys(EXERCISES).join(', '));
 say('');
 
@@ -163,6 +164,46 @@ ok(pu.update(null, 1.0, 0).ok === false, '푸시업: 사람 없음 → ok:false'
 ok(pl.update(null, 1.0, 0).ok === false, '플랭크: 사람 없음 → ok:false');
 ok(ru.update(null, 1.0, 0).ok === false, '러닝: 사람 없음 → ok:false');
 ok(sq.summary().reps === 0 && ru.summary().reps === 0 && ru.summary().cadence === 0, '초기 카운트 0');
+say('');
+
+/* ---------- 6) 내 기록 · 스트릭 (순수 계산) ---------- */
+say('▸ 6. 내 기록 · 스트릭');
+const NOW = new Date(2026, 10, 16, 21, 0, 0).getTime();   // 2026-11-16 21:00 로컬
+function recDay(offset, score, kind) {
+  const d = new Date(2026, 10, 16, 9, 0, 0);
+  d.setDate(d.getDate() - offset);
+  return { id: 'r' + offset, date: d.toISOString(), exercise: kind || 'squat',
+    exerciseName: '스쿼트', metricLabel: '반복', metricValue: '10', score: score,
+    durationSec: 40, topFeedback: '교정 포인트 없음', comment: '' };
+}
+const recs = [recDay(0, 80), recDay(1, 90), recDay(1, 70), recDay(3, 60)];
+const rst = recordStats(recs, NOW);
+say('   total=' + rst.total + ' streak=' + rst.streak + ' avg=' + rst.avgScore +
+    ' week=' + JSON.stringify(rst.week.map(function (d) { return d.avgScore; })));
+ok(rst.total === 4, '총 기록 4건 (실제 ' + rst.total + ')');
+ok(rst.streak === 2, '오늘+어제 연속 = 2일 (실제 ' + rst.streak + ')');
+ok(rst.avgScore === 75, '평균 점수 75 (실제 ' + rst.avgScore + ')');
+ok(rst.bestScore === 90, '최고 점수 90 (실제 ' + rst.bestScore + ')');
+ok(rst.week.length === 7 && rst.week[6].isToday === true, '7일 윈도우 · 마지막이 오늘');
+ok(rst.week[6].count === 1 && rst.week[6].avgScore === 80, '오늘 1건 · 평균 80');
+ok(rst.week[5].count === 2 && rst.week[5].avgScore === 80, '어제 2건 · 평균 80 (실제 ' + JSON.stringify(rst.week[5]) + ')');
+ok(rst.week[3].avgScore === 60 && rst.week[4].count === 0, '3일 전 1건 · 2일 전 공백');
+ok(recordStreak([recDay(1, 80), recDay(2, 80)], NOW) === 2, '오늘 기록 없어도 어제까지 2일 연속');
+ok(recordStreak([recDay(2, 80)], NOW) === 0, '이틀 전에서 끊긴 스트릭 = 0');
+ok(recordStreak([], NOW) === 0 && recordStats([], NOW).avgScore === null, '빈 기록 안전');
+
+const sqRec = buildRecord({ reps: 12, avgScore: 87, durationMs: 42000, frames: 400,
+  issues: [{ code: 'squat_depth_mid', label: '깊이 살짝 부족', count: 2 }, { code: 'squat_ok', label: '좋은 반복', count: 3 }] }, 'squat', NOW);
+ok(sqRec.metricLabel === '반복' && sqRec.metricValue === '12', '스쿼트 → 반복 12');
+ok(sqRec.score === 87 && sqRec.durationSec === 42 && sqRec.exerciseName === '스쿼트', '점수·시간·종목 저장');
+ok(sqRec.topFeedback === '깊이 살짝 부족 ×2', '대표 교정 포인트 (실제 ' + sqRec.topFeedback + ')');
+ok(!!sqRec.id && !!Date.parse(sqRec.date), 'id · date 생성');
+const plRec = buildRecord({ reps: null, holdMs: 32000, score: 91, durationMs: 33000, frames: 500, issues: [] }, 'plank', NOW);
+ok(plRec.metricLabel === '유지 시간' && plRec.metricValue === '0:32' && plRec.score === 91, '플랭크 → 유지 시간 0:32');
+ok(clockText(32000) === '0:32' && clockText(59000) === '0:59', 'clockText 표기');
+const runRec = buildRecord({ reps: 18, avgScore: 84, durationMs: 60000, frames: 900,
+  issues: [{ code: 'run_ok', label: '좋은 스텝', count: 5 }] }, 'running', NOW);
+ok(runRec.metricLabel === '스텝' && runRec.metricValue === '18' && runRec.topFeedback === '좋은 자세 유지', '러닝 → 스텝 18 · 교정 없음 표기');
 say('');
 
 lines.push(fails ? 'RESULT: FAIL (' + fails + '건)' : 'RESULT: ALL PASS');
