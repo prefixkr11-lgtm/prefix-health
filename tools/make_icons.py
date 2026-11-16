@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Prehealth 앱 아이콘 생성기 — 크림 · 차콜 · 라임.
 
+※ 2026-11-16부터 실제 앱 아이콘은 코랄 오렌지 + 화이트 러닝 P이며
+  tools/import_icon.py 로 downloads/icon-ph-10-01.png 에서 뽑는다.
+  이 스크립트를 그대로 돌리면 icons/ 가 옛 크림 로고로 덮어써지니 주의.
+
 downloads/logo-prefix-friendly-2.png 로고에서 뽑은 팔레트를 그대로 쓴다.
   배경 크림    #FDF8F0
   글자 차콜    #282827

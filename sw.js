@@ -1,13 +1,14 @@
 /* Prehealth — Service Worker
    앱 셸만 캐싱한다. MediaPipe CDN·카메라·동영상 스트림은 건드리지 않는다. */
-const CACHE = 'prefix-health-v3';
+const CACHE = 'prefix-health-v5';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './icons/icon-192.png?v=2',
-  './icons/icon-512.png?v=2',
-  './icons/apple-touch-icon.png?v=2'
+  './icons/icon-192.png?v=5',
+  './icons/icon-512.png?v=5',
+  './icons/icon-1024.png?v=5',
+  './icons/apple-touch-icon.png?v=5'
 ];
 
 self.addEventListener('install', function (e) {
