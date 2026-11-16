@@ -10,16 +10,22 @@
 </style>
 </head>
 <body>
-<!-- 앱을 폰 폭(390px)으로 띄워 보는 확인용 페이지. ?demo=1 을 붙이면 스크린샷용 예시 기록을 채운다. -->
-<iframe id="app" src="../index.html" title="Prehealth 미리보기"></iframe>
+<!-- 앱을 폰 폭(390px)으로 띄워 보는 확인용 페이지.
+     ?demo=1 을 붙이면 스크린샷용 예시 기록을 채운다.
+     캐시된 옛 index.html이 뜨지 않도록 항상 새 쿼리로 불러온다. -->
+<iframe id="app" title="Prehealth 미리보기"></iframe>
 <script>
 (function(){
   const demo = /[?&]demo=1/.test(location.search);
   const frame = document.getElementById('app');
+  let seeded = false;
   frame.addEventListener('load', function(){
+    if (seeded) return;
     const w = frame.contentWindow;
     const P = w && w.Prehealth;
-    if (!P || !demo) return;
+    if (!P) return;
+    seeded = true;
+    if (!demo) return;
     function day(offset, hour){
       const d = new Date();
       d.setDate(d.getDate() - offset);
@@ -34,7 +40,7 @@
       { off: 2, hour: 20, kind: 'squat', name: '스쿼트', label: '반복', value: '12', score: 71, dur: 41, fb: '상체 숙임 ×3', c: '가슴을 조금 더 세우면 점수가 확 올라가요.' },
       { off: 4, hour: 19, kind: 'plank', name: '플랭크', label: '유지 시간', value: '0:28', score: 66, dur: 30, fb: '엉덩이 처짐 ×2', c: '시간을 줄이고 일직선을 먼저 잡아 볼까요?' }
     ];
-    const list = rows.map(function(r, i){
+    P.saveRecords(rows.map(function(r, i){
       return {
         id: 'demo' + i,
         date: day(r.off, r.hour),
@@ -47,10 +53,10 @@
         topFeedback: r.fb,
         comment: r.c
       };
-    });
-    P.saveRecords(list);
+    }));
     P.renderRecords();
   });
+  frame.src = '../index.html?t=' + Date.now();
 })();
 </script>
 </body>

@@ -47,7 +47,8 @@ self.addEventListener('fetch', function (e) {
     (req.headers.get('accept') || '').indexOf('text/html') !== -1;
   if (isDoc) {
     e.respondWith(
-      fetch(req)
+      // 문서는 HTTP 캐시도 건너뛰고 확인한다 (배포 직후 새 코드가 바로 보이도록)
+      fetch(req, { cache: 'no-cache' })
         .then(function (res) {
           const copy = res.clone();
           caches.open(CACHE).then(function (c) { c.put(req, copy); }).catch(function () {});
