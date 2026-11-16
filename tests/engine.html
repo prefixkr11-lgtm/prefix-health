@@ -659,6 +659,264 @@ function runCases(M, ok, say){
   ok(recA.level === 'advanced' && recA.levelName === '헬창' && recA.levelEmoji === '🔥', '헬창 기록에 레벨·이름·이모지 저장');
   ok(buildRecord({ level: 'beginner', reps: 5, avgScore: 88 }, 'squat', NOW).levelName === '헬린이', '헬린이 기록 저장');
   ok(buildRecord({ reps: 5, avgScore: 88 }, 'squat', NOW).level === 'beginner', '레벨 미지정 시 기본 헬린이');
+
+  /* ================= 22-26) 신규 4종 (런지·턱걸이·데드리프트·윗몸일으키기) ================= */
+  /* 같은 무릎 각도·상체 각도를 반복하는 합성 동작 (스쿼트 포즈 재사용) */
+  function simKnee(kind, level, top, bottom, opts){
+    const o = opts || {};
+    const eng = createEngine(kind, level);
+    const reps = o.reps || 2, perRep = o.perRep || 3;
+    const frames = Math.round(reps * perRep * FPS);
+    const smooth = function(p){ return 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, Math.min(1, p))); };
+    let last = null;
+    for (let i = 0; i < frames; i++){
+      const t = Math.round(i * DT);
+      const f = ((i / FPS) % perRep) / perRep;
+      let v;
+      if (f < 0.15) v = top;
+      else if (f < 0.40) v = top + (bottom - top) * smooth((f - 0.15) / 0.25);
+      else if (f < 0.58) v = bottom;
+      else if (f < 0.82) v = bottom + (top - bottom) * smooth((f - 0.58) / 0.24);
+      else v = top;
+      last = eng.update(squatPose({ knee: v, lean: o.lean, shin: o.shin }), 1.0, t);
+    }
+    return { last: last, sum: eng.summary() };
+  }
+
+  /* 매달린 자세: 손목은 고정, 팔꿈치 각도에 따라 어깨·몸통이 올라온다 */
+  function pullPose(o){
+    const L = P33();
+    const th = (o.elbow === undefined ? 175 : o.elbow);
+    const a = 0.135;
+    const d = a * Math.sqrt(Math.max(0.04, 2 - 2 * Math.cos(th * Math.PI / 180)));
+    const wr = { x: 0.50, y: 0.12 };
+    const sh = { x: 0.50, y: wr.y + d };
+    const h = Math.sqrt(Math.max(0, a * a - (d / 2) * (d / 2)));
+    const el = { x: 0.50 + h, y: wr.y + d / 2 };
+    const hip = { x: sh.x, y: sh.y + 0.20 };
+    const knee = { x: hip.x, y: hip.y + 0.17 };
+    const ank = { x: knee.x, y: knee.y + 0.17 };
+    const off = 0.010;
+    put(L, 11, sh.x, sh.y + off); put(L, 12, sh.x, sh.y - off);
+    put(L, 13, el.x, el.y + off); put(L, 14, el.x, el.y - off);
+    put(L, 15, wr.x, wr.y + off); put(L, 16, wr.x, wr.y - off);
+    put(L, 23, hip.x, hip.y + off); put(L, 24, hip.x, hip.y - off);
+    put(L, 25, knee.x + off, knee.y); put(L, 26, knee.x - off, knee.y);
+    put(L, 27, ank.x + off, ank.y); put(L, 28, ank.x - off, ank.y);
+    put(L, 0, sh.x - 0.03, sh.y - 0.085 + (o.headDy || 0));
+    return L;
+  }
+  function simPull(level, bottom, top){
+    const eng = createEngine('pullup', level);
+    const perRep = 3, reps = 2;
+    const frames = Math.round(reps * perRep * FPS);
+    const smooth = function(p){ return 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, Math.min(1, p))); };
+    let last = null;
+    for (let i = 0; i < frames; i++){
+      const t = Math.round(i * DT);
+      const f = ((i / FPS) % perRep) / perRep;
+      let e;
+      if (f < 0.20) e = top;
+      else if (f < 0.45) e = top + (bottom - top) * smooth((f - 0.20) / 0.25);
+      else if (f < 0.55) e = bottom;
+      else if (f < 0.85) e = bottom + (top - bottom) * smooth((f - 0.55) / 0.30);
+      else e = top;
+      last = eng.update(pullPose({ elbow: e }), 1.0, t);
+    }
+    return { last: last, sum: eng.summary() };
+  }
+
+  /* 측면 데드리프트: 상체 숙임(힌지)과 무릎 굽힘을 함께 움직인다 */
+  function deadPose(o){
+    const L = P33();
+    const lean = (o.lean === undefined ? 6 : o.lean) * Math.PI / 180;
+    const k = (o.knee === undefined ? 172 : o.knee);
+    const shinT = 8 * Math.PI / 180;
+    const ank = { x: 0.50, y: 0.86 };
+    const KN = { x: ank.x + 0.17 * Math.sin(shinT), y: ank.y - 0.17 * Math.cos(shinT) };
+    const dx = ank.x - KN.x, dy = ank.y - KN.y, n = Math.hypot(dx, dy) || 1;
+    const ux = dx / n, uy = dy / n, th = k * Math.PI / 180;
+    const hx = ux * Math.cos(th) - uy * Math.sin(th);
+    const hy = ux * Math.sin(th) + uy * Math.cos(th);
+    const hip = { x: KN.x + 0.19 * hx, y: KN.y + 0.19 * hy };
+    const sh = { x: hip.x + 0.22 * Math.sin(lean), y: hip.y - 0.22 * Math.cos(lean) };
+    const dir = { x: Math.sin(lean), y: -Math.cos(lean) };
+    const nose = { x: sh.x + dir.x * 0.10, y: sh.y + dir.y * 0.10 + (o.headDy || 0) };
+    const off = 0.010;
+    put(L, 11, sh.x + off, sh.y); put(L, 12, sh.x - off, sh.y);
+    put(L, 13, sh.x + off, sh.y + 0.10); put(L, 14, sh.x - off, sh.y + 0.10);
+    put(L, 15, sh.x + off, sh.y + 0.18); put(L, 16, sh.x - off, sh.y + 0.18);
+    put(L, 23, hip.x + off, hip.y); put(L, 24, hip.x - off, hip.y);
+    put(L, 25, KN.x + off, KN.y); put(L, 26, KN.x - off, KN.y);
+    put(L, 27, ank.x + off, ank.y); put(L, 28, ank.x - off, ank.y);
+    put(L, 31, ank.x + 0.045, ank.y + 0.006); put(L, 32, ank.x - 0.005, ank.y + 0.006);
+    put(L, 0, nose.x, nose.y);
+    return L;
+  }
+  function simDead(level, leanBottom, opts){
+    const o = opts || {};
+    const KB = (o.kneeBottom === undefined ? 142 : o.kneeBottom);
+    const eng = createEngine('deadlift', level);
+    const reps = 2, perRep = 3.2;
+    const frames = Math.round(reps * perRep * FPS);
+    const smooth = function(p){ return 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, Math.min(1, p))); };
+    let last = null;
+    for (let i = 0; i < frames; i++){
+      const t = Math.round(i * DT);
+      const f = ((i / FPS) % perRep) / perRep;
+      let lean, knee;
+      if (f < 0.15){ lean = 6; knee = 172; }
+      else if (f < 0.40){ const p = smooth((f - 0.15) / 0.25); lean = 6 + (leanBottom - 6) * p; knee = 172 + (KB - 172) * p; }
+      else if (f < 0.56){ lean = leanBottom; knee = KB; }
+      else if (f < 0.82){ const p = smooth((f - 0.56) / 0.26); lean = leanBottom + (6 - leanBottom) * p; knee = KB + (172 - KB) * Math.min(1, p * 1.08); }
+      else { lean = 6; knee = 172; }
+      last = eng.update(deadPose({ lean: lean, knee: knee, headDy: o.headDy }), 1.0, t);
+    }
+    return { last: last, sum: eng.summary() };
+  }
+
+  /* 측면 윗몸일으키기: 등이 바닥과 이루는 각(phi)으로 몸통을 움직인다 */
+  function sitPose(o){
+    const L = P33();
+    const phi = (o.torso === undefined ? 0 : o.torso) * Math.PI / 180;
+    const psi = (o.thigh === undefined ? 40 : o.thigh) * Math.PI / 180;
+    const hip = { x: 0.55, y: 0.64 };
+    const dirT = { x: -Math.cos(phi), y: -Math.sin(phi) };
+    const dirL = { x: Math.cos(psi), y: -Math.sin(psi) };
+    const perp = { x: -Math.sin(phi), y: Math.cos(phi) };
+    const sh = { x: hip.x + 0.22 * dirT.x, y: hip.y + 0.22 * dirT.y };
+    const knee = { x: hip.x + 0.20 * dirL.x, y: hip.y + 0.20 * dirL.y };
+    const ank = { x: knee.x + 0.03, y: hip.y + 0.26 };
+    const hd = (o.headDy || 0);
+    const nose = { x: sh.x + dirT.x * 0.10 + perp.x * hd, y: sh.y + dirT.y * 0.10 + perp.y * hd };
+    const off = 0.010;
+    put(L, 11, sh.x, sh.y + off); put(L, 12, sh.x, sh.y - off);
+    put(L, 13, sh.x + 0.06, sh.y + 0.05); put(L, 14, sh.x - 0.06, sh.y + 0.05);
+    put(L, 15, knee.x, knee.y); put(L, 16, knee.x, knee.y);
+    put(L, 23, hip.x, hip.y + off); put(L, 24, hip.x, hip.y - off);
+    put(L, 25, knee.x, knee.y + off); put(L, 26, knee.x, knee.y - off);
+    put(L, 27, ank.x, ank.y); put(L, 28, ank.x, ank.y);
+    put(L, 0, nose.x, nose.y);
+    return L;
+  }
+  function simSit(level, flexMin, opts){
+    const o = opts || {};
+    const eng = createEngine('situp', level);
+    const reps = 2, perRep = 3;
+    const frames = Math.round(reps * perRep * FPS);
+    const setUp = (o.riseSec === undefined ? 0.55 : o.riseSec);
+    const smooth = function(p){ return 0.5 - 0.5 * Math.cos(Math.PI * Math.max(0, Math.min(1, p))); };
+    const phiMax = 140 - flexMin;
+    let last = null;
+    for (let i = 0; i < frames; i++){
+      const t = Math.round(i * DT);
+      const sec = (i / FPS) % perRep;
+      let phi;
+      const holdEnd = 1.0 + setUp + 0.4;
+      if (sec < 1.0) phi = 0;
+      else if (sec < 1.0 + setUp) phi = phiMax * smooth((sec - 1.0) / setUp);
+      else if (sec < holdEnd) phi = phiMax;
+      else if (sec < 2.8) phi = phiMax * (1 - smooth((sec - holdEnd) / (2.8 - holdEnd)));
+      else phi = 0;
+      last = eng.update(sitPose({ torso: phi, thigh: o.thigh, headDy: o.headDy }), 1.0, t);
+    }
+    return { last: last, sum: eng.summary() };
+  }
+
+  /* ---- 22) 런지 ---- */
+  say('');
+  say('▸ 22. 런지 — 깊이 · 상체 쏠림 · 레벨');
+  const lgGood = simKnee('lunge', 'beginner', 168, 92, { lean: 14 });
+  say('   reps=' + lgGood.sum.reps + ' avg=' + lgGood.sum.avgScore + ' issues=' + JSON.stringify(lgGood.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(lgGood.sum.reps === 2, '런지 2회 카운트 (실제 ' + lgGood.sum.reps + ')');
+  ok(lgGood.sum.avgScore >= 85, '깊은 런지 평균 점수 ≥ 85 (실제 ' + lgGood.sum.avgScore + ')');
+  const lgShallowB = simKnee('lunge', 'beginner', 168, 110, {});
+  const lgShallowA = simKnee('lunge', 'advanced', 168, 110, {});
+  ok(lgShallowB.sum.reps === 2 && lgShallowA.sum.reps === 2, '얕은 런지도 횟수는 셈');
+  ok(!has(lgShallowB.sum, 'lunge_depth_low'), '헬린이는 110°를 통과(118° 기준)');
+  ok(has(lgShallowA.sum, 'lunge_depth_low') || has(lgShallowA.sum, 'lunge_depth_mid'), '헬창은 110°를 지적(100° 기준)');
+  ok(lgShallowA.sum.avgScore < lgShallowB.sum.avgScore, '같은 자세에서 헬창 점수가 낮음');
+  const lgLean = simKnee('lunge', 'beginner', 168, 92, { lean: 50 });
+  say('   상체 50° issues=' + JSON.stringify(lgLean.sum.issues.map(function(i){ return i.code; })));
+  ok(has(lgLean.sum, 'lunge_lean_bad') || has(lgLean.sum, 'lunge_lean_mid'), '상체가 앞으로 쏠린 자세 감지');
+  ok(lgLean.sum.avgScore < lgGood.sum.avgScore, '상체 쏠림은 점수를 깎음 (' + lgLean.sum.avgScore + ' < ' + lgGood.sum.avgScore + ')');
+
+  /* ---- 23) 턱걸이 ---- */
+  say('');
+  say('▸ 23. 턱걸이 — 당김 · 턱 높이 · 팔 펴기');
+  const pu = simPull('beginner', 45, 175);
+  say('   reps=' + pu.sum.reps + ' avg=' + pu.sum.avgScore + ' issues=' + JSON.stringify(pu.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(pu.sum.reps === 2, '턱걸이 2회 카운트 (실제 ' + pu.sum.reps + ')');
+  ok(!has(pu.sum, 'pull_depth'), '끝까지 당긴 동작은 깊이 지적 없음');
+  ok(!has(pu.sum, 'pull_chin'), '턱이 바에 닿으면 턱 지적 없음');
+  const puAdv = simPull('advanced', 45, 175);
+  ok(puAdv.sum.reps === 2 && !has(puAdv.sum, 'pull_chin'), '헬창도 턱이 바에 닿으면 통과');
+  const puShallow = simPull('beginner', 120, 175);
+  say('   덜 당김 issues=' + JSON.stringify(puShallow.sum.issues.map(function(i){ return i.code; })));
+  ok(has(puShallow.sum, 'pull_depth'), '덜 당긴 동작 감지');
+  const pu90 = simPull('beginner', 90, 175);
+  const pu90A = simPull('advanced', 90, 175);
+  ok(!has(pu90.sum, 'pull_depth'), '헬린이는 90°까지 당기면 통과(95° 기준)');
+  ok(has(pu90A.sum, 'pull_depth'), '헬창은 90°를 지적(82° 기준)');
+  const puNoOpen = simPull('beginner', 50, 155);
+  say('   팔 덜 폄 reps=' + puNoOpen.sum.reps);
+  ok(puNoOpen.sum.reps === 0, '팔을 끝까지 펴지 않으면 횟수로 세지 않음 (실제 ' + puNoOpen.sum.reps + ')');
+
+  /* ---- 24) 데드리프트 ---- */
+  say('');
+  say('▸ 24. 데드리프트 — 힌지 · 등 굽음 · 무릎');
+  const dl = simDead('beginner', 65);
+  say('   reps=' + dl.sum.reps + ' avg=' + dl.sum.avgScore + ' issues=' + JSON.stringify(dl.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(dl.sum.reps === 2, '데드리프트 2회 카운트 (실제 ' + dl.sum.reps + ')');
+  ok(!has(dl.sum, 'dead_back_round'), '등이 곧은 데드리프트는 등 지적 없음');
+  ok(!has(dl.sum, 'dead_knee_bend'), '무릎을 살짝만 굽히면 지적 없음');
+  ok(!has(dl.sum, 'dead_lockout'), '끝까지 일어서면 락아웃 지적 없음');
+  const dlShort = simDead('beginner', 26);
+  say('   얕은 힌지 issues=' + JSON.stringify(dlShort.sum.issues.map(function(i){ return i.code; })));
+  ok(has(dlShort.sum, 'dead_hinge_short') || dlShort.sum.reps === 0, '엉덩이를 덜 뺀 동작 감지');
+  const dlRound = simDead('beginner', 65, { headDy: 0.12 });
+  say('   등 굽음 issues=' + JSON.stringify(dlRound.sum.issues.map(function(i){ return i.code; })));
+  ok(has(dlRound.sum, 'dead_back_round'), '등이 굽은 자세 감지');
+  const dlKnee = simDead('beginner', 60, { kneeBottom: 92 });
+  say('   무릎 굽힘 issues=' + JSON.stringify(dlKnee.sum.issues.map(function(i){ return i.code; })));
+  ok(has(dlKnee.sum, 'dead_knee_bend'), '무릎을 많이 굽힌(스쿼트 같은) 자세 감지');
+
+  /* ---- 25) 윗몸일으키기 ---- */
+  say('');
+  say('▸ 25. 윗몸일으키기 — 각도 · 목 · 반동');
+  const su = simSit('beginner', 70);
+  say('   reps=' + su.sum.reps + ' avg=' + su.sum.avgScore + ' issues=' + JSON.stringify(su.sum.issues.map(function(i){ return i.code + ':' + i.count; })));
+  ok(su.sum.reps === 2, '윗몸일으키기 2회 카운트 (실제 ' + su.sum.reps + ')');
+  ok(!has(su.sum, 'sit_depth'), '끝까지 일어나면 각도 지적 없음');
+  ok(!has(su.sum, 'sit_momentum'), '천천히 올라오면 반동 지적 없음');
+  const suShallowB = simSit('beginner', 95);
+  ok(has(suShallowB.sum, 'sit_depth'), '덜 일어난 동작 감지');
+  const suShallowA = simSit('advanced', 95);
+  ok(suShallowA.sum.reps === 0, '헬창은 95°를 횟수로 세지 않음 (실제 ' + suShallowA.sum.reps + ')');
+  const suNeck = simSit('beginner', 70, { headDy: 0.09 });
+  say('   목 꺾임 issues=' + JSON.stringify(suNeck.sum.issues.map(function(i){ return i.code; })));
+  ok(has(suNeck.sum, 'sit_neck'), '목을 꺾은 자세 감지');
+  const suFast = simSit('beginner', 70, { riseSec: 0.18 });
+  say('   빠른 반동 issues=' + JSON.stringify(suFast.sum.issues.map(function(i){ return i.code; })));
+  ok(has(suFast.sum, 'sit_momentum'), '반동으로 올라온 동작 감지');
+
+  /* ---- 26) 새 종목 기록 연동 ---- */
+  say('');
+  say('▸ 26. 새 4종 기록 · 카드 연동');
+  const NEW4 = ['lunge', 'pullup', 'deadlift', 'situp'];
+  ok(Object.keys(EXERCISES).length === 8, '운동 8종 등록 (' + Object.keys(EXERCISES).join(',') + ')');
+  ok(NEW4.every(function(k){ return !!(LEVELS.beginner[k] && LEVELS.advanced[k]); }), '새 4종 모두 헬린이·헬창 기준 있음');
+  ok(NEW4.every(function(k){ return !!COPY[{ lunge: 'lunge_ok', pullup: 'pull_ok', deadlift: 'dead_ok', situp: 'sit_ok' }[k]]; }), '새 4종 모두 좋은 자세 문구 있음');
+  let recOk = true, nameOk = true;
+  NEW4.forEach(function(k){
+    const r = buildRecord({ reps: 8, avgScore: 81, durationMs: 30000, frames: 200, issues: [] }, k, NOW);
+    if (!(r.metricLabel === '반복' && r.metricValue === '8' && r.score === 81)) recOk = false;
+    if (r.exerciseName !== EXERCISES[k].name) nameOk = false;
+  });
+  ok(recOk, '새 4종도 기록(반복·점수)으로 저장');
+  ok(nameOk, '기록 이름이 운동 이름과 같음');
+  const noOne = NEW4.map(function(k){ return createEngine(k).update(null, 1.0, 0).ok; });
+  ok(noOne.every(function(v){ return v === false; }), '새 4종도 사람이 없으면 ok:false');
 }
 /* CASES END */
 runCases(mod, ok, say);
