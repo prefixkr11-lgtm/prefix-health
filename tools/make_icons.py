@@ -64,7 +64,7 @@ def _fillet(d, f, cx, cy, r, sx=1, sy=1, ink=INK, bg=BG):
 
 
 def _draw(accent, px, sup, g):
-    """px 크기 아이콘을 sup배 슈퍼샘플로 그려서 (이미지, sup) 를 돌려준다."""
+    """px 크기 아이콘을 sup배 슈퍼샘플 캔버스에 그린다(여백 포함)."""
     k = px * sup / S                     # 기준 단위 → 캔버스 픽셀
     pad = 0.10 * S
     CW = int(round((S + 2 * pad) * k))
