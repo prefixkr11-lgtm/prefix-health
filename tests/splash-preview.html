@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prehealth · 진입 스플래시 모션 미리보기</title>
-<style>
-  html,body{margin:0;background:#0A0A0B;display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
-  #stage{position:relative;width:390px;height:844px;overflow:hidden;background:#141416}
+<style id="pageStyle">
+  html,body{margin:0;padding:0;background:#0A0A0B;display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
+  #stage{position:relative;width:390px;height:844px;overflow:hidden;background:#141416;flex:0 0 auto}
   /* index.html의 스플래시는 position:fixed 이므로, 폰 크기 무대 안에 담기게 absolute로 바꾼다 */
   #stage .splash{position:absolute}
   #hint{position:fixed;left:12px;bottom:12px;color:#6B6B72;font:12px/1.5 ui-monospace,Menlo,monospace}
@@ -14,7 +14,7 @@
 </head>
 <body>
 <!-- 진입 스플래시만 폰 크기(390×844)로 떼어 보는 페이지.
-     마크업은 index.html에서 그대로 읽어 오므로 앱과 항상 같은 연출이 보인다.
+     스타일과 마크업을 index.html에서 그대로 읽어 오므로 앱과 항상 같은 연출이 보인다.
      ?t=620 처럼 시간(ms)을 주면 그 시점에서 멈춘 한 프레임을 보여 준다 (모션 QA·촬영용). -->
 <div id="stage"></div>
 <div id="hint">?t=0 ~ ?t=1180 (ms)</div>
@@ -24,9 +24,22 @@
   var m = /[?&]t=([0-9.]+)/.exec(location.search);
   var t = m ? parseFloat(m[1]) : NaN;
   fetch('../index.html?t=' + Date.now()).then(function(r){ return r.text(); }).then(function(src){
+    var cs = src.indexOf('<style>');
+    var ce = src.indexOf('</style>', cs);
     var a = src.indexOf('<div class="splash" id="splash"');
     var b = src.indexOf('<header class="top"');
-    if (a < 0 || b < 0) return;
+    if (cs < 0 || ce < 0 || a < 0 || b < 0) return;
+
+    // 앱의 스타일을 그대로 입힌다 (range 계산용 :root 변수·스플래시 키프레임 포함)
+    var appStyle = document.createElement('style');
+    appStyle.textContent = src.slice(cs + 7, ce);
+    document.head.appendChild(appStyle);
+
+    // 앱의 전역 body 규칙이 이 페이지 레이아웃을 덮지 않도록 페이지 스타일을 다시 입힌다
+    var pageStyle = document.createElement('style');
+    pageStyle.textContent = document.getElementById('pageStyle').textContent;
+    document.head.appendChild(pageStyle);
+
     stage.innerHTML = src.slice(a, b).trim();
     if (!isNaN(t)){
       stage.getAnimations({ subtree: true }).forEach(function(an){
