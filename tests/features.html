@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prehealth · v10 기능 테스트 (기록·카드·Pro·레벨·일시정지·인트로)</title>
+<title>Prehealth · v11 기능 테스트 (기록·카드·Pro·레벨·일시정지·인트로)</title>
 <style>
   body{background:#141416;color:#F5F2EB;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;margin:0}
   h1{font-size:15px;letter-spacing:.02em}
@@ -13,7 +13,7 @@
 </style>
 </head>
 <body>
-<h1>Prehealth v10 · 기능 테스트 (기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로)</h1>
+<h1>Prehealth v11 · 기능 테스트 (기록 / 결과 카드 / Pro / 헬린이·헬창 / 카메라 일시정지 / 인트로)</h1>
 <pre id="out">index.html을 불러오는 중…</pre>
 <iframe id="app" src="../index.html" title="Prehealth 앱"></iframe>
 <script>
@@ -110,7 +110,7 @@ function decodeImage(src){
      'Pro 요금제 월 4,900 / 연 39,000 노출');
   ok(q('.top').classList.contains('rise') && doc.querySelectorAll('.rise').length >= 8,
      '메인 요소 순차 등장(stagger) 적용 (' + doc.querySelectorAll('.rise').length + '개)');
-  /* v10 인트로: 통통 바운스로 등장한 뒤 커튼처럼 위로 걷히는 슬라이드업 (~1.0초) */
+  /* v11 인트로: P(왼쪽 위)·H(오른쪽 아래)가 중앙으로 날아와 'PH'로 합쳐지고 커튼처럼 위로 걷힌다 (~1.18초) */
   const sheet = doc.styleSheets[0];
   const rules = Array.prototype.slice.call(sheet.cssRules);
   const sel = function(selector){
@@ -118,20 +118,44 @@ function decodeImage(src){
   };
   const kf = {};
   rules.forEach(function(r){ if (r.name) kf[r.name] = r.cssText; });
+  const durOf = function(el){ return el ? parseFloat(el.style.animationDuration) : NaN; };
+  const delayOf = function(el){ return el ? parseFloat(el.style.animationDelay) : NaN; };
   const sp = sel('.splash');
-  const spIn = sel('.splashInner');
+  const spPH = sel('.splashPH'), spP = sel('.splashP'), spH = sel('.splashH');
+  const spPlate = sel('.splashPlate'), spFlash = sel('.splashFlash'), spRing = sel('.splashRing'), spWord = sel('.splashWord');
   ok(!!sp && sp.style.pointerEvents === 'none', '스플래시 레이어는 입력을 막지 않음 (pointer-events: none)');
-  ok(!!kf.splashBounce && /scale\(0?\.6\)/.test(kf.splashBounce) && /scale\(1\.08\)/.test(kf.splashBounce),
-     '로고·워드마크 바운스 키프레임 (scale 0.6 → 1.08 → 1)');
-  ok(!!spIn && spIn.style.animationName === 'splashBounce' && spIn.style.animationDuration === '0.55s' &&
-     spIn.style.animationTimingFunction.indexOf('cubic-bezier(0.34, 1.56, 0.64, 1)') !== -1,
-     '바운스 구간 0초~0.55초 · 스프링 이징 cubic-bezier(0.34, 1.56, 0.64, 1) (' +
-     (spIn ? spIn.style.animationDuration + ' / ' + spIn.style.animationTimingFunction : '없음') + ')');
+  ok(txt('.splashP') === 'P' && txt('.splashH') === 'H', '합체 로고에 P·H 두 글자 존재');
+  ok(!!kf.splashFlyP && /translate\(-90px,\s*-90px\)/.test(kf.splashFlyP) && /scale\(0?\.85\)/.test(kf.splashFlyP),
+     'P는 왼쪽 위(-90px, -90px) · scale 0.85에서 출발');
+  ok(!!kf.splashFlyH && /translate\(90px,\s*90px\)/.test(kf.splashFlyH) && /scale\(0?\.85\)/.test(kf.splashFlyH),
+     'H는 오른쪽 아래(90px, 90px) · scale 0.85에서 출발');
+  ok(!!kf.splashFlyP && /translate\(0(px)?,\s*0(px)?\)/.test(kf.splashFlyP) && /scale\(1\)/.test(kf.splashFlyP) &&
+     !!kf.splashFlyH && /translate\(0(px)?,\s*0(px)?\)/.test(kf.splashFlyH),
+     '두 글자 모두 중앙 제자리(translate 0,0 · scale 1)로 정확히 착지');
+  ok(!!spP && spP.style.animationName === 'splashFlyP' && durOf(spP) === 0.48 && delayOf(spP) === 0 &&
+     spP.style.animationTimingFunction.indexOf('cubic-bezier(0.22, 1, 0.36, 1)') !== -1,
+     'P 비행 구간 0초~0.48초 · ease-out cubic-bezier(0.22, 1, 0.36, 1) (' +
+     (spP ? spP.style.animationDuration + ' / ' + spP.style.animationDelay + ' / ' + spP.style.animationTimingFunction : '없음') + ')');
+  ok(!!spH && spH.style.animationName === 'splashFlyH' && durOf(spH) === 0.48 && delayOf(spH) === 0 &&
+     spH.style.animationTimingFunction.indexOf('cubic-bezier(0.22, 1, 0.36, 1)') !== -1,
+     'H 비행 구간 0초~0.48초 · ease-out cubic-bezier(0.22, 1, 0.36, 1) (' +
+     (spH ? spH.style.animationDuration + ' / ' + spH.style.animationDelay + ' / ' + spH.style.animationTimingFunction : '없음') + ')');
+  ok(!!kf.splashMerge && /scale\(1\.06\)/.test(kf.splashMerge) && /scale\(1\)/.test(kf.splashMerge) &&
+     !!spPH && spPH.style.animationName === 'splashMerge' && delayOf(spPH) === 0.46,
+     '합체 순간 0.46초~ 탄성 키프레임 (scale 1 → 1.06 → 1) (' +
+     (spPH ? spPH.style.animationDelay + ' + ' + spPH.style.animationDuration : '없음') + ')');
+  ok(!!spPlate && spPlate.style.animationName === 'splashPlateIn' && delayOf(spPlate) === 0.44 && spPlate.style.opacity === '0',
+     '배지 판은 0.44초에 떠오름 (그 전에는 투명)');
+  ok(!!spFlash && spFlash.style.animationName === 'splashFlash' && delayOf(spFlash) === 0.46 &&
+     !!spRing && spRing.style.animationName === 'splashRing' && delayOf(spRing) === 0.46,
+     '합체 임팩트 연출 (에메랄드 설광 + 퍼지는 링, 0.46초 시작)');
+  ok(!!spWord && spWord.style.animationName === 'splashWordIn' && delayOf(spWord) === 0.56 && spWord.style.opacity === '0',
+     'Prehealth 서브 텍스트는 합체 뒤 0.56초에 부드럽게 등장');
   ok(!!kf.splashCurtain && /translateY\(0px\)|translateY\(0\)/.test(kf.splashCurtain) && /translateY\(-100%\)/.test(kf.splashCurtain),
      '커튼 슬라이드업 키프레임 (translateY(0) → translateY(-100%))');
-  ok(!!sp && sp.style.animationName === 'splashCurtain' && sp.style.animationDuration === '0.42s' &&
-     sp.style.animationDelay === '0.58s' && sp.style.animationTimingFunction.indexOf('cubic-bezier(0.22, 1, 0.36, 1)') !== -1,
-     '커튼 구간 0.58초~1.0초 · ease-out cubic-bezier(0.22, 1, 0.36, 1) (' +
+  ok(!!sp && sp.style.animationName === 'splashCurtain' && durOf(sp) === 0.4 && delayOf(sp) === 0.78 &&
+     sp.style.animationTimingFunction.indexOf('cubic-bezier(0.22, 1, 0.36, 1)') !== -1,
+     '커튼 구간 0.78초~1.18초 · ease-out cubic-bezier(0.22, 1, 0.36, 1) (' +
      (sp ? sp.style.animationDelay + ' + ' + sp.style.animationDuration + ' / ' + sp.style.animationTimingFunction : '없음') + ')');
   const mq = rules.filter(function(r){ return r.conditionText && r.conditionText.indexOf('prefers-reduced-motion') !== -1; })[0];
   const inMq = function(selector){
@@ -143,15 +167,20 @@ function decodeImage(src){
     return found[0] || null;
   };
   const mqSplash = inMq('.splash'), mqGlow = inMq('.splashGlow'), mqInner = inMq('.splashInner');
+  const mqP = inMq('.splashP'), mqH = inMq('.splashH'), mqPH = inMq('.splashPH'), mqWord = inMq('.splashWord');
   ok(!!mq && !!mqSplash && mqSplash.style.animationName === 'none' &&
      !!mqGlow && mqGlow.style.animationName === 'none' &&
-     !!mqInner && mqInner.style.animationName === 'none',
-     'prefers-reduced-motion: reduce에서 인트로 모션 끔 (스플래시·글로우·바운스)');
+     !!mqInner && mqInner.style.animationName === 'none' &&
+     !!mqP && mqP.style.animationName === 'none' &&
+     !!mqH && mqH.style.animationName === 'none' &&
+     !!mqPH && mqPH.style.animationName === 'none' &&
+     !!mqWord && mqWord.style.animationName === 'none',
+     'prefers-reduced-motion: reduce에서 인트로 모션 끔 (스플래시·글로우·비행·합체·워드마크)');
   const tSplash = Date.now();
   const gone = await until(function(){ return doc.getElementById('splash') === null; }, 2600, 50);
   const cost = Date.now() - tSplash;
-  ok(!!gone && cost < 1300,
-     '진입 스플래시가 약 1.0초 모션 뒤 화면에서 사라짐 (' + cost + 'ms, null=' + (gone ? 'yes' : 'no') + ')');
+  ok(!!gone && cost < 1500,
+     '진입 스플래시가 약 1.18초 모션 뒤 화면에서 사라짐 (' + cost + 'ms, null=' + (gone ? 'yes' : 'no') + ')');
   await wait(900);
   ok(app.getComputedStyle(q('.top')).opacity === '1', '등장 모션 후 요소가 보임');
   say('');

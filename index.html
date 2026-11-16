@@ -469,13 +469,14 @@ window.addEventListener('unhandledrejection', function (e) {
   }
   .toast.show{opacity:1;transform:translate(-50%,0)}
 
-  /* ================= v10: 앱 진입 인트로 — 통통 바운스 + 커튼 슬라이드업 (~1.0초) ================= */
+  /* ================= v11: 앱 진입 인트로 — P·H 합체 스플래시 (~1.18초) =================
+     P는 왼쪽 위에서, H는 오른쪽 아래에서 날아와 중앙에서 'PH'로 딱 합쳐진다.
+     0~0.48초 비행 → 0.46~0.68초 합체 임팩트(글로우·링·scale 1.06→1) → 0.78~1.18초 커튼처럼 위로 걷힘 */
   .splash{
     position:fixed;inset:0;z-index:200;display:grid;place-items:center;overflow:hidden;
     pointer-events:none;transform:translateY(0);
     background:radial-gradient(circle at 50% 44%, #17181b 0%, #111113 58%, #0b0b0c 100%);
-    /* 0~0.58초 제자리에서 로고가 통통 튀고 → 0.58~1.0초 커튼처럼 위로 걷힌다 */
-    animation:splashCurtain .42s cubic-bezier(.22,1,.36,1) .58s both;
+    animation:splashCurtain .40s cubic-bezier(.22,1,.36,1) .78s both;
     will-change:transform;
   }
   .splash.out{opacity:0;transition:opacity .16s ease}
@@ -491,25 +492,83 @@ window.addEventListener('unhandledrejection', function (e) {
     content:"";position:absolute;left:0;right:0;bottom:0;height:2px;z-index:3;
     background:linear-gradient(90deg, rgba(52,211,153,0) 0%, rgba(52,211,153,.65) 50%, rgba(52,211,153,0) 100%);
     opacity:0;
-    animation:splashEdge .42s ease .58s both;
+    animation:splashEdge .40s ease .78s both;
   }
   .splashInner{
-    position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:15px;
-    /* 0~0.55초: 스프링 바운스로 통통 튀며 등장 (scale .6 → 1.08 → 1) */
-    animation:splashBounce .55s cubic-bezier(.34,1.56,.64,1) both;
-    will-change:transform,opacity;
+    position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:16px;
   }
-  .splashMark{
-    width:76px;height:76px;border-radius:23px;display:grid;place-items:center;
-    background:linear-gradient(135deg,#12855A,#10664A);color:#fff;
-    font-size:39px;font-weight:900;letter-spacing:-.04em;
-    box-shadow:0 16px 44px rgba(16,185,129,.42), 0 0 0 1px rgba(52,211,153,.16) inset, inset 0 1px 0 rgba(255,255,255,.26);
+  /* 합체 무대: 두 글자가 각자의 자리(P=왼쪽, H=오른쪽)로 날아와 앉는 flex 슬롯 */
+  .splashPH{
+    position:relative;display:flex;align-items:center;justify-content:center;
+    padding:14px 22px 16px;border-radius:28px;
+    font-size:58px;font-weight:900;line-height:1;letter-spacing:-.07em;color:#fff;
+    /* 합체 순간의 탄성: scale 1 → 1.06 → 1 */
+    animation:splashMerge .24s cubic-bezier(.22,1,.36,1) .46s both;
+    will-change:transform;
   }
-  .splashWord{font-size:19px;font-weight:800;letter-spacing:-.025em;color:var(--ink);opacity:.94}
-  @keyframes splashBounce{
-    0%{opacity:0;transform:scale(.6)}
-    55%{opacity:1;transform:scale(1.08)}
+  .splashP,.splashH{position:relative;z-index:2;display:block;will-change:transform,opacity}
+  /* P: 왼쪽 위(-90px, -90px)에서 중앙 왼쪽 자리로 */
+  .splashP{animation:splashFlyP .48s cubic-bezier(.22,1,.36,1) both}
+  /* H: 오른쪽 아래(90px, 90px)에서 중앙 오른쪽 자리로 */
+  .splashH{animation:splashFlyH .48s cubic-bezier(.22,1,.36,1) both}
+  /* 합체 순간에만 떠오르는 배지 판 — 두 글자를 한 덩어리 로고로 묶는다 */
+  .splashPlate{
+    position:absolute;inset:0;z-index:1;border-radius:inherit;
+    background:linear-gradient(158deg,#12855A 0%,#10664A 58%,#0B4C38 100%);
+    box-shadow:0 18px 48px rgba(16,185,129,.40), inset 0 1px 0 rgba(255,255,255,.22), inset 0 0 0 1px rgba(52,211,153,.20);
+    opacity:0;
+    animation:splashPlateIn .22s cubic-bezier(.22,1,.36,1) .44s both;
+  }
+  /* 합체 임팩트: 부드러운 에메랄드 섬광 + 퍼지는 링 */
+  .splashFlash{
+    position:absolute;left:50%;top:50%;width:220px;height:220px;margin:-110px 0 0 -110px;z-index:0;
+    border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle, rgba(16,185,129,.62) 0%, rgba(16,102,74,.30) 38%, rgba(16,102,74,0) 68%);
+    opacity:0;
+    animation:splashFlash .34s ease-out .46s both;
+  }
+  .splashRing{
+    position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;z-index:0;
+    border-radius:34px;border:1.5px solid rgba(52,211,153,.75);pointer-events:none;opacity:0;
+    animation:splashRing .36s cubic-bezier(.22,1,.36,1) .46s both;
+  }
+  /* 합체 뒤 아래에서 부드럽게 올라오는 워드마크 */
+  .splashWord{
+    font-size:19px;font-weight:800;letter-spacing:-.025em;color:var(--ink);opacity:0;
+    animation:splashWordIn .22s cubic-bezier(.22,1,.36,1) .56s both;
+  }
+  @keyframes splashFlyP{
+    0%{opacity:0;transform:translate(-90px,-90px) scale(.85)}
+    55%{opacity:1}
+    100%{opacity:1;transform:translate(0,0) scale(1)}
+  }
+  @keyframes splashFlyH{
+    0%{opacity:0;transform:translate(90px,90px) scale(.85)}
+    55%{opacity:1}
+    100%{opacity:1;transform:translate(0,0) scale(1)}
+  }
+  @keyframes splashMerge{
+    0%{transform:scale(1)}
+    45%{transform:scale(1.06)}
+    100%{transform:scale(1)}
+  }
+  @keyframes splashPlateIn{
+    0%{opacity:0;transform:scale(.94)}
     100%{opacity:1;transform:scale(1)}
+  }
+  @keyframes splashFlash{
+    0%{opacity:0;transform:scale(.55)}
+    28%{opacity:.95;transform:scale(1)}
+    100%{opacity:0;transform:scale(1.35)}
+  }
+  @keyframes splashRing{
+    0%{opacity:0;transform:scale(.72)}
+    30%{opacity:.85;transform:scale(.98)}
+    100%{opacity:0;transform:scale(1.34)}
+  }
+  @keyframes splashWordIn{
+    0%{opacity:0;transform:translateY(7px)}
+    100%{opacity:.94;transform:none}
   }
   @keyframes splashGlow{
     0%{opacity:0;transform:scale(.72)}
@@ -531,8 +590,10 @@ window.addEventListener('unhandledrejection', function (e) {
 
   @media (prefers-reduced-motion: reduce){
     .splash,.splash.out{animation:none;transition:none;transform:none}
-    .splash::after,.splashGlow,.splashInner{animation:none}
+    .splash::after,.splashGlow,.splashInner,.splashPH,.splashP,.splashH,.splashPlate,.splashFlash,.splashRing,.splashWord{animation:none}
     .splash::after{opacity:0}
+    .splashPlate{opacity:1}
+    .splashWord{opacity:.94}
     .rise{animation:none}
   }
 </style>
@@ -542,7 +603,12 @@ window.addEventListener('unhandledrejection', function (e) {
 <div class="splash" id="splash" aria-hidden="true">
   <div class="splashGlow"></div>
   <div class="splashInner">
-    <span class="splashMark">P</span>
+    <div class="splashPH">
+      <span class="splashFlash" aria-hidden="true"></span>
+      <span class="splashRing" aria-hidden="true"></span>
+      <span class="splashPlate" aria-hidden="true"></span>
+      <span class="splashP">P</span><span class="splashH">H</span>
+    </div>
     <span class="splashWord">Prehealth</span>
   </div>
 </div>
@@ -3572,9 +3638,17 @@ function playIntro(){
     splash.remove();
     return;
   }
-  // 약 1.0초 모션: 0.55초까지 로고 바운스 → 0.58~1.0초 커튼처럼 위로 걷힘 → 1.06초에 DOM 제거
-  setTimeout(function(){ splash.classList.add('out'); }, 1000);
-  setTimeout(function(){ if (splash.parentNode) splash.parentNode.removeChild(splash); }, 1060);
+  // 약 1.18초 모션: 0~0.48초 P·H 비행 → 0.46~0.68초 합체 임팩트 → 0.78~1.18초 커튼처럼 위로 걷힌다 → 1.24초에 DOM 제거
+  // 안전장치: 어떤 이유로든 1.8초까지 남아 있으면 강제로 걷어낸다
+  var removed = false;
+  var killSplash = function(){
+    if (removed) return;
+    removed = true;
+    if (splash.parentNode) splash.parentNode.removeChild(splash);
+  };
+  setTimeout(function(){ splash.classList.add('out'); }, 1180);
+  setTimeout(killSplash, 1240);
+  setTimeout(killSplash, 1800);
 }
 
 /* ------------------------------ boot ------------------------------ */
@@ -3589,7 +3663,7 @@ loadEngine();
 
 /* ------------------------------ 테스트/자동화용 공개 API ------------------------------ */
 window.Prehealth = {
-  version: 'v10',
+  version: 'v11',
   recordsKey: REC_KEY,
   proKey: PRO_KEY,
   levelKey: LEVEL_KEY,
