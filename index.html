@@ -2356,12 +2356,17 @@ function wrapText(g, text, maxW, maxLines){
   let line = '';
   for (let i = 0; i < chars.length; i++){
     const ch = chars[i];
-    const test = line + ch;
-    if (g.measureText(test).width > maxW && line){
+    const tooWide = line && g.measureText(line + ch).width > maxW;
+    if (!tooWide){ line += ch; continue; }
+    // 구두점이 다음 줄 첫 글자로 떨어지면 앞 줄에 붙여 마무리한다 ("…가 볼까요?" 같은 어색한 줄바꿈 방지)
+    if (/[?!.,:;·…%)\]]/.test(ch)){
+      out.push(line + ch);
+      line = '';
+    } else {
       out.push(line);
       line = (ch === ' ') ? '' : ch;
-      if (out.length >= maxLines) return out.slice(0, maxLines);
-    } else line = test;
+    }
+    if (out.length >= maxLines) return out.slice(0, maxLines);
   }
   if (line.trim() && out.length < maxLines) out.push(line.trim());
   return out;
