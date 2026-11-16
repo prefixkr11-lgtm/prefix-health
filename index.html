@@ -474,8 +474,8 @@ window.addEventListener('unhandledrejection', function (e) {
     position:fixed;inset:0;z-index:200;display:grid;place-items:center;overflow:hidden;
     pointer-events:none;
     background:radial-gradient(circle at 50% 44%, #17181b 0%, #111113 58%, #0b0b0c 100%);
-    /* 0.76초부터 배경까지 서서히 걷혀 1.1초에 완전히 투명해진다 */
-    animation:splashBgOut .34s ease .76s forwards;
+    /* 로고가 거의 사라질 때(0.84초~) 배경까지 걷혀 1.1초에 완전히 투명해진다 */
+    animation:splashBgOut .26s ease .84s forwards;
     will-change:opacity;
   }
   .splash.out{opacity:0;transition:opacity .18s ease}
