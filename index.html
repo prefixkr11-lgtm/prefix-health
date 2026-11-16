@@ -3011,7 +3011,7 @@ els.stage.addEventListener('drop', function(e){
 /* ------------------------------ 동영상 고속 스캔 → 바로 결과 ------------------------------
    올린 영상을 재생하며 기다리게 하지 않고, 영상 프레임을 일정 간격으로 건너뛰며
    (기본 초당 12장, 최대 420장) 바로 분석한다. 같은 엔진·같은 판정 함수를 그대로 쓴다. */
-const SCAN = { targetFps: 12, maxFrames: 420, seekTimeout: 1600 };
+const SCAN = { targetFps: 12, maxFrames: 420, seekTimeout: 1600, budgetMs: 12000, tailFrames: 45 };
 
 /* 시간에 맞춰 몇 장을 볼지 정한다 (긴 영상은 간격을 늘려 최대 장수에 맞춘다) */
 function scanPlan(dur){
@@ -3126,10 +3126,13 @@ async function runScan(){
   setText(els.hudHint, '영상을 분석하고 있어요');
 
   const plan = scanPlan(dur);
+  const t0 = performance.now();
+  let cursor = 0;
+  let done = 0;
   let lastOut = null;
-  for (let i = 0; i < plan.total; i++){
+  while (cursor < dur - 0.01){
     if (S.scanToken !== token) return false;
-    const t = Math.min(i * plan.step, Math.max(0, dur - 0.03));
+    const t = Math.min(cursor, Math.max(0, dur - 0.03));
     if (Math.abs(v.currentTime - t) > 0.005) await seekTo(v, t);
     if (S.scanToken !== token) return false;
     await frameTick(v);
@@ -3140,8 +3143,15 @@ async function runScan(){
     const aspect = (v.videoWidth || 16) / (v.videoHeight || 9);
     const out = engine.update(lm, aspect, Math.round(t * 1000), world);
     if (out) lastOut = out;
-    if ((i & 1) === 0 || i === plan.total - 1){
-      scanUi(true, ((i + 1) / plan.total) * 100);
+    done++;
+    /* 느린 기기 배려: 오래 걸리면 남은 구간을 성기게라도 끝까지 본다 */
+    let step = plan.step;
+    const elapsed = performance.now() - t0;
+    const remain = dur - cursor - plan.step;
+    if (elapsed > SCAN.budgetMs && remain > 0) step = Math.max(step, remain / SCAN.tailFrames);
+    cursor += step;
+    if ((done & 1) === 0 || cursor >= dur - 0.01){
+      scanUi(true, Math.min(99, (cursor / dur) * 100));
       if (lastOut) applyResult(lastOut);
     }
   }
