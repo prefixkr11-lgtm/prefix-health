@@ -45,6 +45,8 @@ window.addEventListener('unhandledrejection', function (e) {
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   [hidden]{display:none!important}
+  /* 다크 UI에 맞춘 네이티브 컨트롤·스크롤바 색 (밝은 회색 스크롤바가 뜨지 않도록) */
+  html{color-scheme:dark;scrollbar-color:#2E2E32 #0F0F11}
   html,body{margin:0;padding:0}
   body{
     background:var(--bg);color:var(--ink);
