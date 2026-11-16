@@ -14,7 +14,17 @@
 <body>
 <h1>PREFIX HEALTH · 자세 엔진 스모크 테스트</h1>
 <pre id="out">index.html에서 엔진을 불러오는 중…</pre>
+<script>
+window.addEventListener('error', function (e) {
+  document.getElementById('out').textContent =
+    'ERROR: ' + (e.message || e.error) + ' @' + (e.filename || '') + ':' + (e.lineno || '');
+});
+window.addEventListener('unhandledrejection', function (e) {
+  document.getElementById('out').textContent = 'REJECT: ' + (e.reason && (e.reason.stack || e.reason.message) || e.reason);
+});
+</script>
 <script type="module">
+const LF = String.fromCharCode(10);
 const outEl = document.getElementById('out');
 const lines = [];
 function say(s) { lines.push(s); outEl.textContent = lines.join('\n'); }
