@@ -218,10 +218,10 @@ function decodeImage(src){
   probe.innerHTML = '<span class="wt"><i class="wc on" style="height:80%"></i></span><span class="wd">오늘</span>';
   q('#weekBars').appendChild(probe);
   const barCS = app.getComputedStyle(probe.querySelector('.wc'));
-  const barImg = barCS.backgroundImage;
+  const barBg = barCS.backgroundColor, barImg = barCS.backgroundImage, barShadow = barCS.boxShadow;
   probe.parentNode.removeChild(probe);
-  ok(barCS.backgroundColor === 'rgb(109, 183, 155)' && blank(barImg) && blank(barCS.boxShadow),
-     '7일 그래프 막대는 단색 에메랄드 채움 · 그라데이션·글로우 없음 (' + barCS.backgroundColor + ' / ' + barImg + ')');
+  ok(barBg === 'rgb(109, 183, 155)' && blank(barImg) && blank(barShadow),
+     '7일 그래프 막대는 단색 에메랄드 채움 · 그라데이션·글로우 없음 (' + barBg + ' / ' + barImg + ')');
   const repCS = csOf('.report');
   ok(!!repCS && repCS.backgroundColor === 'rgb(18, 23, 20)' && blank(repCS.backgroundImage),
      '리포트 판은 단색 매트(#121714) (' + (repCS ? repCS.backgroundColor : '없음') + ')');
