@@ -114,7 +114,7 @@ function decodeImage(src){
   const P = await until(function(){ return app.Prehealth; }, 30000);
   if (!P){ say('FAIL  window.Prehealth 공개 API를 찾지 못함'); return done(); }
   say('앱 로드 완료 · 버전 ' + P.version);
-  ok(P.version === 'v19', '공개 API 버전 v19 (실제 ' + P.version + ')');
+  ok(P.version === 'v20', '공개 API 버전 v20 (실제 ' + P.version + ')');
   say('');
 
   const q = function(sel){ return doc.querySelector(sel); };
@@ -185,8 +185,8 @@ function decodeImage(src){
   ok(typeof P.commentFor(80, 'pullup', { reps: 3 }, 'beginner') === 'string' &&
      P.commentFor(80, 'pullup', { reps: 3 }, 'beginner') !== P.commentFor(80, 'pullup', { reps: 3 }, 'advanced'),
      '새 종목도 레벨별 한 줄 코멘트가 나옴');
-  ok(q('#proModal').textContent.indexOf('4,900') !== -1 && q('#proModal').textContent.indexOf('39,000') !== -1,
-     'Pro 요금제 월 4,900 / 연 39,000 노출');
+  ok(q('#proModal').textContent.indexOf('7일 무료 체험') !== -1 && q('#proModal').textContent.indexOf('출시 예정') !== -1,
+     'Pro는 가격 대신 “7일 무료 체험 포함 출시 예정”');
   ok(q('.top').classList.contains('rise') && doc.querySelectorAll('.rise').length >= 8,
      '메인 요소 순차 등장(stagger) 적용 (' + doc.querySelectorAll('.rise').length + '개)');
   /* v13 인트로: P(왼쪽 위)·H(오른쪽 아래)가 화면 밖에서 크게 날아와 'PH'로 합쳐지고 커튼처럼 위로 걷힌다 (~1.9초·글자만) */
@@ -439,22 +439,19 @@ function decodeImage(src){
   const startCount = P.proInterest();
   P.openPro();
   ok(q('#proModal').hidden === false, '메뉴의 Prehealth Pro → 모달 열림');
-  ok((q('#proModal').textContent || '').indexOf('4,900') !== -1, '월 4,900원 표시');
-  ok((q('#proModal').textContent || '').indexOf('39,000') !== -1, '연 39,000원 표시');
+  ok((q('#proModal').textContent || '').indexOf('7일 무료 체험') !== -1, '출시 예정 + 7일 무료 체험 안내');
+  ok((q('#proModal').textContent || '').indexOf('4,900') === -1, '결제 전인데 가격을 강조하지 않음');
   ok(q('#proModal').querySelectorAll('.benefits li').length >= 3, '혜택 3가지 이상');
-  ok(txt('#proCount') === String(startCount), '관심 카운트 초기값 표시 (' + txt('#proCount') + ')');
+  ok(q('#proCount') === null, '기기별 관심 카운트 UI 제거');
+  ok(!!q('#proPreview') && q('#proPreview').querySelectorAll('.ppCell').length >= 4,
+     'Pro 샘플 리포트에 관절별 카드 ' + q('#proPreview').querySelectorAll('.ppCell').length + '개');
+  ok(q('#proPreview').querySelectorAll('.ppRepBars i').length === 12, '반복별 점수 막대 12개');
   q('#proCta').click();
   await wait(120);
-  ok(P.proInterest() === startCount + 1, '출시 알림 신청 → 관심 카운트 +1 (' + P.proInterest() + ')');
+  ok(P.proInterest() === startCount, '출시 알림 신청은 관심 카운트를 더 이상 올리지 않음');
   ok(q('#toast').classList.contains('show') && (q('#toast').textContent || '').indexOf('출시 알림 신청 완료') !== -1,
      '신청 완료 토스트: ' + (q('#toast').textContent || ''));
-  ok(txt('#proCount') === String(startCount + 1), '모달 안 로컬 카운트 갱신');
-  const yearly = q('.plan[data-plan="yearly"]');
-  if (yearly){
-    yearly.click();
-    ok(yearly.getAttribute('aria-pressed') === 'true' && q('.plan[data-plan="monthly"]').getAttribute('aria-pressed') === 'false',
-       '요금제 선택 전환');
-  }
+  ok(!!P.proWaitlist.read(), '대기 명단은 이 기기에 저장');
   q('#proClose').click();
   ok(q('#proModal').hidden === true, '모달 닫기');
   ok(q('#tabBar') && q('#fileInput') && !q('#repCard').disabled, '무료 기능(분석·리포트·카드)은 잠기지 않음');
@@ -471,12 +468,16 @@ function decodeImage(src){
   ok(app.localStorage.getItem(P.levelKey) === 'beginner', '레벨이 localStorage에 저장');
   ok(app.document.body.getAttribute('data-level') === 'beginner', 'body[data-level] 반영');
   const descB = txt('#lvDesc');
+  const lineB = txt('#lvLineText');
   q('.lv-btn[data-level="advanced"]').click();
   ok(P.getLevel() === 'advanced', '헬창으로 전환 (실제 ' + P.getLevel() + ')');
   ok(q('.lv-btn[data-level="advanced"]').getAttribute('aria-pressed') === 'true' &&
      q('.lv-btn[data-level="beginner"]').getAttribute('aria-pressed') === 'false', '버튼 상태가 헬창으로 전환');
   ok(app.localStorage.getItem(P.levelKey) === 'advanced', '전환된 레벨 저장');
   ok(txt('#lvDesc') !== descB && txt('#lvDesc').indexOf('고급') >= 0, '설명 문구도 바뀜 (' + txt('#lvDesc') + ')');
+  ok(lineB.indexOf('부드러운') >= 0 && lineB.indexOf('기본 자세') >= 0, '헬린이 1줄: ' + lineB);
+  ok(txt('#lvLineText').indexOf('엄격한') >= 0 && txt('#lvLineText').indexOf('깊은 가동범위') >= 0,
+     '헬창 1줄: ' + txt('#lvLineText'));
   ok(app.document.body.getAttribute('data-level') === 'advanced', 'body 속성도 헬창');
   ok(q('#toast').textContent.indexOf('헬창') !== -1, '전환 토스트 표시 (' + q('#toast').textContent + ')');
 
@@ -937,17 +938,20 @@ function decodeImage(src){
   say('▸ 12. AI 엔진 로딩 진행률 (10% → 50% → 100%)');
   ok(!!q('#engineProg') && !!q('#engineLoad') && !!q('#engineLoadBar'), '상태칩 진행 막대 + 엔진 준비 상황판 존재');
   ok(typeof P.engine.setProgress === 'function', '공개 API에 engine.setProgress');
-  P.engine.setProgress(10, '엔진 불러오는 중', true);
+  P.engine.setProgress(10, '모델 불러오는 중', true);
   ok((txt('#engineText') || '').indexOf('10%') !== -1, '상태칩에 퍼센트 (' + txt('#engineText') + ')');
-  ok(txt('#engineLoadText') === '10% 엔진 불러오는 중', '단계 문구: ' + txt('#engineLoadText'));
+  ok((txt('#engineLoadText') || '').indexOf('10% 모델 불러오는 중') === 0 && txt('#engineLoadText').indexOf('약') !== -1 && txt('#engineLoadText').indexOf('초') !== -1,
+     '단계 문구 + 예상 초: ' + txt('#engineLoadText'));
   ok(txt('#engineLoadPct') === '10%' && parseFloat(q('#engineLoadBar').style.width) === 10, '진행 막대 10%');
   ok(q('#engineLoad').hidden === false, '상황판이 보임');
+  ok((txt('#engineLoadNote') || '').indexOf('경과') === 0 && txt('#engineLoadNote').indexOf('남은 시간') !== -1,
+     '실제 경과 + 남은 시간: ' + txt('#engineLoadNote'));
   P.engine.setProgress(50, '자세 모델 준비 중', true);
-  ok(txt('#engineLoadText') === '50% 자세 모델 준비 중' && parseFloat(q('#engineLoadBar').style.width) === 50,
+  ok((txt('#engineLoadText') || '').indexOf('50% 자세 모델 준비 중') === 0 && parseFloat(q('#engineLoadBar').style.width) === 50,
      '중간 단계: ' + txt('#engineLoadText'));
   P.engine.setProgress(100, '준비 완료');
   ok(txt('#engineLoadText') === '100% 준비 완료' && parseFloat(q('#engineLoadBar').style.width) === 100, '완료 단계: ' + txt('#engineLoadText'));
-  ok((txt('#engineText') || '') === '분석 준비 완료', '상태칩도 준비 완료 (' + txt('#engineText') + ')');
+  ok((txt('#engineText') || '') === '준비 완료', '상태칩도 준비 완료 (' + txt('#engineText') + ')');
   ok(q('#engineStatus').getAttribute('data-progress') === '100', 'data-progress=100');
   await wait(1450);
   ok(q('#engineLoad').hidden === true, '100% 뒤에는 상황판이 사라져 화면을 가리지 않음');
@@ -960,12 +964,9 @@ function decodeImage(src){
   ok(!!q('#proFeatures') && !!q('#proContact'), '기대 기능 칩 + 연락처 입력칸');
   ok(q('#proFeatures').querySelectorAll('.planChip').length >= 3, '기대 기능 칩 ' + q('#proFeatures').querySelectorAll('.planChip').length + '개');
   ok((q('#proForm').textContent || '').indexOf('이 기기') !== -1, '이 기기에만 저장된다는 안내');
-  const proBefore = P.proInterest();
   P.openPro();
   ok(q('#proModal').hidden === false, 'Pro 모달 열림');
-  ok(txt('#proCta') === '출시 알림 신청', '처음 CTA 문구 (' + txt('#proCta') + ')');
-  q('.plan[data-plan="yearly"]').click();
-  ok(P.proWaitlist.plan() === 'yearly' && q('.plan[data-plan="yearly"]').getAttribute('aria-pressed') === 'true', '연간 플랜 선택');
+  ok(txt('#proCta') === '출시 알림 받기', '처음 CTA 문구 (' + txt('#proCta') + ')');
   q('#proFeatures .planChip[data-feat="capture"]').click();
   q('#proFeatures .planChip[data-feat="weekly"]').click();
   ok(q('#proFeatures .planChip[data-feat="capture"]').getAttribute('aria-pressed') === 'true' &&
@@ -977,19 +978,17 @@ function decodeImage(src){
   q('#proCta').click();
   await wait(150);
   const wl = P.proWaitlist.read();
-  ok(!!wl && wl.plan === 'yearly', '플랜 저장 (' + (wl && wl.plan) + ')');
   ok(!!wl && wl.features.indexOf('capture') >= 0 && wl.features.indexOf('weekly') >= 0 && wl.features.length === 2,
      '기대 기능 저장 (' + (wl ? wl.features.join(',') : '') + ')');
   ok(!!wl && wl.contact === 'prehealth@example.com', '연락처 저장 (' + (wl && wl.contact) + ')');
+  ok(!!wl && !('count' in wl), '기기별 관심 카운트는 저장하지 않음');
   ok(app.localStorage.getItem(P.proWaitlist.key) !== null, 'localStorage에 남음 (' + P.proWaitlist.key + ')');
   ok(q('#proDone').hidden === false && (txt('#proDone') || '').indexOf('출시 알림 신청 완료') !== -1,
      '“출시 알림 신청 완료” 피드백: ' + txt('#proDone'));
   ok((q('#toast').textContent || '').indexOf('출시 알림 신청 완료') !== -1, '토스트: ' + q('#toast').textContent);
-  ok(P.proInterest() === proBefore + 1, '관심 카운트도 함께 증가 (' + P.proInterest() + ')');
   P.closePro();
   P.openPro();
-  ok(q('.plan[data-plan="yearly"]').getAttribute('aria-pressed') === 'true' && q('#proContact').value === 'prehealth@example.com' &&
-     q('#proDone').hidden === false, '다시 열면 신청 내용이 그대로');
+  ok(q('#proContact').value === 'prehealth@example.com' && q('#proDone').hidden === false, '다시 열면 신청 내용이 그대로');
   ok(txt('#proCta') === '신청 완료 ✓ · 다시 신청', 'CTA 문구도 신청 상태 (' + txt('#proCta') + ')');
   P.closePro();
   say('');
@@ -1028,11 +1027,15 @@ function decodeImage(src){
   mcVideo.click();
   ok(P.state.mode === 'video' && mcVideo.getAttribute('aria-selected') === 'true' && q('#videoControls').hidden === false,
      '동영상 카드를 누르면 영상 모드');
+  q('.modeCard[data-mode="video"]').click();
+  await wait(80);
+  P.picker.set(false);
   const pickCS = app.getComputedStyle(q('#picker'));
   ok(pickCS.display === 'flex' && (pickCS.overflowX === 'auto' || pickCS.overflowX === 'scroll'),
-     '운동 8종은 한 줄 가로 스크롤 칩 (' + pickCS.overflowX + ')');
-  ok(q('#picker').scrollWidth > q('#picker').clientWidth,
-     '8종이 화면 폭을 넘어 스크롤됨 (' + q('#picker').scrollWidth + ' > ' + q('#picker').clientWidth + ')');
+     '운동 칩은 한 줄 가로 스크롤 칩 (' + pickCS.overflowX + ')');
+  ok(P.picker.visible() === 3 && !P.picker.expanded(), '기본은 인기 3종만 보임 (' + P.picker.visible() + ')');
+  ok(q('.ex-btn[data-ex="situp"]').offsetParent === null, '나머지 5종은 접혀 있음');
+  ok((txt('#pickerMoreText') || '').indexOf('나머지 5개') !== -1, '“나머지 5개 더 보기” 버튼');
   const selChipCS = app.getComputedStyle(q('.ex-btn[data-ex="squat"]'));
   ok(selChipCS.backgroundColor === 'rgb(23, 33, 29)' && selChipCS.borderTopColor === 'rgb(44, 87, 72)',
      '선택된 운동은 딥 에메랄드 배경·테두리 (' + selChipCS.backgroundColor + ' / ' + selChipCS.borderTopColor + ')');
@@ -1127,7 +1130,199 @@ function decodeImage(src){
   ok(cleanRed === 0, '경고가 없으면 빨강 0px — 정상 자세는 에메랄드·화이트만');
   say('');
 
-  /* ---------- 16) 콘솔 에러 ---------- */
+  /* ---------- 16) v20: 피드백 8개 항목 ---------- */
+  say('▸ 16. v20 피드백 반영');
+  P.setLevel('beginner', true);
+  P.tabs.switch('analyze');
+  await wait(120);
+
+  say('   16-1. 첫 화면 — 신뢰 띠 · 운동 접기/펼치기 · 만점 기준');
+  ok(!!q('#trustStrip') && (q('#trustStrip').textContent || '').indexOf('영상은 기기 밖으로 나가지 않아요') !== -1,
+     '첫 화면 방패 신뢰 띠: ' + (txt('#trustStrip') || ''));
+  ok(!!q('#trustStrip svg.ic') && q('#trustStrip svg.ic').getAttribute('stroke-width') === '1.75',
+     '방패도 1.75px 라인 아이콘');
+  ok((q('#uploadNote').textContent || '').indexOf('기기 밖으로 나가지 않아요') !== -1,
+     '업로드 버튼 옆에도 같은 안내');
+  ok((q('#clipNote').textContent || '').indexOf('60초') !== -1, '업로드 영역 60초 안내');
+  P.picker.set(false);
+  ok(P.picker.visible() === 3 && (txt('#pickerMoreText') || '').indexOf('나머지 5개') !== -1,
+     '접힌 상태: 인기 3종 + “나머지 5개 더 보기”');
+  q('#pickerMore').click();
+  ok(P.picker.expanded() && P.picker.visible() === 8, '펼치면 8종 모두 (' + P.picker.visible() + ')');
+  ok((txt('#pickerMoreText') || '') === '접기', '버튼 문구가 “접기”로');
+  ok(['squat', 'pushup', 'running'].every(function(k){ return q('.ex-btn[data-ex="' + k + '"]').offsetParent !== null; }),
+     '인기 3종(스쿼트·푸시업·러닝)은 항상 보임');
+  q('#pickerMore').click();
+  ok(!P.picker.expanded() && P.picker.visible() === 3, '다시 누르면 접힘');
+  ok((txt('#exCriteria') || '').indexOf('만점 기준') === 0 && txt('#exCriteria').indexOf('무릎 90°') !== -1,
+     '스쿼트 만점 기준: ' + txt('#exCriteria'));
+  q('.ex-btn[data-ex="pullup"]').click();
+  ok(P.picker.expanded() && q('.ex-btn[data-ex="pullup"]').getAttribute('aria-selected') === 'true', '접힌 운동을 고르면 자동으로 펼쳐짐');
+  ok((txt('#exCriteria') || '').indexOf('턱이 바 위') !== -1, '종목별 만점 기준: ' + txt('#exCriteria'));
+  q('.ex-btn[data-ex="squat"]').click();
+  ok(P.picker.expanded(), '펼친 상태는 유지');
+  q('#pickerMore').click();
+  ok(!P.picker.expanded() && P.picker.visible() === 3, '접기 버튼으로 인기 3종만');
+  ok(P.criteria.of('squat', 'en').indexOf('Knees') === 0, '만점 기준 영어 문구도 있음');
+  say('');
+
+  say('   16-2. 전신 미노출 · 어두운 조명 경고');
+  P.quality.reset();
+  ok(P.quality.visible() === false, '처음엔 경고 없음');
+  const darkRes = P.quality.check(P.sample.poseAt(100), 0.05);
+  ok(darkRes.dark === true && P.quality.dark(0.05) && !P.quality.dark(0.5), '밝기 0.05는 어두운 프레임');
+  ok(P.quality.check(null, 0.4).cut === true, '관절이 없으면 전신 미노출');
+  P.quality.check(null, 0.4);
+  P.quality.check(null, 0.4);
+  ok(P.quality.visible() === true, '3프레임 연속이면 경고 배너 표시');
+  ok((P.quality.text() || '').indexOf('전신이 다 안 보이거나 조명이 어두워') !== -1,
+     '경고 문구: ' + P.quality.text());
+  P.quality.reset();
+  ok(P.quality.visible() === false, '경고 초기화');
+  say('');
+
+  say('   16-3. 결과 화면 — 참고용 배지 · 핵심 팁 1줄 · 최대 3개 · 문제 장면 이동');
+  P.clearRecords();
+  await P.sample.run();
+  await wait(200);
+  ok(q('#report').hidden === false, '샘플 분석 후 결과 화면');
+  ok((P.disclaimerBadge() || '').indexOf('의학적 판단이 아니에요') !== -1, '결과 화면 안 참고용 배지: ' + P.disclaimerBadge());
+  ok(q('#repBadge').offsetParent !== null, '배지가 결과 카드 안에 직접 보임');
+  ok(q('#repTip').hidden === false && (txt('#repTipText') || '').length > 5, '핵심 교정 팁 1줄: ' + txt('#repTipText'));
+  const v20chips = q('#repIssues').querySelectorAll('.issueChip');
+  ok(v20chips.length <= 3 && v20chips.length >= 1, '교정 포인트 최대 3개 (' + v20chips.length + ')');
+  const worst = P.report.worst();
+  ok(!!worst && typeof worst.t === 'number' && Array.isArray(worst.lm) && worst.lm.length === 33,
+     '가장 흔들린 장면 기록 (' + (worst ? Math.round(worst.t) + 'ms · ' + Math.round(worst.score) + '점' : '없음') + ')');
+  ok(q('#repJump').hidden === false && (txt('#repJumpTime') || '').indexOf('0:') >= 0,
+     '문제 장면 이동 버튼 (' + txt('#repJumpTime') + ')');
+  q('#repJump').click();
+  await wait(420);
+  const jumpOverlay = q('#overlay');
+  const jd = jumpOverlay.getContext('2d').getImageData(0, 0, jumpOverlay.width, jumpOverlay.height).data;
+  let jpx = 0;
+  for (let i = 3; i < jd.length; i += 4){ if (jd[i] > 40) jpx++; }
+  ok(jpx > 100, '이동한 장면에 스켈레톤 오버레이 ' + jpx + 'px');
+  ok((txt('#hudHint') || '').indexOf('장면') !== -1, '안내 문구: ' + txt('#hudHint'));
+  say('');
+
+  say('   16-4. 기록 — 오늘 체크 · 주간 목표 · JSON 백업 · 이전 점수');
+  P.clearRecords();
+  P.tabs.switch('records');
+  await wait(150);
+  ok(P.habit.checked() === false && q('#todayCheck').getAttribute('aria-pressed') === 'false', '오늘 체크 전');
+  q('#todayCheck').click();
+  await wait(120);
+  ok(P.habit.checked() === true && q('#todayCheck').getAttribute('aria-pressed') === 'true', '1탭으로 오늘 운동 체크');
+  ok(P.habit.days().indexOf(P.habit.today()) >= 0, 'localStorage에 오늘 날짜 저장');
+  ok((txt('#recStreak') || '') === '1', '연속 기록 1일 (' + txt('#recStreak') + ')');
+  ok((txt('#weekGoalNum') || '').indexOf('1/3') === 0, '주간 목표 1/3 (' + txt('#weekGoalNum') + ')');
+  ok(parseFloat(q('#weekGoalBar').style.width) > 30, '주간 목표 진행률 바 ' + q('#weekGoalBar').style.width);
+  q('#todayCheck').click();
+  await wait(100);
+  ok(P.habit.checked() === false && (txt('#recStreak') || '') === '0', '다시 누르면 체크 해지');
+  P.clearRecords();
+  P.saveRecords([seed(1, 70, 'squat'), seed(3, 62, 'squat')]);
+  P.renderRecords();
+  const cmpUp = P.report.compare.forExercise('squat', 76);
+  ok(cmpUp.dir === 'up' && cmpUp.delta === 6 && cmpUp.label === '지난번보다 +6점', '지난번 대비 +6점 (' + cmpUp.label + ')');
+  P.report.compare.paint(cmpUp);
+  ok(P.report.compare.visible() && q('#repCompare').getAttribute('data-dir') === 'up' && (txt('#repCompare') || '').indexOf('+6') !== -1,
+     '결과 배지에 +6 표시: ' + txt('#repCompare'));
+  const cmpDown = P.report.compare.calc(59, 62);
+  ok(cmpDown.dir === 'down' && cmpDown.delta === -3, '내려가면 -3점');
+  P.clearRecords();
+  const cmpFirst = P.report.compare.forExercise('squat', 80);
+  ok(cmpFirst.dir === 'first' && cmpFirst.label === '첫 기록', '기록이 없으면 “첫 기록”');
+  say('   16-4b. JSON 내보내기/불러오기');
+  P.saveRecords([seed(1, 81, 'squat'), seed(2, 74, 'pushup')]);
+  const backup = P.recordsIo.backup();
+  ok(backup.records.length === 2 && backup.app === 'prehealth' && Array.isArray(backup.days), '백업 페이로드 ' + backup.records.length + '건');
+  ok(!!q('#recExport') && !!q('#recImport') && !!q('#recImportFile'), '기록 탭에 JSON 내보내기/불러오기 버튼');
+  P.clearRecords();
+  ok(P.loadRecords().length === 0, '초기화 후 0건');
+  const imported = P.recordsIo.import(JSON.stringify(backup));
+  ok(imported.added === 2 && P.loadRecords().length === 2, 'JSON 불러오기로 2건 복원 (' + imported.added + ')');
+  const again = P.recordsIo.import(JSON.stringify(backup));
+  ok(again.added === 0 && P.loadRecords().length === 2, '같은 파일을 다시 불러와도 중복 없음');
+  let parseErr = '';
+  try { P.recordsIo.parse('not json'); } catch (e){ parseErr = e.message; }
+  ok(parseErr.length > 0, '잘못된 파일은 오류: ' + parseErr);
+  say('');
+
+  say('   16-5. Pro · 개인정보 · 60초 · 자동 성능');
+  P.openPro();
+  ok((q('#proSoon').textContent || '').indexOf('7일 무료 체험') !== -1 && q('#proPreview').offsetParent !== null,
+     'Pro 모달: 출시 예정 안내 + 샘플 리포트 UI');
+  ok(!!q('#proPrivacy'), 'Pro 모달 안 개인정보처리방침 버튼');
+  q('#proPrivacy').click();
+  await wait(150);
+  ok(q('#privacyModal').hidden === false && P.privacy.visible(), '개인정보처리방침 모달 열림');
+  ok((q('#privacyModal').textContent || '').indexOf('영상은 기기 밖으로 나가지 않아요') !== -1, '로컬 처리 원칙 문구');
+  ok((q('#privacyModal').textContent || '').indexOf('출시 알림') !== -1, '이메일 보관 원칙 문구');
+  q('#privacyOk').click();
+  await wait(80);
+  ok(P.privacy.visible() === false, '모달 닫기');
+  P.closePro();
+  ok(!!q('#openPrivacy') && !!q('#footPrivacy'), '더보기·하단에도 개인정보처리방침 링크');
+  const c75 = P.clip.info(75), c30 = P.clip.info(30);
+  ok(c75.capped === true && c75.analyzed === 60 && c30.capped === false && c30.analyzed === 30,
+     '60초 초과는 앞 60초만 (' + c75.analyzed + 's)');
+  ok(P.clip.max === 60, '권장 최대 60초');
+  ok(P.perf.on() === true && q('#autoPerf').getAttribute('aria-pressed') === 'true', '자동 성능 조절 기본 ON');
+  q('#autoPerf').click();
+  ok(P.perf.on() === false && app.localStorage.getItem('prehealth:autoperf:v1') === '0', '토글 OFF + 저장');
+  q('#autoPerf').click();
+  ok(P.perf.on() === true, '다시 ON');
+  P.perf.setLevel(0);
+  P.perf.feed(240);
+  ok(P.perf.level() >= 1, '느린 프레임이면 단계 자동 상향 (' + P.perf.level() + ')');
+  ok((P.perf.label() || '').indexOf('px') !== -1 || (P.perf.label() || '').indexOf('해상도') !== -1, '상태 문구: ' + P.perf.label());
+  P.perf.setLevel(0);
+  ok(P.perf.gap() === 66, '원래 단계의 프레임 간격 66ms');
+  say('');
+
+  say('   16-6. KR / EN 전환');
+  q('.langBtn[data-lang="en"]').click();
+  await wait(200);
+  ok(P.lang.get() === 'en' && app.localStorage.getItem(P.lang.key) === 'en', 'EN으로 전환 + 저장');
+  ok((q('.tabBtn[data-tab="records"] span').textContent || '') === 'Records', '탭 이름 영어');
+  ok((q('.ex-btn[data-ex="squat"] .nm').textContent || '') === 'Squat', '운동 이름 영어');
+  ok((txt('#exCriteria') || '').indexOf('Knees') >= 0, '만점 기준 영어: ' + txt('#exCriteria'));
+  const enComment = P.commentFor(80, 'squat', { reps: 5 }, 'beginner');
+  ok(!/[\uAC00-\uD7A3]/.test(enComment), '리포트 코멘트 영어: ' + enComment.slice(0, 48));
+  ok((txt('#lvLineText') || '').indexOf('standard') !== -1, '난이도 1줄 영어: ' + txt('#lvLineText'));
+  q('.langBtn[data-lang="ko"]').click();
+  await wait(200);
+  ok(P.lang.get() === 'ko' && (q('.tabBtn[data-tab="records"] span').textContent || '') === '기록', '한국어로 복귀');
+  ok((q('.ex-btn[data-ex="squat"] .nm').textContent || '') === '스쿼트', '운동 이름 복귀');
+  ok((txt('#exCriteria') || '').indexOf('무릎') >= 0, '만점 기준 복귀');
+  say('');
+
+  say('   16-7. 9:16 인스타 스토리 카드');
+  ok(P.storyCard.size.w === 1080 && P.storyCard.size.h === 1920, '9:16 크기 1080×1920');
+  const story = P.storyCard.canvas(P.sample.record() || P.buildRecord({ reps: 8, avgScore: 84, durationMs: 30000, frames: 300 }, 'squat', Date.now()));
+  ok(story.width === 1080 && story.height === 1920, '스토리 캔버스 ' + story.width + '×' + story.height);
+  const sctx = story.getContext('2d');
+  const topPx = sctx.getImageData(0, 0, 1080, 200).data;
+  let topInk = 0;
+  for (let i = 0; i < topPx.length; i += 4){ if (topPx[i] > 30 || topPx[i + 1] > 30) topInk++; }
+  ok(topInk > 200, '스토리 상단 타이틀 렌더 ' + topInk + 'px');
+  ok(P.storyCard.dataUrl(P.buildRecord({ reps: 3, avgScore: 70, durationMs: 9000 }, 'squat', Date.now())).indexOf('data:image/png') === 0, '스토리 PNG 데이터');
+  const rec9 = P.buildRecord({ reps: 3, avgScore: 70, durationMs: 9000 }, 'squat', Date.now());
+  P.openCardModal(rec9);
+  ok((q('#cardStory').getAttribute('href') || '').indexOf('data:image/png') === 0, '카드 모달 9:16 저장 버튼');
+  P.card.setRatio('916');
+  ok(P.card.ratio() === '916' && q('#cardPreview').getAttribute('width') === '1080' && q('#cardPreview').getAttribute('height') === '1920',
+     '9:16 미리보기 (1080×1920)');
+  ok(q('#cardRatio45').getAttribute('aria-pressed') === 'false' && q('#cardRatio916').getAttribute('aria-pressed') === 'true', '비율 버튼 상태');
+  P.card.setRatio('45');
+  ok(P.card.ratio() === '45' && q('#cardPreview').getAttribute('height') === '1350', '4:5로 복귀');
+  P.closeCardModal();
+  P.clearRecords();
+  say('');
+
+  /* ---------- 17) 콘솔 에러 ---------- */
   say('▸ 15. 에러 확인');
   const real = errors.filter(function(e){ return e && e.indexOf('ResizeObserver') === -1; });
   ok(real.length === 0, '앱에서 발생한 JS 에러 0건' + (real.length ? ' → ' + real.join(' | ') : ''));

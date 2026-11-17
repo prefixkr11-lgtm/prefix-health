@@ -41,7 +41,7 @@ const html = await (await fetch('../index.html?v=' + Date.now(), { cache: 'no-st
 const a = html.lastIndexOf('/*', html.indexOf('CORE START'));
 const b = html.lastIndexOf('/*', html.indexOf('CORE END'));
 if (a < 0 || b < 0) { say('index.html에서 CORE 블록을 찾지 못했습니다'); throw new Error('no core'); }
-const EXPORTS = 'export { createEngine, LEVELS, RUN, TUNE, EXERCISES, COPY, angleAt, leanFromVertical, bodyLine, createOneEuro, oneEuroAlpha, valgusMeasure, overstride, assessQuality, sayCopy, buildRecord, recordStats, recordStreak, dateKeyOf, clockText };';
+const EXPORTS = 'export { createEngine, LEVELS, RUN, TUNE, EXERCISES, COPY, angleAt, leanFromVertical, bodyLine, createOneEuro, oneEuroAlpha, valgusMeasure, overstride, assessQuality, sayCopy, buildRecord, recordStats, recordStreak, dateKeyOf, clockText, CRITERIA, criteriaOf, CLIP_MAX_SEC, clipInfo, activityDaySet, streakFromDays, weekGoalProgress, compareScores, bodyCut, isDarkFrame, KEY_LANDMARKS, DARK_LEVEL };';
 const src = html.slice(a, b) + EXPORTS;
 const mod = await import(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
 say('코어 로드 완료 · 운동 ' + Object.keys(mod.EXERCISES).join(', ') + ' · 레벨 ' + Object.keys(mod.LEVELS).join(', '));
@@ -917,6 +917,56 @@ function runCases(M, ok, say){
   ok(nameOk, '기록 이름이 운동 이름과 같음');
   const noOne = NEW4.map(function(k){ return createEngine(k).update(null, 1.0, 0).ok; });
   ok(noOne.every(function(v){ return v === false; }), '새 4종도 사람이 없으면 ok:false');
+
+  /* ---- 27) v20: 만점 기준 · 60초 · 습관 · 이전 점수 · 품질 ---- */
+  say('');
+  say('▸ 27. v20 — 만점 기준 · 60초 · 습관 · 이전 점수 · 품질 판정');
+  const criteriaOf = M.criteriaOf, clipInfo = M.clipInfo, CLIP_MAX_SEC = M.CLIP_MAX_SEC;
+  const activityDaySet = M.activityDaySet, streakFromDays = M.streakFromDays, weekGoalProgress = M.weekGoalProgress;
+  const compareScores = M.compareScores, bodyCut = M.bodyCut, isDarkFrame = M.isDarkFrame, DARK_LEVEL = M.DARK_LEVEL;
+  ok(Object.keys(M.CRITERIA).length === 8, '운동 8종 만점 기준');
+  ok(criteriaOf('squat', 'ko').indexOf('무릎 90°') >= 0 && criteriaOf('squat', 'en').indexOf('Knees') === 0, '만점 기준 한국어·영어');
+  ok(criteriaOf('plank', 'ko').indexOf('60초') >= 0 && criteriaOf('situp', 'ko').indexOf('80°') >= 0, '종목별 기준이 다름');
+  ok(CLIP_MAX_SEC === 60, '권장 최대 60초');
+  const c75 = clipInfo(75), c30 = clipInfo(30), cBad = clipInfo(NaN);
+  ok(c75.capped === true && c75.analyzed === 60 && c75.note.indexOf('60초') >= 0, '75초 → 앞 60초만');
+  ok(c30.capped === false && c30.analyzed === 30 && c30.note === '', '30초는 그대로');
+  ok(cBad.capped === false && cBad.analyzed === 0, '길이를 모르면 0');
+
+  const today = new Date();
+  const keyOf = function(off){
+    const d = new Date(today.getTime());
+    d.setDate(d.getDate() - off);
+    return M.dateKeyOf(d.getTime());
+  };
+  const v20recs = [
+    { date: new Date(today.getTime()).toISOString(), score: 80 },
+    { date: new Date(today.getTime() - 86400000).toISOString(), score: 70 },
+    { date: new Date(today.getTime() - 86400000 * 3).toISOString(), score: 60 }
+  ];
+  const days = activityDaySet(v20recs, [keyOf(2)]);
+  ok(days[keyOf(0)] && days[keyOf(1)] && days[keyOf(2)] && days[keyOf(3)] && !days[keyOf(9)], '기록 + 수동 체크를 합침');
+  ok(streakFromDays(days) === 4, '오늘부터 4일 연속 (실제 ' + streakFromDays(days) + ')');
+  ok(activityDaySet([], [keyOf(5)])[keyOf(5)] === true, '수동 체크만 있어도 활동일');
+  const wg = weekGoalProgress([{ date: new Date().toISOString() }], [], Date.now(), 3);
+  ok(wg.done >= 1 && wg.goal === 3 && wg.days.length === 7 && wg.pct >= 33, '주간 목표 진행률 (' + wg.done + '/' + wg.goal + ')' );
+  const wgDone = weekGoalProgress([], weekGoalProgress([], [], Date.now(), 3).days.slice(0, 3).map(function(d){ return d.key; }), Date.now(), 3);
+  ok(wgDone.pct === 100 && wgDone.left === 0, '3일 채우면 100% (실제 ' + wgDone.pct + '%)');
+
+  const up = compareScores(76, 70), down = compareScores(59, 62), same = compareScores(70, 70);
+  ok(up.dir === 'up' && up.delta === 6 && up.label === '지난번보다 +6점', '오르면 +6점');
+  ok(down.dir === 'down' && down.delta === -3 && down.label === '지난번보다 -3점', '내려가면 -3점');
+  ok(same.dir === 'same' && same.delta === 0, '같으면 same');
+  ok(compareScores(80, null).dir === 'first' && compareScores(null, 70).dir === 'none', '첫 기록 · 점수 없음');
+
+  ok(bodyCut(null) === true && bodyCut([]) === true, '관절이 없으면 전신 미노출');
+  const full = new Array(33).fill(null).map(function(){ return { x: 0.5, y: 0.5, visibility: 0.9 }; });
+  ok(bodyCut(full) === false, '전신이 보이면 정상');
+  const cut = full.slice();
+  cut[0] = { x: 0.5, y: 0.02, visibility: 0.1 };
+  cut[27] = { x: 0.5, y: 0.99, visibility: 0.1 };
+  ok(bodyCut(cut) === true, '핵심 관절 2곳이 안 보이면 잘린 것');
+  ok(isDarkFrame(0.05) === true && isDarkFrame(DARK_LEVEL) === false && isDarkFrame(null) === false, '밝기 기준 ' + DARK_LEVEL);
 }
 /* CASES END */
 runCases(mod, ok, say);
